@@ -1,5 +1,7 @@
 name: Deploy AlergenRisk to GitHub Pages
 
+# Static client-side application; no build step is required.
+
 on:
   push:
     branches: [main]
