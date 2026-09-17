@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Výskumná platforma genetických modelov predispozície k potravinovým alergiám z údajov SNP čipu.">
+  <title>AlergenRisk — genetická predispozícia k potravinovým alergiám</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #10233e;
+      --muted: #5f6f82;
+      --line: #dfe5eb;
+      --paper: #ffffff;
+      --wash: #f4f7f8;
+      --navy: #173e68;
+      --blue: #2f73a8;
+      --amber: #e8a82b;
+      --amber-soft: #fff5d9;
+      --low: #2b7a68;
+      --normal: #2f73a8;
+      --high: #c35b3d;
+      --shadow: 0 18px 55px rgba(16, 35, 62, .09);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 82% 4%, rgba(232,168,43,.13), transparent 24rem),
+        linear-gradient(180deg, #f8fafb 0, var(--wash) 100%);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    button, input { font: inherit; }
+
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 24px 0 18px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 40px; height: 40px; border-radius: 14px;
+      background: var(--navy); color: white; display: grid; place-items: center;
+      font-weight: 850; letter-spacing: -.04em; box-shadow: 0 8px 18px rgba(23,62,104,.22);
+    }
+    .brand-name { font-weight: 800; letter-spacing: -.02em; }
+    .brand-note { color: var(--muted); font-size: .83rem; }
+    .privacy { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .9rem; }
+    .privacy svg { color: var(--low); flex: 0 0 auto; }
+    .offline-pill { display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; padding: 4px 8px; border-radius: 999px; color: #1f6658; background: #e7f5f1; font-size: .72rem; font-weight: 800; }
+
+    main { padding: 14px 0 56px; }
+    .intro { max-width: 740px; margin-bottom: 24px; }
+    h1 { margin: 0 0 9px; font-size: clamp(2rem, 4vw, 3.35rem); line-height: 1.04; letter-spacing: -.045em; }
+    .intro p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+    .allergen-tabs { display: flex; align-items: center; gap: 10px; margin: 2px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .allergen-tab { display: inline-flex; align-items: center; gap: 9px; border: 1px solid #b8c5d1; border-radius: 12px; padding: 10px 15px; background: #fff; color: var(--navy); font-weight: 800; cursor: pointer; }
+    .allergen-tab.active { border-color: var(--navy); background: var(--navy); color: #fff; }
+    .tab-count { padding: 2px 7px; border-radius: 999px; background: rgba(255,255,255,.16); font-size: .76rem; }
+    .tabs-note { color: var(--muted); font-size: .86rem; }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, .93fr) minmax(390px, 1.07fr); gap: 22px; align-items: start; }
+    .card { background: rgba(255,255,255,.94); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+    .upload-card { padding: 24px; }
+    .eyebrow { color: var(--blue); text-transform: uppercase; letter-spacing: .12em; font-size: .76rem; font-weight: 800; }
+    h2 { margin: 7px 0 7px; font-size: 1.38rem; letter-spacing: -.025em; }
+    .sub { margin: 0 0 20px; color: var(--muted); }
+
+    .dropzone {
+      display: grid; place-items: center; min-height: 248px; padding: 28px;
+      border: 1.5px dashed #9fb0c0; border-radius: 18px; background: #f8fafc;
+      text-align: center; cursor: pointer; transition: border-color .2s, background .2s, transform .2s;
+    }
+    .dropzone:hover, .dropzone.drag { border-color: var(--blue); background: #eff7fc; transform: translateY(-1px); }
+    .upload-icon { width: 54px; height: 54px; border-radius: 18px; background: #e8f1f7; color: var(--navy); display: grid; place-items: center; margin-bottom: 14px; }
+    .dropzone strong { display: block; font-size: 1.03rem; }
+    .dropzone span { display: block; color: var(--muted); font-size: .9rem; margin: 5px 0 16px; }
+    .select-btn, .reset-btn {
+      border: 0; border-radius: 11px; padding: 10px 16px; font-weight: 750; cursor: pointer;
+    }
+    .select-btn { color: #fff; background: var(--navy); }
+    .select-btn:hover { background: #0f3155; }
+    #fileInput { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+
+    .formats { margin: 16px 0 0; color: var(--muted); font-size: .86rem; }
+    .notice { margin-top: 18px; padding: 14px 15px; border-radius: 14px; background: var(--amber-soft); border: 1px solid #efd78e; font-size: .88rem; color: #684c10; }
+    .error { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 12px; color: #8e321e; background: #fff0ec; border: 1px solid #f0c2b5; }
+    .error.show { display: block; }
+    .normalizer-action { display: none; margin-top: 12px; padding: 14px; border: 1px solid #efc9c2; border-radius: 12px; background: #fff9f7; }
+    .normalizer-action.show { display: block; }
+    .normalizer-action p { margin: 0 0 10px; color: #6e4b45; font-size: .86rem; line-height: 1.45; }
+    .normalizer-btn { border: 0; border-radius: 10px; padding: 10px 14px; background: var(--navy); color: #fff; font-weight: 800; cursor: pointer; }
+    .normalizer-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .empty { padding: 34px; min-height: 480px; display: grid; place-items: center; text-align: center; }
+    .empty-inner { max-width: 340px; }
+    .empty-number { font-size: 4.7rem; font-weight: 850; line-height: 1; color: #d6e0e8; letter-spacing: -.08em; }
+    .empty h2 { margin-top: 18px; }
+    .empty p { color: var(--muted); }
+
+    .results { display: none; overflow: hidden; }
+    .results.show { display: block; }
+    .result-head { padding: 24px 24px 20px; background: linear-gradient(135deg, #173e68, #245f8e); color: white; }
+    .file-row { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 18px; }
+    .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .9rem; opacity: .8; }
+    .reset-btn { color: white; background: rgba(255,255,255,.14); padding: 8px 12px; }
+    .reset-btn:hover { background: rgba(255,255,255,.22); }
+    .result-main { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+    .score-disc { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; background: white; color: var(--navy); border: 8px solid rgba(232,168,43,.78); }
+    .score-disc strong { display: block; font-size: 2.1rem; line-height: 1; letter-spacing: -.05em; }
+    .score-disc small { display: block; color: var(--muted); text-align: center; margin-top: 4px; }
+    .result-label { font-size: 1.55rem; font-weight: 800; letter-spacing: -.03em; }
+    .result-copy { margin-top: 5px; opacity: .84; }
+
+    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+    .metric { padding: 17px 18px; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric span { display: block; color: var(--muted); font-size: .78rem; }
+    .metric strong { display: block; margin-top: 3px; font-size: 1.05rem; }
+    .result-body { padding: 22px 24px 24px; }
+    .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .section-title h3 { margin: 0; font-size: 1rem; }
+    .section-title span { color: var(--muted); font-size: .78rem; }
+
+    .prob-row { display: grid; grid-template-columns: 80px 1fr 58px; gap: 10px; align-items: center; margin: 9px 0; font-size: .86rem; }
+    .track { height: 9px; background: #edf1f4; border-radius: 99px; overflow: hidden; }
+    .fill { height: 100%; border-radius: 99px; min-width: 1px; }
+    .fill.low { background: var(--low); } .fill.normal { background: var(--normal); } .fill.high { background: var(--high); }
+    .fill.uncertainty { background: #aeb9c4; }
+    .prob-value { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+    .confidence-note { margin: 10px 0 0; color: var(--muted); font-size: .82rem; }
+    .chip-summary { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; margin-bottom: 20px; padding: 14px 15px; border: 1px solid var(--line); border-radius: 14px; background: #f8fafc; }
+    .chip-summary span { display: block; color: var(--muted); font-size: .76rem; text-transform: uppercase; letter-spacing: .05em; }
+    .chip-summary strong { display: block; margin-top: 3px; }
+    .coverage { text-align: right; white-space: nowrap; }
+
+    .histogram-wrap { position: relative; padding-top: 29px; }
+    .histogram { height: 126px; display: grid; grid-template-columns: repeat(9, 1fr); align-items: end; gap: 6px; padding-top: 8px; }
+    .bar-col { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; gap: 5px; }
+    .bar-value { text-align: center; color: var(--muted); font-size: .68rem; min-height: 15px; }
+    .bar { min-height: 2px; background: var(--blue); border-radius: 5px 5px 2px 2px; transition: height .45s ease; }
+    .bar.low { background: var(--low); } .bar.normal { background: var(--normal); } .bar.high { background: var(--high); }
+    .bar-label { text-align: center; font-size: .74rem; color: var(--muted); }
+    .individual-marker { position: absolute; z-index: 2; top: 24px; bottom: 19px; width: 2px; background: var(--amber); transform: translateX(-1px); pointer-events: none; }
+    .individual-marker span { position: absolute; top: -24px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 2px 7px; border-radius: 6px; background: var(--amber-soft); color: #684c10; font-size: .72rem; font-weight: 800; border: 1px solid #efd78e; }
+    .divider { height: 1px; background: var(--line); margin: 22px 0; }
+
+    .interpretation-card, .detail-card, .literature-card { margin-top: 22px; padding: 24px; }
+    .interpretation-card h2, .detail-card h2, .literature-card h2 { margin-top: 0; }
+    .interpretation-lead { margin: 8px 0 20px; max-width: 900px; color: #30445c; font-size: 1.02rem; }
+    .band-guide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .band-item { padding: 15px; border: 1px solid var(--line); border-radius: 15px; background: #f9fbfc; }
+    .band-item.active { border-color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber); background: #fffaf0; }
+    .band-item strong { display: block; margin-bottom: 4px; }
+    .band-item span { color: var(--muted); font-size: .87rem; }
+    .detail-card h2 { margin-top: 0; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; font-size: .9rem; }
+    .detail-card table { min-width: 980px; }
+    th { color: var(--muted); font-size: .76rem; text-transform: uppercase; letter-spacing: .055em; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    td { padding: 13px 12px; border-bottom: 1px solid #edf0f3; vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    code { color: var(--navy); background: #eef3f7; padding: 2px 6px; border-radius: 6px; font-size: .85em; }
+    .status { display: inline-block; padding: 4px 8px; border-radius: 99px; font-size: .76rem; font-weight: 750; white-space: nowrap; }
+    .direct { color: #1f6658; background: #e7f5f1; }
+    .proxy { color: #315b80; background: #e9f1f8; }
+    .population { color: #755719; background: #fff3d6; }
+    .footnote { color: var(--muted); font-size: .86rem; margin: 16px 0 0; }
+    .source-link { color: var(--blue); font-weight: 750; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+    footer { padding: 22px 0 40px; color: var(--muted); font-size: .83rem; }
+    .version-tag { display: block; margin-top: 7px; color: #8a97a6; font-size: .72rem; letter-spacing: .04em; }
+
+    @media (max-width: 880px) {
+      .workspace { grid-template-columns: 1fr; }
+      .empty { min-height: 330px; }
+      .band-guide { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .allergen-tabs { align-items: flex-start; flex-direction: column; }
+      .shell { width: min(100% - 22px, 1180px); }
+      header { align-items: flex-start; padding-top: 16px; }
+      .brand-note, .privacy span { display: none; }
+      .privacy .offline-pill { display: inline-flex; }
+      main { padding-top: 5px; }
+      .upload-card, .result-body, .interpretation-card, .detail-card, .literature-card { padding: 18px; }
+      .result-head { padding: 19px; }
+      .result-main { grid-template-columns: 86px 1fr; gap: 13px; }
+      .score-disc { width: 86px; height: 86px; border-width: 6px; }
+      .score-disc strong { font-size: 1.65rem; }
+      .result-label { font-size: 1.27rem; }
+      .metrics { grid-template-columns: 1fr; }
+      .metric { border-right: 0; border-bottom: 1px solid var(--line); }
+      .metric:last-child { border-bottom: 0; }
+      .prob-row { grid-template-columns: 70px 1fr 54px; }
+      .chip-summary { grid-template-columns: 1fr; }
+      .coverage { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">AR</div>
+        <div><div class="brand-name">AlergenRisk</div><div class="brand-note">genetické modely alergénov · EUR</div></div>
+      </div>
+      <div class="privacy" title="Súbor sa spracuje iba vo vašom prehliadači">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        <span>Genotyp neopúšťa zariadenie</span><span class="offline-pill">● OFFLINE VÝPOČET</span>
+      </div>
+    </header>
+
+    <main>
+      <nav class="allergen-tabs" role="tablist" aria-label="Genetické modely alergénov">
+        <button class="allergen-tab active" id="tabEgg" data-model="egg" type="button" role="tab" aria-selected="true">Vajce <span class="tab-count">4 SNP</span></button>
+        <button class="allergen-tab" id="tabPeanut" data-model="peanut" type="button" role="tab" aria-selected="false">Arašidy <span class="tab-count">5 SNP</span></button>
+        <span class="tabs-note">Jeden lokálny import pre všetky modely.</span>
+      </nav>
+      <section class="intro">
+        <h1 id="modelHeading">Genetická predispozícia k alergii na vajce</h1>
+        <p id="modelIntro">Nahrajte export SNP čipu. Aplikácia bez internetového prenosu rozpozná 23andMe, MyHeritage alebo DNAEra a pre každý zo štyroch cieľových markerov použije priamy nález alebo najkvalitnejší dostupný proxy SNP.</p>
+      </section>
+
+      <div class="workspace">
+        <section class="card upload-card" aria-labelledby="upload-title">
+          <div class="eyebrow">Krok 1</div>
+          <h2 id="upload-title">Nahrať genotypový súbor</h2>
+          <p class="sub">Spracovanie prebieha lokálne. Dáta sa neposielajú na server.</p>
+          <label class="dropzone" id="dropzone" for="fileInput">
+            <div>
+              <div class="upload-icon" aria-hidden="true">
+                <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg>
+              </div>
+              <strong>Presuňte súbor sem</strong>
+              <span>alebo ho vyberte z počítača</span>
+              <span class="select-btn">Vybrať súbor</span>
+            </div>
+          </label>
+          <input id="fileInput" type="file" accept=".txt,.tsv,.csv,text/plain,text/tab-separated-values" aria-describedby="formats">
+          <p class="formats" id="formats">Formát a dostupný čipový profil určíme automaticky. Podporované sú 23andMe TXT/TSV, MyHeritage CSV (MHv1.0) a DNAEra CSV (Illumina GSGT). Výpočet nepoužíva sieťové API.</p>
+          <div class="error" id="error" role="alert"></div>
+          <div class="normalizer-action" id="normalizerAction">
+            <p>Tento profil bude možné previesť do podporovaného formátu v samostatnom normalizačnom nástroji.</p>
+            <button class="normalizer-btn" id="normalizerBtn" type="button" disabled>Otvoriť normalizačný nástroj</button>
+          </div>
+          <div class="notice" id="uploadNotice"><strong>Dôležité:</strong> výsledok vyjadruje experimentálnu genetickú predispozíciu. Nie je diagnózou alergie ani odporúčaním vajce konzumovať.</div>
+        </section>
+
+        <section class="card empty" id="emptyState" aria-live="polite">
+          <div class="empty-inner">
+            <div class="empty-number" id="emptyRange">0–8</div>
+            <h2>Výsledok sa zobrazí tu</h2>
+            <p>Priamy nález má prednosť. Každý cieľový marker má 2–3 zabudované proxy náhrady; až keď chýbajú všetky, použijú sa európske populačné frekvencie.</p>
+          </div>
+        </section>
+
+        <section class="card results" id="results" aria-live="polite">
+          <div class="result-head">
+            <div class="file-row"><div class="file-name" id="fileName"></div><button class="reset-btn" id="resetBtn">Nový súbor</button></div>
+            <div class="result-main">
+              <div class="score-disc"><div><strong id="rawScore">–</strong><small id="scoreMaximum">z 8</small></div></div>
+              <div><div class="result-label" id="resultLabel">–</div><div class="result-copy" id="resultCopy">–</div></div>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><span>Pravdepodobnosť presného skóre</span><strong id="scoreConfidence">–</strong></div>
+            <div class="metric"><span>Spoľahlivosť interpretácie</span><strong id="interpretationConfidence">–</strong></div>
+            <div class="metric"><span>Rozpätie pri imputácii</span><strong id="scoreRange">–</strong></div>
+          </div>
+          <div class="result-body">
+            <div class="chip-summary">
+              <div><span>Rozpoznaný formát / čipový profil</span><strong id="chipProfile">–</strong></div>
+              <div class="coverage"><span>Pokrytie cieľov panelom</span><strong id="panelCoverage">–</strong></div>
+            </div>
+            <div class="section-title"><h3>Istota individuálneho zaradenia</h3><span>v rámci modelu</span></div>
+            <div class="prob-row"><span>Relevantné</span><div class="track"><div class="fill normal" id="confidenceBar"></div></div><div class="prob-value" id="confidenceValue">–</div></div>
+            <div class="prob-row"><span>Neistota</span><div class="track"><div class="fill uncertainty" id="uncertaintyBar"></div></div><div class="prob-value" id="uncertaintyValue">–</div></div>
+            <p class="confidence-note" id="confidenceNote">Percento vyjadruje pravdepodobnosť, že skutočné skóre patrí do zobrazovaného pásma po zohľadnení chýbajúcich a imputovaných genotypov. Nevyjadruje klinickú presnosť modelu.</p>
+            <div class="divider"></div>
+            <div class="section-title"><h3>Referenčná distribúcia EUR populácie</h3><span id="distributionMeta">všetky kombinácie 4 SNP · skóre 0–8</span></div>
+            <div class="histogram-wrap">
+              <div class="individual-marker" id="individualMarker"><span id="markerLabel">Výsledok</span></div>
+              <div class="histogram" id="histogram" aria-label="Referenčný histogram skóre 0 až 8 v európskej populácii"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="card interpretation-card" id="interpretation" hidden>
+        <div class="eyebrow">Praktická interpretácia</div>
+        <h2 id="interpretationTitle">Význam výsledku</h2>
+        <p class="interpretation-lead" id="interpretationText"></p>
+        <div class="band-guide">
+          <div class="band-item" id="bandLow"><strong id="bandLowTitle">Znížená predispozícia · 0–1</strong><span>Menej rizikových alel než je typické v referenčnej EUR populácii. Reakciu to nevylučuje.</span></div>
+          <div class="band-item" id="bandNormal"><strong id="bandNormalTitle">Normálna predispozícia · 2–3</strong><span>Bežná genetická predispozícia porovnateľná s referenčnou EUR populáciou.</span></div>
+          <div class="band-item" id="bandHigh"><strong id="bandHighTitle">Zvýšená predispozícia · 4–8</strong><span>Viac rizikových alel než je typické v referenčnej EUR populácii. Reakciu to nepotvrdzuje.</span></div>
+        </div>
+        <div class="notice" id="clinicalNotice"><strong>Klinický význam:</strong> genetická predispozícia neurčuje, či reakcia skutočne nastane ani aká bude závažná. Bez ťažkostí, anamnézy a alergologického vyšetrenia sa výsledok nemá používať ako pokyn na konzumáciu alebo vyradenie vajec.</div>
+      </section>
+
+      <section class="card detail-card" id="details" hidden>
+        <h2>Identifikované a imputované markery</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Marker</th><th>Riziková alela</th><th>Genotyp</th><th>Pravdepodobnosť</th><th>Skóre</th><th>β</th><th>Spôsob určenia</th><th>Použitý proxy SNP</th><th>Genotyp proxy</th><th>EUR r²</th></tr></thead>
+            <tbody id="markerRows"></tbody>
+          </table>
+        </div>
+        <p class="footnote"><strong>Ako čítať proxy stĺpce:</strong> program skúša proxy markery v poradí podľa EUR r² a použije prvý prítomný v súbore. Ak chýba cieľ aj všetky jeho náhrady, zobrazí sa „EUR frekvencie (bez proxy)“.</p>
+        <p class="footnote">Populačná imputácia nie je individuálne určený genotyp. Spoľahlivosť interpretácie zachytáva iba neistotu spôsobenú chýbajúcimi genotypmi a proxy markerom; nehodnotí klinickú validitu ani pravdepodobnosť alergickej reakcie.</p>
+      </section>
+
+      <section class="card literature-card" aria-labelledby="literature-title">
+        <div class="eyebrow">Pôvod modelu</div>
+        <h2 id="literature-title">Pôvodné SNP z literatúry</h2>
+        <p id="literatureIntro">Štyri priame markery a ich účinky pochádzajú z GWAS alergie na potraviny potvrdenej orálnym expozičným testom. Hodnoty pre alergiu na slepačie vajce sú prevzaté z tabuľky 2 pôvodnej štúdie; β je prirodzený logaritmus OR rizikovej alely.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Marker</th><th>Lokus</th><th>Efektová alela v štúdii</th><th id="literatureOrHeading">OR pre vajce</th><th>P</th><th>Riziková alela modelu</th><th>β</th></tr></thead>
+            <tbody id="literatureRows">
+              <tr><td><code>rs12123821</code></td><td>FLG-AS1 / FLG</td><td>T</td><td>2,74</td><td>5,4 × 10<sup>−12</sup></td><td><strong>T</strong></td><td>1,008</td></tr>
+              <tr><td><code>rs11949166</code></td><td>IL4 / KIF3A</td><td>T</td><td>0,62</td><td>2,2 × 10<sup>−12</sup></td><td><strong>A</strong></td><td>0,478</td></tr>
+              <tr><td><code>rs2212434</code></td><td>C11orf30 / LRRC32</td><td>T</td><td>1,39</td><td>8,8 × 10<sup>−6</sup></td><td><strong>T</strong></td><td>0,329</td></tr>
+              <tr><td><code>rs1243064</code></td><td>SERPINB7 / SERPINB2</td><td>A</td><td>1,47</td><td>4,2 × 10<sup>−8</sup></td><td><strong>A</strong></td><td>0,385</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="literatureNotes"></div>
+      </section>
+    </main>
+
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 12 · vajce + arašidy</span></footer>
+  </div>
+
+  <script>
+    const eggLoci = [
+      {
+        id:'rs12123821', aliases:['1:152179152'], risk:'T', nonRisk:'C', beta:1.008, eur:{CC:.9144, CT:.0836, TT:.0019},
+        proxies:[
+          {id:'rs12122629', riskAllele:'C', r2:.744769, dPrime:.919032, pRiskIfProxy:.9225731, pRiskIfOther:.0082933},
+          {id:'rs115288876', aliases:['1:152000117'], riskAllele:'A', r2:.698182, dPrime:.914501, pRiskIfProxy:.9182405, pRiskIfOther:.0103458},
+          {id:'rs1039088', riskAllele:'A', r2:.433114, dPrime:.873410, pRiskIfProxy:.5179372, pRiskIfOther:.0055367}
+        ]
+      },
+      {
+        id:'rs11949166', aliases:['5:132027681'], risk:'A', nonRisk:'T', beta:.478, eur:{TT:.5324, AT:.3946, AA:.0731},
+        proxies:[
+          {id:'rs11747814', riskAllele:'C', r2:.980137, dPrime:1, pRiskIfProxy:.9855074, pRiskIfOther:0},
+          {id:'rs2897442', riskAllele:'C', r2:.906123, dPrime:.999999, pRiskIfProxy:.9315060, pRiskIfOther:0},
+          {id:'rs3798130', riskAllele:'T', r2:.560438, dPrime:.999999, pRiskIfProxy:.9999994, pRiskIfOther:.1188477}
+        ]
+      },
+      {
+        id:'rs2212434', aliases:['11:76281593'], risk:'T', nonRisk:'C', beta:.329, eur:{CC:.3121, CT:.4931, TT:.1948},
+        proxies:[
+          {id:'rs7126418', riskAllele:'T', r2:.968318, dPrime:1, pRiskIfProxy:.9823009, pRiskIfOther:0},
+          {id:'rs7936070', riskAllele:'T', r2:.897383, dPrime:.999998, pRiskIfProxy:.9426742, pRiskIfOther:0},
+          {id:'rs2155219', aliases:['11:76299194'], riskAllele:'T', r2:.818821, dPrime:.999999, pRiskIfProxy:.8987851, pRiskIfOther:0}
+        ]
+      },
+      {
+        id:'rs1243064', aliases:['18:61513975'], risk:'A', nonRisk:'T', beta:.385, eur:{TT:.5455, AT:.3862, AA:.0684},
+        proxies:[
+          {id:'rs1243063', riskAllele:'C', r2:.979517, dPrime:1, pRiskIfProxy:.9999998, pRiskIfOther:.0053548},
+          {id:'rs1243039', aliases:['18:61498396'], riskAllele:'A', r2:.841576, dPrime:.936277, pRiskIfProxy:.9252968, pRiskIfOther:.0166593},
+          {id:'rs986982', riskAllele:'A', r2:.832604, dPrime:.935977, pRiskIfProxy:.9184297, pRiskIfOther:.0167377}
+        ]
+      }
+    ];
+
+    const peanutLoci = [
+      {
+        id:'rs7192', aliases:['6:32411646'], risk:'T', nonRisk:'G', beta:.531, eur:{GG:.401, GT:.465, TT:.135},
+        proxies:[
+          {id:'rs2213585', riskAllele:'G', r2:1, dPrime:1, pRiskIfProxy:1, pRiskIfOther:0},
+          {id:'rs2227139', riskAllele:'G', r2:1, dPrime:1, pRiskIfProxy:1, pRiskIfOther:0},
+          {id:'rs7195', riskAllele:'A', r2:1, dPrime:1, pRiskIfProxy:1, pRiskIfOther:0}
+        ]
+      },
+      {
+        id:'rs9275596', aliases:['6:32681631'], risk:'C', nonRisk:'T', beta:.531, eur:{TT:.4759, CT:.4279, CC:.0962},
+        proxies:[
+          {id:'rs1612904', aliases:['6:32669018'], riskAllele:'C', r2:.995369, dPrime:1, pRiskIfProxy:.9968052, pRiskIfOther:0},
+          {id:'rs2856717', aliases:['6:32670308'], riskAllele:'A', r2:.868985, dPrime:.999998, pRiskIfProxy:.9096194, pRiskIfOther:0},
+          {id:'rs2858310', aliases:['6:32668323'], riskAllele:'G', r2:.864151, dPrime:.995007, pRiskIfProxy:.9092744, pRiskIfOther:.0015484}
+        ]
+      },
+      {
+        id:'rs7936434', aliases:['11:76293805'], risk:'C', nonRisk:'G', beta:.457, eur:{GG:.2818, CG:.4981, CC:.2201},
+        proxies:[
+          {id:'rs7936070', riskAllele:'T', r2:.996016, dPrime:1, pRiskIfProxy:1, pRiskIfOther:.0018692},
+          {id:'rs2155219', aliases:['11:76299194'], riskAllele:'T', r2:.908326, dPrime:.995747, pRiskIfProxy:.9533974, pRiskIfOther:.0019955},
+          {id:'rs2212434', aliases:['11:76281593'], riskAllele:'T', r2:.893808, dPrime:.999998, pRiskIfProxy:.9999990, pRiskIfOther:.0498229}
+        ]
+      },
+      {
+        id:'rs7475217', aliases:['10:68444013'], risk:'T', nonRisk:'C', beta:.495, eur:{CC:.3984, CT:.4656, TT:.1360},
+        proxies:[
+          {id:'rs2394283', riskAllele:'G', r2:1, dPrime:1, pRiskIfProxy:1, pRiskIfOther:0},
+          {id:'rs71193762', riskAllele:'A', r2:.995741, dPrime:1, pRiskIfProxy:.9973117, pRiskIfOther:0},
+          {id:'rs7908849', aliases:['10:68483603'], riskAllele:'C', r2:.907389, dPrime:.956642, pRiskIfProxy:.9675021, pRiskIfOther:.0159901}
+        ]
+      },
+      {
+        id:'rs744597', aliases:['4:86337028'], risk:'C', nonRisk:'T', beta:.494, eur:{TT:.1785, CT:.4880, CC:.3335},
+        proxies:[
+          {id:'rs340183', riskAllele:'T', r2:.854687, dPrime:.999999, pRiskIfProxy:.9386105, pRiskIfOther:0},
+          {id:'rs340185', aliases:['4:86335426'], riskAllele:'T', r2:.851103, dPrime:.999999, pRiskIfProxy:.9370965, pRiskIfOther:0},
+          {id:'rs398803', aliases:['4:86339322'], riskAllele:'A', r2:.850332, dPrime:.995357, pRiskIfProxy:.9384461, pRiskIfOther:.0026813}
+        ]
+      }
+    ];
+
+    const models = {
+      egg:{key:'egg',name:'Vajce',food:'vajca',loci:eggLoci,maxScore:8,bands:{low:[0,1],normal:[2,3],high:[4,8]}},
+      peanut:{key:'peanut',name:'Arašidy',food:'arašidov',loci:peanutLoci,maxScore:10,bands:{low:[0,2],normal:[3,5],high:[6,10]}}
+    };
+    const modelContent = {
+      egg:{
+        heading:'Genetická predispozícia k alergii na vajce',
+        intro:'Nahrajte export SNP čipu. Aplikácia bez internetového prenosu rozpozná 23andMe, MyHeritage alebo DNAEra a pre každý zo štyroch cieľových markerov použije priamy nález alebo najkvalitnejší dostupný proxy SNP.',
+        literatureIntro:'Štyri priame markery a ich účinky pochádzajú z GWAS alergie na potraviny potvrdenej orálnym expozičným testom. Hodnoty pre alergiu na slepačie vajce sú prevzaté z tabuľky 2 pôvodnej štúdie; β je prirodzený logaritmus OR rizikovej alely.',
+        literatureRows:[
+          ['rs12123821','FLG-AS1 / FLG','T','2,74','5,4 × 10<sup>−12</sup>','T','1,008'],
+          ['rs11949166','IL4 / KIF3A','T','0,62','2,2 × 10<sup>−12</sup>','A','0,478'],
+          ['rs2212434','C11orf30 / LRRC32','T','1,39','8,8 × 10<sup>−6</sup>','T','0,329'],
+          ['rs1243064','SERPINB7 / SERPINB2','A','1,47','4,2 × 10<sup>−8</sup>','A','0,385']
+        ],
+        notes:'<p class="footnote"><strong>Orientácia alel:</strong> pri ochrannom efekte sa modelová riziková alela určila ako opačná alela a β = ln(1/OR). Proxy odhady používajú EUR LD a nie sú ďalšími nezávislými bodmi skóre.</p>'
+      },
+      peanut:{
+        heading:'Genetická predispozícia k alergii na arašidy',
+        intro:'Nahrajte export SNP čipu. Päť cieľových markerov pre alergiu na arašidy sa vyhodnotí priamo alebo cez najkvalitnejší dostupný EUR proxy SNP. Celé spracovanie zostáva vo vašom prehliadači.',
+        literatureIntro:'Panel kombinuje dva HLA markery replikované pri alergii na arašidy s tromi kandidátnymi lokusmi z viacpopulačnej GWAS a metaanalýzy. β je prirodzený logaritmus OR rizikovej alely; skóre je nevážený počet rizikových alel.',
+        literatureRows:[
+          ['rs7192','HLA-DRA','T','1,70','5,5 × 10<sup>−8</sup>','T','0,531'],
+          ['rs9275596','HLA-DQB1 / HLA-DQA2','C','1,70','6,8 × 10<sup>−10</sup>','C','0,531'],
+          ['rs7936434','C11orf30 / EMSY','C','1,58','5,17 × 10<sup>−7</sup>','C','0,457'],
+          ['rs7475217','CTNNA3','T','1,64','3,58 × 10<sup>−7</sup>','T','0,495'],
+          ['rs744597','ARHGAP24','A (ochranná)','0,61','3,98 × 10<sup>−7</sup>','C','0,494']
+        ],
+        notes:'<p class="footnote"><strong>Sila dôkazu:</strong> HLA markery pochádzajú z replikovanej GWAS alergie na arašidy; tri ďalšie lokusy mali v objavovej analýze sugestívnu asociáciu. Panel je preto experimentálny, nie klinicky validované PRS.</p><p class="footnote"><strong>Orientácia rs744597:</strong> štúdia uvádza ochrannú alelu A na opačnom vlákne; v plus orientácii model počíta C ako rizikovú alelu. <a href="https://doi.org/10.1038/ncomms7304" target="_blank" rel="noopener">Hong et al., 2015</a> · <a href="https://doi.org/10.1016/j.jaci.2017.09.015" target="_blank" rel="noopener">Asai et al., 2018</a>.</p>'
+      }
+    };
+    let activeModel=models.egg;
+    let loci=activeModel.loci;
+    let currentParsed=null;
+    let currentFileName='';
+    const validBases = /^[ACGT]{2}$/;
+    const $ = id => document.getElementById(id);
+    const input = $('fileInput');
+    const dropzone = $('dropzone');
+
+    function normalizeGenotype(value) {
+      const g = String(value || '').trim().replace(/^['"]|['"]$/g,'').toUpperCase().replace(/[\/|\s]/g,'');
+      return validBases.test(g) ? g.split('').sort().join('') : null;
+    }
+
+    function cleanField(value) {
+      return String(value || '').trim().replace(/^['"]|['"]$/g,'').trim();
+    }
+
+    function headerMetadata(text) {
+      const head=text.split(/\r?\n/).slice(0,180).join('\n');
+      const value=(patterns)=>patterns.map(p=>head.match(p)?.[1]?.trim()).find(Boolean) || null;
+      return {
+        manifest:value([/^(?:#\s*)?(?:Manifest Name|Manifest|Array|Chip|Content)[,:=\t]\s*([^\r\n]+)/im]),
+        declaredSource:value([/^(?:#\s*)?Source format:\s*([^\r\n]+)/im]),
+        reference:value([/^##reference=(.+)$/im,/Reference human assembly\s+([^\r\n.]+)/im])
+      };
+    }
+
+    function detectSource(text) {
+      const meta=headerMetadata(text);
+      if (/^##fileformat=MyHeritage\s*$/im.test(text) || /^##format=MHv\d/i.test(text) || /MyHeritage/i.test(text) || /^['"]?RSID['"]?\s*[,;]\s*['"]?CHROMOSOME['"]?\s*[,;]\s*['"]?POSITION['"]?\s*[,;]\s*['"]?(?:RESULT|GENOTYPE)['"]?/im.test(text)) {
+        const version=text.match(/^##format=(.+)$/im)?.[1]?.trim();
+        const reference=text.match(/^##reference=(.+)$/im)?.[1]?.trim();
+        return {type:'myheritage',format:version ? `MyHeritage ${version}` : 'MyHeritage',build:/37/i.test(reference || '') ? 'GRCh37' : reference || 'zostava neuvedená',meta};
+      }
+      if (/23andMe/i.test(text) || /^#?\s*rsid\s+[\t ]+chromosome\s+[\t ]+position\s+[\t ]+genotype/im.test(text)) {
+        const compatible=/compatible/i.test(meta.declaredSource || '') ? '-kompatibilný' : '';
+        return {type:'23andme',format:`23andMe${compatible}`,build:/38/i.test(meta.reference || '')?'GRCh38':'GRCh37',meta};
+      }
+      if (/^\[Header\]\s*$/im.test(text) && /^GSGT Version\s*[,;\t]/im.test(text) && /^Sample Name\s*[,;\t]\s*SNP Name\s*[,;\t]\s*Chr\s*[,;\t]\s*Position\s*[,;\t]\s*Allele1 - Plus\s*[,;\t]\s*Allele2 - Plus\s*$/im.test(text)) {
+        return {type:'dnaera',format:'DNAEra (Illumina GSGT)',build:/38/i.test(meta.reference || '')?'GRCh38':'GRCh37',meta};
+      }
+      return {type:'unknown',format:'Nerozpoznaný formát',build:'zostava neuvedená',meta};
+    }
+
+    function chipProfile(parsed) {
+      const candidates=loci.flatMap(l=>[l.id,...l.proxies.map(p=>p.id)]);
+      const present=candidates.filter(id=>parsed.found.has(id.toLowerCase())).length;
+      const manifest=parsed.source.meta?.manifest;
+      const imputed=/imput/i.test(parsed.source.meta?.declaredSource || '');
+      const label=manifest ? `${parsed.source.format} · ${manifest}` : `${parsed.source.format} · profil určený pokrytím markerov`;
+      return {label:imputed ? `${label} · súbor deklaruje imputáciu` : label,present,total:candidates.length};
+    }
+
+    function parseGenotypes(text) {
+      const found = new Map();
+      let rows = 0;
+      const source=detectSource(text);
+      if (source.type === 'unknown') return {found,rows,source};
+      for (const raw of text.split(/\r?\n/)) {
+        const line = raw.trim();
+        if (!line || line.startsWith('#')) continue;
+        const delimiter=line.includes('\t') ? '\t' : line.includes(',') ? ',' : line.includes(';') ? ';' : null;
+        const p=(delimiter ? line.split(delimiter) : line.split(/\s+/)).map(cleanField);
+        if (p.length < 4) continue;
+        const isDNAEra=source.type === 'dnaera';
+        if (isDNAEra && p.length < 6) continue;
+        const genotype = normalizeGenotype(isDNAEra ? `${p[4]}${p[5]}` : p[p.length - 1]);
+        if (!genotype) continue;
+        rows++;
+        const id = p[isDNAEra ? 1 : 0].toLowerCase();
+        found.set(id, genotype);
+        const chr = String(p[isDNAEra ? 2 : 1]).replace(/^chr/i,'');
+        const pos = String(p[isDNAEra ? 3 : 2]);
+        if (/^(?:[1-9]|1\d|2[0-2]|X|Y|MT)$/i.test(chr) && /^\d+$/.test(pos)) found.set(`${chr}:${pos}`.toLowerCase(), genotype);
+      }
+      return { found, rows, source };
+    }
+
+    function lookup(found, ids) {
+      for (const id of ids) if (found.has(id.toLowerCase())) return found.get(id.toLowerCase());
+      return null;
+    }
+
+    function normalizedDistribution(obj) {
+      const entries = Object.entries(obj).map(([genotype,p]) => ({ genotype: normalizeGenotype(genotype), p }));
+      const sum = entries.reduce((a,b)=>a+b.p,0);
+      return entries.map(x=>({genotype:x.genotype,p:x.p/sum}));
+    }
+
+    function proxyDistribution(locus, proxy, proxyGenotype) {
+      const alleles=normalizeGenotype(proxyGenotype)?.split('');
+      if (!alleles) return null;
+      const q=alleles.map(a=>a===proxy.riskAllele ? proxy.pRiskIfProxy : proxy.pRiskIfOther);
+      const p0=(1-q[0])*(1-q[1]);
+      const p1=q[0]*(1-q[1])+(1-q[0])*q[1];
+      const p2=q[0]*q[1];
+      return [
+        {genotype:normalizeGenotype(locus.nonRisk+locus.nonRisk),p:p0},
+        {genotype:normalizeGenotype(locus.nonRisk+locus.risk),p:p1},
+        {genotype:normalizeGenotype(locus.risk+locus.risk),p:p2}
+      ].filter(x=>x.p>1e-12);
+    }
+
+    function riskCount(genotype, risk) { return genotype.split('').filter(a=>a===risk).length; }
+
+    function referenceDistribution() {
+      let combinations=[{raw:0,p:1}];
+      for (const locus of loci) {
+        const next=[];
+        for (const base of combinations) for (const option of normalizedDistribution(locus.eur)) {
+          next.push({raw:base.raw+riskCount(option.genotype,locus.risk),p:base.p*option.p});
+        }
+        combinations=next;
+      }
+      const hist=Array(activeModel.maxScore+1).fill(0);
+      for (const c of combinations) hist[c.raw]+=c.p;
+      return hist;
+    }
+
+    let eurReference=referenceDistribution();
+
+    function sumRange(hist,range) {
+      return hist.slice(range[0],range[1]+1).reduce((a,b)=>a+b,0);
+    }
+
+    function bandForScore(score,result) {
+      if (score<=activeModel.bands.low[1]) return {key:'low',label:'Znížená predispozícia',value:result.low};
+      if (score<=activeModel.bands.normal[1]) return {key:'normal',label:'Normálna predispozícia',value:result.normal};
+      return {key:'high',label:'Zvýšená predispozícia',value:result.high};
+    }
+
+    function analyze(found) {
+      let direct = 0;
+      let proxyCount = 0;
+      const calls = loci.map(locus => {
+        const g = lookup(found,[locus.id,...locus.aliases]);
+        if (g) {
+          direct++;
+          return {...locus, dist:[{genotype:g,p:1}], method:'Priamy nález', methodClass:'direct', usedProxy:null, usedProxyGenotype:null};
+        }
+        for (const proxy of locus.proxies) {
+          const pg=lookup(found,[proxy.id,...(proxy.aliases || [])]);
+          const pd=pg ? proxyDistribution(locus,proxy,pg) : null;
+          if (pd) {
+            proxyCount++;
+            return {...locus,dist:pd,method:'Proxy odhad',methodClass:'proxy',usedProxy:proxy,usedProxyGenotype:pg};
+          }
+        }
+        return {...locus, dist:normalizedDistribution(locus.eur), method:'EUR frekvencie (bez proxy)', methodClass:'population', usedProxy:null, usedProxyGenotype:null};
+      });
+
+      let combinations=[{raw:0,p:1}];
+      for (const call of calls) {
+        const next=[];
+        for (const base of combinations) for (const option of call.dist) {
+          const score=riskCount(option.genotype,call.risk);
+          next.push({raw:base.raw+score,p:base.p*option.p});
+        }
+        combinations=next;
+      }
+      const hist=Array(activeModel.maxScore+1).fill(0);
+      for (const c of combinations) hist[c.raw]+=c.p;
+      const low=sumRange(hist,activeModel.bands.low), normal=sumRange(hist,activeModel.bands.normal), high=sumRange(hist,activeModel.bands.high);
+      const achievedScore=calls.reduce((sum,call)=>{
+        const best=[...call.dist].sort((a,b)=>b.p-a.p)[0];
+        return sum+riskCount(best.genotype,call.risk);
+      },0);
+      const scoreConfidence=hist[achievedScore];
+      const possible=hist.map((p,score)=>({p,score})).filter(x=>x.p>1e-9).map(x=>x.score);
+      return {calls,direct,proxyCount,hist,achievedScore,scoreConfidence,scoreMin:Math.min(...possible),scoreMax:Math.max(...possible),low,normal,high};
+    }
+
+    const pct = value => `${(value*100).toLocaleString('sk-SK',{minimumFractionDigits:1,maximumFractionDigits:1})} %`;
+    const num = (value,digits=2) => value.toLocaleString('sk-SK',{minimumFractionDigits:digits,maximumFractionDigits:digits});
+
+    function render(result, fileName, parsed) {
+      const band=bandForScore(result.achievedScore,result);
+      const confidence=band.value;
+      const uncertainty=1-confidence;
+      const profile=chipProfile(parsed);
+      $('fileName').textContent=`${fileName} · ${parsed.source.format} · ${parsed.source.build} · ${parsed.rows.toLocaleString('sk-SK')} variantov`;
+      $('chipProfile').textContent=profile.label;
+      $('panelCoverage').textContent=`${result.direct + result.proxyCount}/${loci.length} cieľov · ${result.direct} priamo, ${result.proxyCount} cez proxy`;
+      $('rawScore').textContent=result.achievedScore;
+      $('scoreConfidence').textContent=pct(result.scoreConfidence);
+      $('interpretationConfidence').textContent=pct(confidence);
+      $('scoreRange').textContent=result.scoreMin===result.scoreMax ? `${result.scoreMin}` : `${result.scoreMin}–${result.scoreMax}`;
+      $('resultLabel').textContent=band.label;
+      $('resultCopy').textContent=`Dosiahnuté genetické skóre predstavuje počet rizikových alel v použitých markeroch. Nejde o vážený priemer. Pri imputovaných genotypoch je pravdepodobnosť presne tohto skóre ${pct(result.scoreConfidence)}.`;
+      $('confidenceBar').style.width=`${confidence*100}%`; $('confidenceValue').textContent=pct(confidence);
+      $('uncertaintyBar').style.width=`${uncertainty*100}%`; $('uncertaintyValue').textContent=pct(uncertainty);
+      $('confidenceNote').textContent=`Imputácia pripúšťa skóre ${result.scoreMin===result.scoreMax?result.scoreMin:`${result.scoreMin} až ${result.scoreMax}`}. Pravdepodobnosť, že výsledok zostane v pásme „${band.label.toLowerCase()}“, je ${pct(confidence)}.`;
+      const max=Math.max(...eurReference,.0001);
+      $('histogram').style.gridTemplateColumns=`repeat(${eurReference.length},1fr)`;
+      $('histogram').innerHTML=eurReference.map((p,i)=>{
+        const cls=i<=activeModel.bands.low[1]?'low':i<=activeModel.bands.normal[1]?'normal':'high';
+        return `<div class="bar-col"><div class="bar-value">${p>.00005?pct(p):'–'}</div><div class="bar ${cls}" style="height:${Math.max(2,p/max*82)}px"></div><div class="bar-label">${i}</div></div>`;
+      }).join('');
+      $('individualMarker').style.left=`${(result.achievedScore+.5)/eurReference.length*100}%`;
+      $('markerLabel').textContent=`Skóre ${result.achievedScore}`;
+      const interpretationTexts={
+        low:`Skóre ${result.achievedScore} patrí do zníženého pásma ${activeModel.bands.low[0]}–${activeModel.bands.low[1]}. Osoba má v sledovaných markeroch menej rizikových alel než je typické v EUR referenčnej populácii, a preto má podľa tohto modelu zníženú genetickú predispozíciu na imunitnú reakciu proti alergénom ${activeModel.food}. Reakciu nemožno vylúčiť iba na základe genetiky.`,
+        normal:`Skóre ${result.achievedScore} patrí do normálneho pásma ${activeModel.bands.normal[0]}–${activeModel.bands.normal[1]}. Genetická predispozícia na imunitnú reakciu proti alergénom ${activeModel.food} je podľa sledovaných markerov približne na úrovni bežnej EUR populácie. Výsledok neznamená nulové riziko ani potvrdenú toleranciu.`,
+        high:`Skóre ${result.achievedScore} patrí do zvýšeného pásma ${activeModel.bands.high[0]}–${activeModel.bands.high[1]}. Osoba má v sledovaných markeroch viac rizikových alel než je typické v EUR referenčnej populácii, a preto má podľa tohto modelu zvýšenú genetickú predispozíciu na imunitnú reakciu proti alergénom ${activeModel.food}. Ide o náchylnosť, nie potvrdenú alergiu, pravdepodobnosť reakcie ani jej závažnosť.`
+      };
+      $('interpretationTitle').textContent=band.label;
+      $('interpretationText').textContent=interpretationTexts[band.key];
+      for (const [key,id] of [['low','bandLow'],['normal','bandNormal'],['high','bandHigh']]) $(id).classList.toggle('active',key===band.key);
+      $('markerRows').innerHTML=result.calls.map(call=>{
+        const best=[...call.dist].sort((a,b)=>b.p-a.p)[0];
+        const score=riskCount(best.genotype,call.risk);
+        const populationEstimate=call.methodClass==='population';
+        const proxyId=call.usedProxy ? `<code>${call.usedProxy.id}</code>` : populationEstimate ? 'bez proxy' : 'nepoužitý';
+        const proxyGenotype=call.usedProxyGenotype ? `<strong>${call.usedProxyGenotype}</strong>` : populationEstimate ? 'odhad z EUR frekvencií' : 'neuplatňuje sa';
+        const proxyR2=call.usedProxy ? num(call.usedProxy.r2,3) : '—';
+        return `<tr><td><code>${call.id}</code></td><td>${call.risk}</td><td><strong>${best.genotype}</strong></td><td>${pct(best.p)}</td><td>${score}</td><td>${call.beta.toFixed(3)}</td><td><span class="status ${call.methodClass}">${call.method}</span></td><td>${proxyId}</td><td>${proxyGenotype}</td><td>${proxyR2}</td></tr>`;
+      }).join('');
+      $('emptyState').style.display='none'; $('results').classList.add('show'); $('interpretation').hidden=false; $('details').hidden=false;
+    }
+
+    function showError(message) { $('error').textContent=message; $('error').classList.add('show'); }
+    function showNormalizer() { $('normalizerAction').classList.add('show'); }
+    function clearError() { $('error').textContent=''; $('error').classList.remove('show'); $('normalizerAction').classList.remove('show'); }
+    function updateModelUI() {
+      const content=modelContent[activeModel.key];
+      const bands=activeModel.bands;
+      $('modelHeading').textContent=content.heading;
+      $('modelIntro').textContent=content.intro;
+      $('emptyRange').textContent=`0–${activeModel.maxScore}`;
+      $('scoreMaximum').textContent=`z ${activeModel.maxScore}`;
+      $('distributionMeta').textContent=`všetky kombinácie ${loci.length} SNP · skóre 0–${activeModel.maxScore}`;
+      $('bandLowTitle').textContent=`Znížená predispozícia · ${bands.low[0]}–${bands.low[1]}`;
+      $('bandNormalTitle').textContent=`Normálna predispozícia · ${bands.normal[0]}–${bands.normal[1]}`;
+      $('bandHighTitle').textContent=`Zvýšená predispozícia · ${bands.high[0]}–${bands.high[1]}`;
+      $('uploadNotice').innerHTML=`<strong>Dôležité:</strong> výsledok vyjadruje experimentálnu genetickú predispozíciu. Nie je diagnózou alergie ani odporúčaním ${activeModel.food} konzumovať.`;
+      $('clinicalNotice').innerHTML=`<strong>Klinický význam:</strong> genetická predispozícia neurčuje, či reakcia skutočne nastane ani aká bude závažná. Bez ťažkostí, anamnézy a alergologického vyšetrenia sa výsledok nemá používať ako pokyn na konzumáciu alebo vyradenie ${activeModel.food}.`;
+      $('literatureIntro').textContent=content.literatureIntro;
+      $('literatureOrHeading').textContent=`OR pre ${activeModel.key==='egg'?'vajce':'arašidy'}`;
+      $('literatureRows').innerHTML=content.literatureRows.map(row=>`<tr><td><code>${row[0]}</code></td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td><strong>${row[5]}</strong></td><td>${row[6]}</td></tr>`).join('');
+      $('literatureNotes').innerHTML=content.notes;
+      document.querySelectorAll('.allergen-tab').forEach(tab=>{
+        const selected=tab.dataset.model===activeModel.key;
+        tab.classList.toggle('active',selected);
+        tab.setAttribute('aria-selected',String(selected));
+      });
+    }
+
+    function switchModel(key) {
+      if (!models[key] || models[key]===activeModel) return;
+      activeModel=models[key];
+      loci=activeModel.loci;
+      eurReference=referenceDistribution();
+      updateModelUI();
+      clearError();
+      if (currentParsed) render(analyze(currentParsed.found),currentFileName,currentParsed);
+      else {
+        $('results').classList.remove('show');
+        $('emptyState').style.display='grid';
+        $('interpretation').hidden=true;
+        $('details').hidden=true;
+      }
+    }
+
+    function reset() { input.value=''; currentParsed=null; currentFileName=''; clearError(); $('results').classList.remove('show'); $('emptyState').style.display='grid'; $('interpretation').hidden=true; $('details').hidden=true; }
+
+    async function handleFile(file) {
+      clearError();
+      if (!file) return;
+      if (file.size > 100*1024*1024) return showError('Súbor je väčší ako 100 MB. Použite export obsahujúci iba textové genotypové údaje.');
+      try {
+        const text=await file.text();
+        const parsed=parseGenotypes(text);
+        if (parsed.source.type === 'unknown') {
+          showError('Formát profilu sa nepodarilo rozpoznať. Podporované sú 23andMe, MyHeritage a DNAEra.');
+          showNormalizer();
+          return;
+        }
+        if (!parsed.rows) return showError(`Formát ${parsed.source.format} sa rozpoznal, ale v súbore sa nenašli použiteľné genotypové riadky.`);
+        const relevant=Object.values(models).flatMap(model=>model.loci).flatMap(l=>[l.id,...l.aliases,...l.proxies.flatMap(p=>[p.id,...(p.aliases || [])])]).some(id=>parsed.found.has(id.toLowerCase()));
+        if (!relevant) return showError('Súbor sa načítal, ale neobsahuje žiadny cieľový ani proxy marker. Skontrolujte zostavu a formát exportu.');
+        currentParsed=parsed;
+        currentFileName=file.name;
+        render(analyze(parsed.found),file.name,parsed);
+      } catch (e) { showError('Súbor sa nepodarilo spracovať. Skontrolujte, či ide o nekomprimovaný textový export.'); }
+    }
+
+    input.addEventListener('change',e=>handleFile(e.target.files[0]));
+    $('resetBtn').addEventListener('click',reset);
+    document.querySelectorAll('.allergen-tab').forEach(tab=>tab.addEventListener('click',()=>switchModel(tab.dataset.model)));
+    for (const type of ['dragenter','dragover']) dropzone.addEventListener(type,e=>{e.preventDefault();dropzone.classList.add('drag')});
+    for (const type of ['dragleave','drop']) dropzone.addEventListener(type,e=>{e.preventDefault();dropzone.classList.remove('drag')});
+    dropzone.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
+    updateModelUI();
+  </script>
+</body>
+</html>
