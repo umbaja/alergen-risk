@@ -65,7 +65,7 @@
     .intro { max-width: 740px; margin-bottom: 24px; }
     h1 { margin: 0 0 9px; font-size: clamp(2rem, 4vw, 3.35rem); line-height: 1.04; letter-spacing: -.045em; }
     .intro p { margin: 0; color: var(--muted); font-size: 1.05rem; }
-    .allergen-tabs { display: flex; align-items: center; gap: 10px; margin: 2px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .allergen-tabs { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 2px 0 24px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
     .allergen-tab { display: inline-flex; align-items: center; gap: 9px; border: 1px solid #b8c5d1; border-radius: 12px; padding: 10px 15px; background: #fff; color: var(--navy); font-weight: 800; cursor: pointer; }
     .allergen-tab.active { border-color: var(--navy); background: var(--navy); color: #fff; }
     .tab-count { padding: 2px 7px; border-radius: 999px; background: rgba(255,255,255,.16); font-size: .76rem; }
@@ -227,7 +227,15 @@
       <nav class="allergen-tabs" role="tablist" aria-label="Genetické modely alergénov">
         <button class="allergen-tab active" id="tabEgg" data-model="egg" type="button" role="tab" aria-selected="true">Vajce <span class="tab-count">4 SNP</span></button>
         <button class="allergen-tab" id="tabPeanut" data-model="peanut" type="button" role="tab" aria-selected="false">Arašidy <span class="tab-count">5 SNP</span></button>
-        <span class="tabs-note">Jeden lokálny import pre všetky modely.</span>
+        <button class="allergen-tab" data-model="milk" type="button" role="tab" aria-selected="false">Mlieko</button>
+<button class="allergen-tab" data-model="wheat" type="button" role="tab" aria-selected="false">Pšenica</button>
+<button class="allergen-tab" data-model="soy" type="button" role="tab" aria-selected="false">Sója</button>
+<button class="allergen-tab" data-model="nuts" type="button" role="tab" aria-selected="false">Stromové orechy</button>
+<button class="allergen-tab" data-model="sesame" type="button" role="tab" aria-selected="false">Sezam</button>
+<button class="allergen-tab" data-model="fish" type="button" role="tab" aria-selected="false">Ryby</button>
+<button class="allergen-tab" data-model="seafood" type="button" role="tab" aria-selected="false">Kôrovce a mäkkýše</button>
+<button class="allergen-tab" data-model="histamine" type="button" role="tab" aria-selected="false">Histamín / DAO</button>
+<span class="tabs-note">Jeden lokálny import pre všetky modely.</span>
       </nav>
       <section class="intro">
         <h1 id="modelHeading">Genetická predispozícia k alergii na vajce</h1>
@@ -263,7 +271,7 @@
           <div class="empty-inner">
             <div class="empty-number" id="emptyRange">0–8</div>
             <h2>Výsledok sa zobrazí tu</h2>
-            <p>Priamy nález má prednosť. Každý cieľový marker má 2–3 zabudované proxy náhrady; až keď chýbajú všetky, použijú sa európske populačné frekvencie.</p>
+            <p>Priamy nález má prednosť. Overené proxy náhrady sa používajú iba tam, kde sú dostupné. Pri paneloch bez overenej spoločnej referencie sa chýbajúce genotypy nedopĺňajú populačným odhadom.</p>
           </div>
         </section>
 
@@ -311,18 +319,6 @@
         <div class="notice" id="clinicalNotice"><strong>Klinický význam:</strong> genetická predispozícia neurčuje, či reakcia skutočne nastane ani aká bude závažná. Bez ťažkostí, anamnézy a alergologického vyšetrenia sa výsledok nemá používať ako pokyn na konzumáciu alebo vyradenie vajec.</div>
       </section>
 
-      <section class="card detail-card" id="details" hidden>
-        <h2>Identifikované a imputované markery</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Marker</th><th>Riziková alela</th><th>Genotyp</th><th>Pravdepodobnosť</th><th>Skóre</th><th>β</th><th>Spôsob určenia</th><th>Použitý proxy SNP</th><th>Genotyp proxy</th><th>EUR r²</th></tr></thead>
-            <tbody id="markerRows"></tbody>
-          </table>
-        </div>
-        <p class="footnote"><strong>Ako čítať proxy stĺpce:</strong> program skúša proxy markery v poradí podľa EUR r² a použije prvý prítomný v súbore. Ak chýba cieľ aj všetky jeho náhrady, zobrazí sa „EUR frekvencie (bez proxy)“.</p>
-        <p class="footnote">Populačná imputácia nie je individuálne určený genotyp. Spoľahlivosť interpretácie zachytáva iba neistotu spôsobenú chýbajúcimi genotypmi a proxy markerom; nehodnotí klinickú validitu ani pravdepodobnosť alergickej reakcie.</p>
-      </section>
-
       <section class="card literature-card" aria-labelledby="literature-title">
         <div class="eyebrow">Pôvod modelu</div>
         <h2 id="literature-title">Pôvodné SNP z literatúry</h2>
@@ -340,9 +336,21 @@
         </div>
         <div id="literatureNotes"></div>
       </section>
+      <section class="card detail-card" id="details" hidden>
+        <h2>Identifikované a imputované markery</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Marker</th><th>Riziková alela</th><th>Genotyp</th><th>Pravdepodobnosť</th><th>Skóre</th><th>β</th><th>Spôsob určenia</th><th>Použitý proxy SNP</th><th>Genotyp proxy</th><th>EUR r²</th></tr></thead>
+            <tbody id="markerRows"></tbody>
+          </table>
+        </div>
+        <p class="footnote"><strong>Ako čítať proxy stĺpce:</strong> program skúša proxy markery v poradí podľa EUR r² a použije prvý prítomný v súbore. Ak chýba cieľ aj všetky jeho náhrady, zobrazí sa „EUR frekvencie (bez proxy)“.</p>
+        <p class="footnote">Populačná imputácia nie je individuálne určený genotyp. Spoľahlivosť interpretácie zachytáva iba neistotu spôsobenú chýbajúcimi genotypmi a proxy markerom; nehodnotí klinickú validitu ani pravdepodobnosť alergickej reakcie.</p>
+      </section>
+
     </main>
 
-    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 12 · vajce + arašidy</span></footer>
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 13 · potravinové alergény + DAO</span></footer>
   </div>
 
   <script>
@@ -455,6 +463,28 @@
         notes:'<p class="footnote"><strong>Sila dôkazu:</strong> HLA markery pochádzajú z replikovanej GWAS alergie na arašidy; tri ďalšie lokusy mali v objavovej analýze sugestívnu asociáciu. Panel je preto experimentálny, nie klinicky validované PRS.</p><p class="footnote"><strong>Orientácia rs744597:</strong> štúdia uvádza ochrannú alelu A na opačnom vlákne; v plus orientácii model počíta C ako rizikovú alelu. <a href="https://doi.org/10.1038/ncomms7304" target="_blank" rel="noopener">Hong et al., 2015</a> · <a href="https://doi.org/10.1016/j.jaci.2017.09.015" target="_blank" rel="noopener">Asai et al., 2018</a>.</p>'
       }
     };
+
+    const sharedLoci=eggLoci.slice(0,3).map((l,i)=>({...l,beta:[Math.log(2.65),Math.log(1/.63),Math.log(1.35)][i]}));
+    const sharedRows=[
+      ['rs12123821','FLG-AS1 / FLG','T','2,65','2,6 × 10⁻¹⁵','T','0,975'],
+      ['rs11949166','IL4 / KIF3A','T','0,63','4,3 × 10⁻¹⁷','A','0,462'],
+      ['rs2212434','C11orf30 / LRRC32','T','1,35','pozri štúdiu','T','0,300']
+    ];
+    const sharedFoods={wheat:['Pšenica','pšenice'],soy:['Sója','sóje'],nuts:['Stromové orechy','stromových orechov'],sesame:['Sezam','sezamu'],fish:['Ryby','rýb'],seafood:['Kôrovce a mäkkýše','kôrovcov a mäkkýšov']};
+    for(const [key,[name,food]] of Object.entries(sharedFoods)){
+      models[key]={key,name,food,loci:sharedLoci,maxScore:6,bands:{low:[0,0],normal:[1,2],high:[3,6]},shared:true};
+      modelContent[key]={heading:`${name} · spoločný model potravinovej alergie`,
+        intro:'Tri spoločné lokusy potravinovej alergie. Rovnaké skóre v týchto paneloch je zámerné: model neurčuje, na ktorú konkrétnu potravinu človek reaguje.',
+        literatureIntro:'OR pochádzajú z analýzy všeobecnej potravinovej alergie. Nejde o OR pre vybraný alergén. '+(key==='wheat'?'Tento panel nehodnotí celiakiu.':''),
+        literatureRows:sharedRows,orHeading:'OR všeobecnej potravinovej alergie',
+        notes:'<p class="footnote">Experimentálny spoločný panel; alergénovo špecifická predikcia nie je dostupná. Pásma skóre sú opisné, nie klinické prahy. EUR histogram predpokladá nezávislosť lokusov. <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a>.</p>'};
+    }
+    const candidate=(id,risk,nonRisk)=>({id,risk,nonRisk,aliases:[],beta:null,proxies:[]});
+    models.milk={key:'milk',name:'Mlieko',food:'kravského mlieka',loci:[...sharedLoci,candidate('rs17616434','C','T'),candidate('rs2069772','T','C')],maxScore:10,bands:{low:[0,2],normal:[3,5],high:[6,10]},directOnly:true};
+    modelContent.milk={heading:'Kravské mlieko · experimentálny panel',intro:'Tri spoločné lokusy a dva kandidátne markery alergie na kravské mlieko. Zobrazuje sa súčet priamo zistených alel a rozsah pri chýbajúcich genotypoch. Tento panel nehodnotí laktózovú intoleranciu.',literatureIntro:'Dva kandidátne SNP pochádzajú z malej štúdie (30 prípadov, 23 kontrol). Asociácia homozygotov nie je dôkazom aditívneho efektu: skórovanie 0/1/2 je experimentálna voľba, nie publikovaný model.',literatureRows:[...sharedRows,['rs17616434','TLR6 región','C','CC asociovaný genotyp','0,002','C','—'],['rs2069772','IL2','T','TT asociovaný genotyp','0,038','T','—']],orHeading:'Efekt / všeobecné OR',notes:'<p class="footnote">Pre tento kombinovaný panel nie sú overené populačné prahy ani spoločná EUR distribúcia. Preto neuvádzame kategóriu nízke/normálne/zvýšené riziko ani percento istoty. <a href="https://doi.org/10.1186/s13601-016-0096-9">Henneman et al., 2016</a> · <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a>.</p>'};
+    models.histamine={key:'histamine',name:'Histamín / DAO',food:'histamínu',loci:[candidate('rs2052129','T','G'),candidate('rs10156191','T','C'),candidate('rs1049742','T','C')],maxScore:6,bands:{low:[0,1],normal:[2,3],high:[4,6]},directOnly:true};
+    modelContent.histamine={heading:'Histamín · varianty spojené s aktivitou DAO',intro:'Tri varianty AOC1 spojené s nižšou DAO aktivitou. Zobrazuje sa počet priamo zistených efektových alel. Tento výsledok neurčuje diagnózu histamínovej intolerancie.',literatureIntro:'Kandidátna štúdia 484 nemeckých osôb zistila asociácie s DAO aktivitou, nie so samotným fenotypom histamínovej intolerancie. SNP v jednom géne sa nepovažujú za nezávislé.',literatureRows:[['rs2052129','AOC1 regulačný región','T','nižšia DAO aktivita','2,5 × 10⁻¹¹','T','—'],['rs10156191','AOC1 Thr16Met','T','nižšia DAO aktivita','8,9 × 10⁻¹³','T','—'],['rs1049742','AOC1 Ser332Phe','T','nižšia DAO aktivita','2 × 10⁻⁵','T','—']],orHeading:'Pozorovaný efekt',notes:'<p class="footnote">Bez overenej haplotypovej referencie nepočítame spoločný EUR histogram, populačnú imputáciu ani percentuálnu istotu. Súčet 0–6 je opis počtu alel, nie validované rizikové skóre. <a href="https://doi.org/10.1111/j.1398-9995.2011.02548.x">Maintz et al., 2011</a>.</p>'};
+
     let activeModel=models.egg;
     let loci=activeModel.loci;
     let currentParsed=null;
@@ -562,6 +592,7 @@
     function riskCount(genotype, risk) { return genotype.split('').filter(a=>a===risk).length; }
 
     function referenceDistribution() {
+      if(activeModel.directOnly) return [];
       let combinations=[{raw:0,p:1}];
       for (const locus of loci) {
         const next=[];
@@ -588,6 +619,7 @@
     }
 
     function analyze(found) {
+      if(activeModel.directOnly) return {directOnly:true};
       let direct = 0;
       let proxyCount = 0;
       const calls = loci.map(locus => {
@@ -632,6 +664,9 @@
     const num = (value,digits=2) => value.toLocaleString('sk-SK',{minimumFractionDigits:digits,maximumFractionDigits:digits});
 
     function render(result, fileName, parsed) {
+      if(activeModel.directOnly) return renderDirectPanel(fileName,parsed);
+      $("results").querySelectorAll(".metrics,.prob-row,.confidence-note,.histogram-wrap,.section-title").forEach(e=>e.style.display="");
+      $("individualMarker").style.display="";
       const band=bandForScore(result.achievedScore,result);
       const confidence=band.value;
       const uncertainty=1-confidence;
@@ -662,7 +697,7 @@
         high:`Skóre ${result.achievedScore} patrí do zvýšeného pásma ${activeModel.bands.high[0]}–${activeModel.bands.high[1]}. Osoba má v sledovaných markeroch viac rizikových alel než je typické v EUR referenčnej populácii, a preto má podľa tohto modelu zvýšenú genetickú predispozíciu na imunitnú reakciu proti alergénom ${activeModel.food}. Ide o náchylnosť, nie potvrdenú alergiu, pravdepodobnosť reakcie ani jej závažnosť.`
       };
       $('interpretationTitle').textContent=band.label;
-      $('interpretationText').textContent=interpretationTexts[band.key];
+      $('interpretationText').textContent=activeModel.shared ? `Skóre ${result.achievedScore} je súčet efektových alel spoločnej potravinovo-alergickej predispozície. Pásmo je opisné; nepredpovedá alergiu na ${activeModel.food}. Rovnaké SNP používajú aj ostatné spoločné panely, preto budú mať rovnaké skóre.` : interpretationTexts[band.key];
       for (const [key,id] of [['low','bandLow'],['normal','bandNormal'],['high','bandHigh']]) $(id).classList.toggle('active',key===band.key);
       $('markerRows').innerHTML=result.calls.map(call=>{
         const best=[...call.dist].sort((a,b)=>b.p-a.p)[0];
@@ -671,9 +706,28 @@
         const proxyId=call.usedProxy ? `<code>${call.usedProxy.id}</code>` : populationEstimate ? 'bez proxy' : 'nepoužitý';
         const proxyGenotype=call.usedProxyGenotype ? `<strong>${call.usedProxyGenotype}</strong>` : populationEstimate ? 'odhad z EUR frekvencií' : 'neuplatňuje sa';
         const proxyR2=call.usedProxy ? num(call.usedProxy.r2,3) : '—';
-        return `<tr><td><code>${call.id}</code></td><td>${call.risk}</td><td><strong>${best.genotype}</strong></td><td>${pct(best.p)}</td><td>${score}</td><td>${call.beta.toFixed(3)}</td><td><span class="status ${call.methodClass}">${call.method}</span></td><td>${proxyId}</td><td>${proxyGenotype}</td><td>${proxyR2}</td></tr>`;
+        return `<tr><td><code>${call.id}</code></td><td>${call.risk}</td><td><strong>${best.genotype}</strong></td><td>${pct(best.p)}</td><td>${score}</td><td>${Number.isFinite(call.beta)?call.beta.toFixed(3):'—'}</td><td><span class="status ${call.methodClass}">${call.method}</span></td><td>${proxyId}</td><td>${proxyGenotype}</td><td>${proxyR2}</td></tr>`;
       }).join('');
       $('emptyState').style.display='none'; $('results').classList.add('show'); $('interpretation').hidden=false; $('details').hidden=false;
+    }
+
+
+    function renderDirectPanel(fileName,parsed){
+      const calls=loci.map(l=>{const g=lookup(parsed.found,[l.id]);const valid=g&&g.split('').every(a=>a===l.risk||a===l.nonRisk);return {...l,g:valid?g:null};});
+      const direct=calls.filter(c=>c.g).length,missing=loci.length-direct;
+      const score=calls.reduce((n,c)=>n+(c.g?riskCount(c.g,c.risk):0),0);
+      $('fileName').textContent=`${fileName} · ${parsed.source.format}`;
+      $('rawScore').textContent=score;
+      $('resultLabel').textContent=missing?'Neúplný panel':'Počet efektových alel';
+      $('resultCopy').textContent=missing?`Zistený súčet ${score}; po doplnení ${missing} chýbajúcich markerov môže byť celkový súčet ${score}–${score+2*missing}.`:`Priamy súčet ${score} z ${activeModel.maxScore}. Bez váženia a imputácie.`;
+      $('chipProfile').textContent=chipProfile(parsed).label;
+      $('panelCoverage').textContent=`${direct}/${loci.length} priamo · ${missing} chýba`;
+      $('results').querySelectorAll('.metrics,.prob-row,.confidence-note,.histogram-wrap,.section-title').forEach(e=>e.style.display='none');
+      $('interpretationTitle').textContent='Interpretácia výskumného panelu';
+      $('interpretationText').textContent=activeModel.key==='histamine'?'Ide o počet alel asociovaných s nižšou DAO aktivitou. Varianty v AOC1 môžu byť vo väzbe; súčet nemá overené klinické prahy ani prevedenie na pravdepodobnosť intolerancie.':'Panel kombinuje spoločné alergické lokusy a dva kandidátne mliečne SNP. Skóre nemá validované prahy ani prevedenie na pravdepodobnosť alergie na mlieko.';
+      $('clinicalNotice').textContent='Výsledok sám neurčuje toleranciu potraviny. Neúplný panel nemožno interpretovať ako nízku predispozíciu.';
+      $('markerRows').innerHTML=calls.map(c=>`<tr><td><code>${c.id}</code></td><td>${c.risk}</td><td>${c.g||'nezistený'}</td><td>—</td><td>${c.g?riskCount(c.g,c.risk):'—'}</td><td>${Number.isFinite(c.beta)?c.beta.toFixed(3):'—'}</td><td>${c.g?'Priamy nález':'Chýba; bez imputácie'}</td><td>nepoužitý</td><td>—</td><td>—</td></tr>`).join('');
+      $('emptyState').style.display='none';$('results').classList.add('show');$('interpretation').hidden=false;$('details').hidden=false;
     }
 
     function showError(message) { $('error').textContent=message; $('error').classList.add('show'); }
@@ -693,9 +747,11 @@
       $('uploadNotice').innerHTML=`<strong>Dôležité:</strong> výsledok vyjadruje experimentálnu genetickú predispozíciu. Nie je diagnózou alergie ani odporúčaním ${activeModel.food} konzumovať.`;
       $('clinicalNotice').innerHTML=`<strong>Klinický význam:</strong> genetická predispozícia neurčuje, či reakcia skutočne nastane ani aká bude závažná. Bez ťažkostí, anamnézy a alergologického vyšetrenia sa výsledok nemá používať ako pokyn na konzumáciu alebo vyradenie ${activeModel.food}.`;
       $('literatureIntro').textContent=content.literatureIntro;
-      $('literatureOrHeading').textContent=`OR pre ${activeModel.key==='egg'?'vajce':'arašidy'}`;
+      $('literatureOrHeading').textContent=content.orHeading || `OR pre ${activeModel.key==='egg'?'vajce':'arašidy'}`;
       $('literatureRows').innerHTML=content.literatureRows.map(row=>`<tr><td><code>${row[0]}</code></td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td><strong>${row[5]}</strong></td><td>${row[6]}</td></tr>`).join('');
       $('literatureNotes').innerHTML=content.notes;
+      document.querySelector('.band-guide').style.display=activeModel.directOnly?'none':'';
+      if(activeModel.directOnly) $('uploadNotice').textContent='Výskumný panel: počet zistených alel nie je pravdepodobnosť reakcie ani pokyn na zmenu stravy.';
       document.querySelectorAll('.allergen-tab').forEach(tab=>{
         const selected=tab.dataset.model===activeModel.key;
         tab.classList.toggle('active',selected);
