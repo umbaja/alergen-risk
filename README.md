@@ -50,3 +50,8 @@ Pšenica, sója, orechy, sezam, ryby a morské plody používajú rovnaký všeo
 Mlieko: 3 spoločné + 2 kandidátne markery. Histamín: 3 varianty AOC1 spojené s DAO aktivitou. Tieto dva výskumné panely počítajú iba priamo zistené alely, uvádzajú rozsah pri chýbaní a nevytvárajú neoverenú EUR distribúciu, rizikové pásma ani percento klinickej istoty.
 
 Zdroje sú uvedené pri každom paneli v aplikácii. Súbor genotypu sa spracúva lokálne bez sieťových požiadaviek.
+
+
+## Verzia 14
+
+Šesť kategórií s identickým 3-SNP panelom je zlúčených do jednej skupiny „Spoločná predispozícia k potravinovej alergii“: pšenica, sója, stromové orechy, sezam, ryby, kôrovce a mäkkýše. Aplikácia zobrazuje päť jedinečných panelov: vajce, arašidy, mlieko, spoločná predispozícia a DAO. Výpočty sa nemenia.
