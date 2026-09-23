@@ -55,3 +55,11 @@ Zdroje sú uvedené pri každom paneli v aplikácii. Súbor genotypu sa spracúv
 ## Verzia 14
 
 Šesť kategórií s identickým 3-SNP panelom je zlúčených do jednej skupiny „Spoločná predispozícia k potravinovej alergii“: pšenica, sója, stromové orechy, sezam, ryby, kôrovce a mäkkýše. Aplikácia zobrazuje päť jedinečných panelov: vajce, arašidy, mlieko, spoločná predispozícia a DAO. Výpočty sa nemenia.
+
+## Version 15
+
+Slovak/English UI, selectable with `?lang=sk` or `?lang=en`; uploaded data stays in memory when switching languages or panels.
+
+Added separate lactose and partial coeliac susceptibility panels. Lactose uses direct rs4988235 plus-strand GG/AG/AA genotype rules (Enattah 2002, PMID 11788828). Coeliac uses rs2187668 T and rs7454108 C as indirect DQ2.5/DQ8 tags (Monsuur 2008, DOI 10.1371/journal.pone.0002270); it does not cover the full six-SNP assay, DQ2.2/DQ7 or phase. Neither panel imputes missing data or reports disease probabilities. Negative partial HLA tags do not exclude coeliac disease.
+
+Verification: syntax validation; 28 genotype/language cases, including unsupported/missing genotypes; live browser upload with synthetic data. No personal genotype was used for deployment testing.
