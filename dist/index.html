@@ -222,6 +222,7 @@
         <span>Genotyp neopúšťa zariadenie</span><span class="offline-pill">● OFFLINE VÝPOČET</span>
       </div>
     </header>
+    <nav aria-label="Language / Jazyk" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px"><button class="allergen-tab" type="button" data-lang="sk" lang="sk" aria-pressed="true">SK</button><button class="allergen-tab" type="button" data-lang="en" lang="en" aria-pressed="false">EN</button></nav>
 
     <main>
       <nav class="allergen-tabs" role="tablist" aria-label="Genetické modely alergénov">
@@ -234,6 +235,8 @@
 
 
 
+<button class="allergen-tab" data-model="lactose" type="button" role="tab" aria-selected="false">Laktóza</button>
+<button class="allergen-tab" data-model="celiac" type="button" role="tab" aria-selected="false">Celiakia</button>
 <button class="allergen-tab" data-model="histamine" type="button" role="tab" aria-selected="false">Histamín / DAO</button>
 <span class="tabs-note">Jeden lokálny import pre všetky modely.</span>
       </nav>
@@ -350,7 +353,7 @@
 
     </main>
 
-    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 14 · potravinové alergény + DAO</span></footer>
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 15 · potravinové alergény + DAO</span></footer>
   </div>
 
   <script>
@@ -481,6 +484,12 @@
     modelContent.milk={heading:'Kravské mlieko · experimentálny panel',intro:'Tri spoločné lokusy a dva kandidátne markery alergie na kravské mlieko. Zobrazuje sa súčet priamo zistených alel a rozsah pri chýbajúcich genotypoch. Tento panel nehodnotí laktózovú intoleranciu.',literatureIntro:'Dva kandidátne SNP pochádzajú z malej štúdie (30 prípadov, 23 kontrol). Asociácia homozygotov nie je dôkazom aditívneho efektu: skórovanie 0/1/2 je experimentálna voľba, nie publikovaný model.',literatureRows:[...sharedRows,['rs17616434','TLR6 región','C','CC asociovaný genotyp','0,002','C','—'],['rs2069772','IL2','T','TT asociovaný genotyp','0,038','T','—']],orHeading:'Efekt / všeobecné OR',notes:'<p class="footnote">Pre tento kombinovaný panel nie sú overené populačné prahy ani spoločná EUR distribúcia. Preto neuvádzame kategóriu nízke/normálne/zvýšené riziko ani percento istoty. <a href="https://doi.org/10.1186/s13601-016-0096-9">Henneman et al., 2016</a> · <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a>.</p>'};
     models.histamine={key:'histamine',name:'Histamín / DAO',food:'histamínu',loci:[candidate('rs2052129','T','G'),candidate('rs10156191','T','C'),candidate('rs1049742','T','C')],maxScore:6,bands:{low:[0,1],normal:[2,3],high:[4,6]},directOnly:true};
     modelContent.histamine={heading:'Histamín · varianty spojené s aktivitou DAO',intro:'Tri varianty AOC1 spojené s nižšou DAO aktivitou. Zobrazuje sa počet priamo zistených efektových alel. Tento výsledok neurčuje diagnózu histamínovej intolerancie.',literatureIntro:'Kandidátna štúdia 484 nemeckých osôb zistila asociácie s DAO aktivitou, nie so samotným fenotypom histamínovej intolerancie. SNP v jednom géne sa nepovažujú za nezávislé.',literatureRows:[['rs2052129','AOC1 regulačný región','T','nižšia DAO aktivita','2,5 × 10⁻¹¹','T','—'],['rs10156191','AOC1 Thr16Met','T','nižšia DAO aktivita','8,9 × 10⁻¹³','T','—'],['rs1049742','AOC1 Ser332Phe','T','nižšia DAO aktivita','2 × 10⁻⁵','T','—']],orHeading:'Pozorovaný efekt',notes:'<p class="footnote">Bez overenej haplotypovej referencie nepočítame spoločný EUR histogram, populačnú imputáciu ani percentuálnu istotu. Súčet 0–6 je opis počtu alel, nie validované rizikové skóre. <a href="https://doi.org/10.1111/j.1398-9995.2011.02548.x">Maintz et al., 2011</a>.</p>'};
+
+
+    models.lactose={key:'lactose',name:'Laktóza',food:'laktózy',loci:[candidate('rs4988235','G','A')],maxScore:2,bands:{low:[0,0],normal:[0,0],high:[0,0]},directOnly:true,special:true};
+    models.celiac={key:'celiac',name:'Celiakia',food:'lepku',loci:[candidate('rs2187668','T','C'),candidate('rs7454108','C','T')],maxScore:4,bands:{low:[0,0],normal:[0,0],high:[0,0]},directOnly:true,special:true};
+    modelContent.lactose={heading:'Laktóza · predispozícia k poklesu laktázy',intro:'Samostatný panel pre primárnu laktázovú nonperzistenciu v dospelosti, najmä pri európskom pôvode. Nejde o alergiu na mliečne bielkoviny.',literatureIntro:'rs4988235: v genómovej plus orientácii GG zodpovedá −13910 CC; AG a AA zodpovedajú CT a TT. Hodnotíme genotyp, nie aditívne rizikové skóre.',orHeading:'Genotypové pravidlo',literatureRows:[['rs4988235','MCM6 / LCT','G / A','GG: nonperzistencia; AG/AA: perzistencia','—','G','—']],notes:'<p class="footnote">Prijímame priamy nález GG, AG alebo AA v plus orientácii. Chýbajúci marker sa neimputuje. Výsledok nepredpovedá intenzitu príznakov ani sekundárnu intoleranciu; iné populačne špecifické varianty nie sú zahrnuté. <a href="https://pubmed.ncbi.nlm.nih.gov/11788828/" target="_blank" rel="noopener">Enattah et al. (2002)</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs4988235" target="_blank" rel="noopener">dbSNP: plus strand</a></p>'};
+    modelContent.celiac={heading:'Celiakia · čiastočný HLA tag panel',intro:'Dva tag SNP pre predispozíciu súvisiacu s HLA-DQ2.5 a HLA-DQ8. Celiakia je autoimunitné ochorenie; tento panel ju nediagnostikuje a nie je testom alergie na pšenicu.',literatureIntro:'Plus orientácia: rs2187668 T taguje DQ2.5 (v publikácii A); rs7454108 C taguje DQ8 (v publikácii G). Priamy nález SNP je iba nepriamou informáciou o HLA.',orHeading:'HLA tag',literatureRows:[['rs2187668','HLA-DQA1','T','DQ2.5 tag','—','T','—'],['rs7454108','HLA region','C','DQ8 tag','—','C','—']],notes:'<p class="footnote">Používame iba 2 zo 6 markerov publikovaného tag panelu. DQ2.2, DQ7, fáza a trans kombinácie sa nevyhodnocujú. Neprítomnosť týchto dvoch tagov nevylučuje celiakiu. Bez HLA typizácie a kalibrácie neuvádzame pravdepodobnosť ochorenia. <a href="https://doi.org/10.1371/journal.pone.0002270" target="_blank" rel="noopener">Monsuur et al. (2008)</a></p>'};
 
     let activeModel=models.egg;
     let loci=activeModel.loci;
@@ -802,6 +811,126 @@
     for (const type of ['dragleave','drop']) dropzone.addEventListener(type,e=>{e.preventDefault();dropzone.classList.remove('drag')});
     dropzone.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
     updateModelUI();
+    // Language selection is local; genotype data is never persisted.
+    const englishText={
+      'genetické modely alergénov · EUR':'genetic allergen models · EUR','Genotyp neopúšťa zariadenie':'Your genotype stays on this device','● OFFLINE VÝPOČET':'● OFFLINE ANALYSIS',
+      'Vajce':'Egg','Arašidy':'Peanut','Mlieko':'Milk','Spoločná potravinová predispozícia':'Shared food-allergy predisposition','Histamín / DAO':'Histamine / DAO','Jeden lokálny import pre všetky modely.':'One local import for all panels.',
+      'Krok 1':'Step 1','Nahrať genotypový súbor':'Upload genotype file','Spracovanie prebieha lokálne. Dáta sa neposielajú na server.':'Processing is local. No genotype data is sent to a server.','Presuňte súbor sem':'Drop your file here','alebo ho vyberte z počítača':'or select it from your computer','Vybrať súbor':'Choose file',
+      'Formát a dostupný čipový profil určíme automaticky. Podporované sú 23andMe TXT/TSV, MyHeritage CSV (MHv1.0) a DNAEra CSV (Illumina GSGT). Výpočet nepoužíva sieťové API.':'The format and available chip profile are detected automatically. Supports 23andMe TXT/TSV, MyHeritage CSV (MHv1.0) and DNAEra CSV (Illumina GSGT). Analysis uses no network APIs.',
+      'Tento profil bude možné previesť do podporovaného formátu v samostatnom normalizačnom nástroji.':'This profile requires conversion to a supported format using a separate normalization tool.','Otvoriť normalizačný nástroj':'Open normalization tool',
+      'Výsledok sa zobrazí tu':'Your result will appear here','Priamy nález má prednosť. Overené proxy náhrady sa používajú iba tam, kde sú dostupné. Pri paneloch bez overenej spoločnej referencie sa chýbajúce genotypy nedopĺňajú populačným odhadom.':'Direct calls take priority. Verified proxies are used where available. Panels without a verified joint reference do not fill missing genotypes using population estimates.',
+      'Nový súbor':'New file','Pravdepodobnosť presného skóre':'Probability of this exact score','Spoľahlivosť interpretácie':'Model band confidence','Rozpätie pri imputácii':'Range under imputation','Rozpoznaný formát / čipový profil':'Detected format / chip profile','Pokrytie cieľov panelom':'Target marker coverage','Istota individuálneho zaradenia':'Confidence in individual classification','v rámci modelu':'within this model','Relevantné':'Same score band','Neistota':'Uncertainty','Referenčná distribúcia EUR populácie':'EUR population reference distribution','Výsledok':'Result',
+      'Praktická interpretácia':'Practical interpretation','Význam výsledku':'What the result means','Znížená predispozícia':'Lower predisposition','Normálna predispozícia':'Typical predisposition','Zvýšená predispozícia':'Higher predisposition',
+      'Menej rizikových alel než je typické v referenčnej EUR populácii. Reakciu to nevylučuje.':'Fewer risk alleles than typical in the EUR reference population. This does not exclude a reaction.','Bežná genetická predispozícia porovnateľná s referenčnou EUR populáciou.':'Genetic predisposition comparable with the EUR reference population.','Viac rizikových alel než je typické v referenčnej EUR populácii. Reakciu to nepotvrdzuje.':'More risk alleles than typical in the EUR reference population. This does not confirm a reaction.',
+      'Pôvod modelu':'Model evidence','Pôvodné SNP z literatúry':'Original SNPs from the literature','Lokus':'Locus','Efektová alela v štúdii':'Study effect allele','Riziková alela modelu':'Model risk allele','Identifikované a imputované markery':'Identified and imputed markers','Riziková alela':'Risk allele','Genotyp':'Genotype','Pravdepodobnosť':'Probability','Skóre':'Score','Spôsob určenia':'Call method','Použitý proxy SNP':'Proxy SNP used','Genotyp proxy':'Proxy genotype','Ako čítať proxy stĺpce:':'Reading the proxy columns:',
+      'program skúša proxy markery v poradí podľa EUR r² a použije prvý prítomný v súbore. Ak chýba cieľ aj všetky jeho náhrady, zobrazí sa „EUR frekvencie (bez proxy)“.':'Proxies are checked in EUR r² order; the first available proxy is used. Where population estimation is supported, a missing target and all missing proxies are shown as “EUR frequencies (no proxy)”.',
+      'Populačná imputácia nie je individuálne určený genotyp. Spoľahlivosť interpretácie zachytáva iba neistotu spôsobenú chýbajúcimi genotypmi a proxy markerom; nehodnotí klinickú validitu ani pravdepodobnosť alergickej reakcie.':'Population imputation is not an individually determined genotype. Band confidence reflects only uncertainty from missing genotypes and proxies; it does not measure clinical validity or the probability of an allergic reaction.',
+      'Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.':'Research and educational prototype. Clinical decisions require medical history, specific IgE and, where appropriate, a medically supervised food challenge.',
+      'Priamy nález':'Direct call','Proxy odhad':'Proxy estimate','EUR frekvencie (bez proxy)':'EUR frequencies (no proxy)','bez proxy':'no proxy','nepoužitý':'not used','neuplatňuje sa':'not applicable','odhad z EUR frekvencií':'estimated from EUR frequencies','nezistený':'not found','Chýba; bez imputácie':'Missing; no imputation','Neúplný panel':'Incomplete panel','Počet efektových alel':'Effect allele count',
+      'pozri štúdiu':'see study','nižšia DAO aktivita':'lower DAO activity','AOC1 regulačný región':'AOC1 regulatory region','TLR6 región':'TLR6 region','CC asociovaný genotyp':'associated genotype CC','TT asociovaný genotyp':'associated genotype TT','A (ochranná)':'A (protective)',
+      'Súbor je väčší ako 100 MB. Použite export obsahujúci iba textové genotypové údaje.':'The file exceeds 100 MB. Use a text-only genotype export.','Formát profilu sa nepodarilo rozpoznať. Podporované sú 23andMe, MyHeritage a DNAEra.':'Unrecognized format. Supported formats are 23andMe, MyHeritage and DNAEra.','Súbor sa načítal, ale neobsahuje žiadny cieľový ani proxy marker. Skontrolujte zostavu a formát exportu.':'The file contains no target or proxy markers. Check the genome build and export format.','Súbor sa nepodarilo spracovať. Skontrolujte, či ide o nekomprimovaný textový export.':'Unable to process the file. Check that it is an uncompressed text export.'
+    };
+    const enContent={
+      lactose:{heading:'Lactose · predisposition to lactase non-persistence',intro:'A separate panel for primary adult lactase non-persistence, primarily in people of European ancestry. This is distinct from milk-protein allergy.',literatureIntro:'In genomic plus orientation, rs4988235 GG corresponds to −13910 CC; AG and AA correspond to CT and TT. Interpretation follows genotype rules, not an additive risk score.',notes:'Only direct GG, AG or AA calls in plus orientation are accepted. No imputation. This does not predict symptoms or secondary intolerance; other ancestry-specific persistence variants are not included.'},
+      celiac:{heading:'Coeliac disease · partial HLA tag panel',intro:'Two tag SNPs for HLA-DQ2.5 and HLA-DQ8 susceptibility. Coeliac disease is autoimmune; this panel neither diagnoses it nor assesses wheat allergy.',literatureIntro:'Plus orientation: rs2187668 T tags DQ2.5 (A in the paper); rs7454108 C tags DQ8 (G in the paper). A direct SNP call provides indirect HLA information.',notes:'Only 2 of the published 6 tag SNPs are used. DQ2.2, DQ7, phase and trans combinations are not assessed. Absence of these two tags does not exclude coeliac disease. No disease probability is calculated.'},
+      egg:{heading:'Genetic predisposition to egg allergy',intro:'Upload your SNP-chip export. 23andMe, MyHeritage and DNAEra files are processed offline using direct calls or the best available proxy for each of four targets.',literatureIntro:'Four markers from a GWAS of food allergy confirmed by oral food challenge. Egg effects are taken from Table 2; beta is the natural logarithm of the risk-allele odds ratio.',notes:'Protective effects are inverted to define the model risk allele. Proxies are replacements, not additional score contributions.'},
+      peanut:{heading:'Genetic predisposition to peanut allergy',intro:'Five target markers are assessed directly or using the best available EUR proxy. Processing stays in your browser.',literatureIntro:'The panel combines two replicated HLA markers with three candidate loci from a multi-population GWAS and meta-analysis. Beta is ln(OR); the score is an unweighted risk-allele count.',notes:'The HLA associations were replicated; the other three loci showed suggestive discovery associations. This is an experimental panel, not a clinically validated PRS. For rs744597, the reported protective A allele is on the opposite strand; the model counts C in the plus orientation.'},
+      shared:{heading:'Shared predisposition to food allergy',intro:'One shared panel for wheat, soy, tree nuts, sesame, fish, crustaceans and molluscs. These categories used the same three SNPs and therefore have a single result. The model does not distinguish risk between these foods.',literatureIntro:'Odds ratios relate to general food allergy and are not separately verified effects for each food. This panel does not assess coeliac disease.',notes:'Experimental shared panel without allergen-specific prediction. Score bands are descriptive, not clinical thresholds. The EUR histogram assumes independent loci.'},
+      milk:{heading:'Cow’s milk · experimental panel',intro:'Three shared loci and two candidate milk-allergy markers. The panel reports directly observed allele counts and a range for missing genotypes. It does not assess lactose intolerance.',literatureIntro:'The two candidate SNPs come from a small study (30 cases and 23 controls). Homozygote associations do not establish additive effects: 0/1/2 scoring is an experimental choice, not a published predictive model.',notes:'The combined panel has no verified population thresholds or joint EUR distribution. Risk categories and confidence percentages are therefore not reported.'},
+      histamine:{heading:'Histamine · variants associated with DAO activity',intro:'Three AOC1 variants associated with lower DAO activity. Results show directly observed effect alleles and do not diagnose histamine intolerance.',literatureIntro:'A candidate study of 484 German participants found associations with DAO activity, not with the histamine-intolerance phenotype itself. SNPs within one gene are not assumed independent.',notes:'Without a verified haplotype reference, no joint EUR histogram, population imputation or confidence percentage is calculated. The 0–6 sum is an allele count, not a validated risk score.'}
+    };
+    let language=new URLSearchParams(location.search).get('lang')==='en'?'en':'sk';
+    const originalText=new WeakMap();
+    function translateStatic(){
+      const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+      while(walker.nextNode()){
+        const node=walker.currentNode;if(node.parentElement.closest('script,style,#fileName'))continue;
+        const text=node.textContent.trim(); if(englishText[text]) {originalText.set(node,node.textContent);node.textContent=node.textContent.replace(text,englishText[text]);}
+      }
+    }
+    function restoreStatic(){const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);while(w.nextNode()){const n=w.currentNode;if(originalText.has(n)){n.textContent=originalText.get(n);originalText.delete(n);}}}
+    const skUpdate=updateModelUI,skRender=render,skError=showError;
+    const englishNames={egg:'egg',peanut:'peanut',milk:'cow’s milk',shared:'individual foods',histamine:'histamine'};
+    const enPct=v=>(v*100).toLocaleString('en-GB',{minimumFractionDigits:1,maximumFractionDigits:1})+' %';
+    function englishUI(){
+      const c=enContent[activeModel.key];
+      $('modelHeading').textContent=c.heading;$('modelIntro').textContent=c.intro;$('literatureIntro').textContent=c.literatureIntro;
+      const links=[...$('literatureNotes').querySelectorAll('a')].map(a=>a.outerHTML).join(' · ');
+      $('literatureNotes').innerHTML='<p class="footnote">'+c.notes+'</p><p class="footnote">'+links+'</p>';
+      $('scoreMaximum').textContent='of '+activeModel.maxScore;
+      $('distributionMeta').textContent=`All combinations of ${loci.length} SNPs · score 0–${activeModel.maxScore}`;
+      for(const [k,id,label] of [['low','bandLowTitle','Lower'],['normal','bandNormalTitle','Typical'],['high','bandHighTitle','Higher']])$(id).textContent=`${label} predisposition · ${activeModel.bands[k].join('–')}`;
+      $('uploadNotice').textContent=activeModel.directOnly?'Research panel: observed allele counts are not reaction probabilities or instructions to change your diet.':'Experimental genetic predisposition. This is not an allergy diagnosis or a recommendation to consume the food.';
+      $('clinicalNotice').textContent='Genetic predisposition does not determine whether a reaction will occur or its severity. Do not use this result alone to decide whether to eat or exclude a food.';
+      $('literatureOrHeading').textContent=activeModel.directOnly?'Observed effect / general OR':activeModel.shared?'OR for general food allergy':'OR for '+englishNames[activeModel.key];
+      $('literatureRows').querySelectorAll('td').forEach(td=>{td.innerHTML=td.innerHTML.replace(/(\d),(\d)/g,'$1.$2');});
+      $('histogram').setAttribute('aria-label','EUR population reference score distribution');
+      document.querySelector('.privacy').title='Your file is processed only in your browser';
+      document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetic allergen panels');
+      document.querySelector('.version-tag').textContent='AlergenRisk · version 15 · food allergens + DAO';
+    }
+    updateModelUI=function(){skUpdate();if(language==='en'){translateStatic();englishUI();}document.querySelector('[data-model=lactose]').textContent=language==='en'?'Lactose':'Laktóza';document.querySelector('[data-model=celiac]').textContent=language==='en'?'Coeliac disease':'Celiakia';if(activeModel.special){$('emptyRange').textContent='DNA';$('uploadNotice').textContent=language==='en'?'Genotype-based interpretation; no disease probability, population imputation or dietary instruction.':'Interpretácia genotypu; bez pravdepodobnosti ochorenia, populačnej imputácie a pokynov na zmenu stravy.';if(language==='en'&&activeModel.key==='lactose')$('literatureRows').children[0].children[3].textContent='GG: non-persistence; AG/AA: persistence';}};
+    render=function(result,fileName,parsed){
+      skRender(result,fileName,parsed);if(activeModel.special){if(language==='en'){translateStatic();englishUI();}renderSpecialPanel(fileName,parsed);return;}if(language!=='en')return;
+      translateStatic();englishUI();
+      $('fileName').textContent=`${fileName} · ${parsed.source.format.replace('-kompatibilný','-compatible')} · ${parsed.rows.toLocaleString('en-GB')} variants`;
+      $('chipProfile').textContent=parsed.source.format+' · '+(parsed.source.meta?.manifest||'profile based on marker coverage');
+      if(activeModel.directOnly){
+        const observed=loci.filter(l=>{const g=lookup(parsed.found,[l.id]);return g&&g.split('').every(a=>a===l.risk||a===l.nonRisk);}).length;
+        const missing=loci.length-observed,score=Number($('rawScore').textContent);
+        $('panelCoverage').textContent=`${observed}/${loci.length} direct · ${missing} missing`;
+        $('resultCopy').textContent=missing?`Observed sum: ${score}. With ${missing} missing markers, the total could be ${score}–${score+missing*2}.`:`Direct sum: ${score} of ${activeModel.maxScore}. No weighting or imputation.`;
+        $('interpretationTitle').textContent='Research panel interpretation';
+        $('interpretationText').textContent=activeModel.key==='histamine'?'This is a count of alleles associated with lower DAO activity. AOC1 variants may be linked; the sum has no verified clinical thresholds or conversion to intolerance probability.':'This panel combines shared allergy loci with two candidate milk SNPs. The score has no validated thresholds or conversion to milk-allergy probability.';
+        $('clinicalNotice').textContent='The result alone does not determine food tolerance. An incomplete panel must not be interpreted as low predisposition.';
+      }else{
+        const b=bandForScore(result.achievedScore,result),label={low:'Lower predisposition',normal:'Typical predisposition',high:'Higher predisposition'}[b.key];
+        $('resultLabel').textContent=label;$('interpretationTitle').textContent=label;
+        $('panelCoverage').textContent=`${result.direct+result.proxyCount}/${loci.length} targets · ${result.direct} direct, ${result.proxyCount} via proxy`;
+        $('resultCopy').textContent=`The score is the sum of risk alleles, not a weighted average. With imputed genotypes, the probability of this exact score is ${enPct(result.scoreConfidence)}.`;
+        $('confidenceNote').textContent=`Imputation allows scores ${result.scoreMin}–${result.scoreMax}. The probability of remaining in the displayed band is ${enPct(b.value)}. This is not clinical accuracy.`;
+        $('scoreConfidence').textContent=enPct(result.scoreConfidence);$('interpretationConfidence').textContent=enPct(b.value);$('confidenceValue').textContent=enPct(b.value);$('uncertaintyValue').textContent=enPct(1-b.value);$('markerLabel').textContent='Score '+result.achievedScore;
+        $('interpretationText').textContent=activeModel.shared?`Score ${result.achievedScore} counts effect alleles for shared food-allergy predisposition. The descriptive band does not predict allergy to a specific food. Wheat, soy, tree nuts, sesame, fish, crustaceans and molluscs share this result.`:`Score ${result.achievedScore} is in the ${label.toLowerCase()} band (${activeModel.bands[b.key].join('–')}) for this experimental ${englishNames[activeModel.key]} panel. This is genetic susceptibility, not a diagnosis, confirmation of tolerance, or probability or severity of a reaction.`;
+        document.querySelectorAll('.bar-value,#markerRows td').forEach(el=>{if(el.textContent.includes('%'))el.textContent=el.textContent.replace(/(\d),(\d)/g,'$1.$2');});
+      }
+    };
+
+    function renderSpecialPanel(fileName,parsed){
+      const en=language==='en',t=(sk,eng)=>en?eng:sk;
+      const calls=loci.map(l=>{const raw=lookup(parsed.found,[l.id]);const g=raw&&raw.length===2&&raw.split('').every(a=>a===l.risk||a===l.nonRisk)?raw:null;return {...l,g,raw};});
+      const direct=calls.filter(c=>c.g).length;
+      $('scoreMaximum').textContent=t('genotypový nález','genotype finding');
+      $('rawScore').textContent=activeModel.key==='lactose'?(calls[0].g||'—'):'HLA';
+      $('panelCoverage').textContent=t(`${direct}/${calls.length} priamo · bez imputácie`,`${direct}/${calls.length} direct · no imputation`);
+      $('interpretationTitle').textContent=t('Interpretácia','Interpretation');
+      if(activeModel.key==='lactose'){
+        const g=calls[0].g;
+        $('resultLabel').textContent=!g?t('Nedostatok údajov','Insufficient data'):g==='GG'?t('Predispozícia k poklesu laktázy','Predisposition to lactase non-persistence'):t('Genotyp spojený s perzistenciou laktázy','Genotype associated with lactase persistence');
+        $('resultCopy').textContent=t('GG: pokles tvorby laktázy v dospelosti. AG / AA: zachovanie tvorby laktázy. Chýbajúci alebo nepodporovaný genotyp sa neodhaduje.','GG: adult lactase non-persistence. AG / AA: lactase persistence. Missing or unsupported genotypes are not inferred.');
+        $('interpretationText').textContent=t('Táto asociácia sa týka primárnej laktázovej nonperzistencie, najmä pri európskom pôvode. Genotyp neurčuje, či a po akej dávke laktózy vzniknú príznaky. AG ani AA nevylučujú sekundárnu intoleranciu. Chýbajúci nález nie je nízka predispozícia.','This association concerns primary lactase non-persistence, mainly in European ancestry. Genotype does not determine symptoms or the lactose dose that triggers them. AG and AA do not exclude secondary intolerance. A missing result is not low predisposition.');
+      }else{
+        const tags=calls.filter(c=>c.g&&riskCount(c.g,c.risk)>0).map(c=>c.id==='rs2187668'?'DQ2.5':'DQ8');
+        $('resultLabel').textContent=tags.length?t('Zistený tag: ','Detected tag: ')+tags.join(' + '):direct<2?t('Neúplný HLA tag panel','Incomplete HLA tag panel'):t('Dva sledované tagy nezistené','Neither assessed tag detected');
+        $('resultCopy').textContent=t('Nález tagu podporuje možnú HLA predispozíciu; nejde o potvrdenú HLA typizáciu ani o diagnózu celiakie.','A tag supports possible HLA susceptibility; it is not confirmed HLA typing or a coeliac diagnosis.');
+        $('interpretationText').textContent=t('Tento čiastočný panel nerozlišuje všetky HLA rizikové kombinácie. Aj pri dvoch negatívnych tagoch alebo chýbajúcom SNP nemožno celiakiu vylúčiť. Z počtu tagových alel sa nevypočítava klinické riziko ani jeho percentuálna spoľahlivosť.','This partial panel does not resolve all HLA risk combinations. Neither two negative tags nor a missing SNP can exclude coeliac disease. Tag-allele counts are not converted into clinical risk or percentage confidence.');
+      }
+      $('clinicalNotice').textContent=t('Výsledok sám nie je dôvodom na vylúčenie mlieka alebo lepku. Pri podozrení na celiakiu preberte vyšetrenie s lekárom ešte pred zmenou príjmu lepku.','This result alone is not a reason to exclude milk or gluten. If coeliac disease is suspected, discuss testing with a clinician before changing gluten intake.');
+      $('markerRows').innerHTML=calls.map(c=>`<tr><td><code>${c.id}</code></td><td>${c.risk} (+)</td><td>${c.g||t('nezistený / nepodporovaný','missing / unsupported')}</td><td>—</td><td>${c.g?riskCount(c.g,c.risk):'—'}</td><td>—</td><td>${c.g?t('Priamy SNP nález','Direct SNP call'):t('Bez imputácie','No imputation')}</td><td>—</td><td>—</td><td>—</td></tr>`).join('');
+      $('resultCopy').textContent+=' '+t('Tabuľka uvádza počet efektových alel iba opisne; nesčítavame ich do rizikového skóre.','The table lists effect-allele counts descriptively; they are not summed into a risk score.');
+    }
+
+    showError=function(message){if(language==='en')message=englishText[message]||message.replace(/^Formát (.+) sa rozpoznal, ale v súbore sa nenašli použiteľné genotypové riadky\.$/,'The $1 format was recognized, but no usable genotype rows were found.');skError(message);};
+    function setLanguage(lang){
+      restoreStatic();language=lang;document.documentElement.lang=lang;
+      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 15 · potravinové alergény + DAO';document.querySelector('.privacy').title='Súbor sa spracuje iba vo vašom prehliadači';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
+      document.title=lang==='en'?'AlergenRisk — genetic food-allergy predisposition':'AlergenRisk — genetická predispozícia';
+      document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
+      updateModelUI();if(currentParsed)render(analyze(currentParsed.found),currentFileName,currentParsed);clearError();
+      const url=new URL(location.href);url.searchParams.set('lang',lang);history.replaceState(null,'',url);
+    }
+    document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setLanguage(b.dataset.lang)));
+    setLanguage(language);
+
   </script>
 </body>
 </html>
