@@ -228,12 +228,12 @@
         <button class="allergen-tab active" id="tabEgg" data-model="egg" type="button" role="tab" aria-selected="true">Vajce <span class="tab-count">4 SNP</span></button>
         <button class="allergen-tab" id="tabPeanut" data-model="peanut" type="button" role="tab" aria-selected="false">Arašidy <span class="tab-count">5 SNP</span></button>
         <button class="allergen-tab" data-model="milk" type="button" role="tab" aria-selected="false">Mlieko</button>
-<button class="allergen-tab" data-model="wheat" type="button" role="tab" aria-selected="false">Pšenica</button>
-<button class="allergen-tab" data-model="soy" type="button" role="tab" aria-selected="false">Sója</button>
-<button class="allergen-tab" data-model="nuts" type="button" role="tab" aria-selected="false">Stromové orechy</button>
-<button class="allergen-tab" data-model="sesame" type="button" role="tab" aria-selected="false">Sezam</button>
-<button class="allergen-tab" data-model="fish" type="button" role="tab" aria-selected="false">Ryby</button>
-<button class="allergen-tab" data-model="seafood" type="button" role="tab" aria-selected="false">Kôrovce a mäkkýše</button>
+<button class="allergen-tab" data-model="shared" type="button" role="tab" aria-selected="false">Spoločná potravinová predispozícia <span class="tab-count">3 SNP</span></button>
+
+
+
+
+
 <button class="allergen-tab" data-model="histamine" type="button" role="tab" aria-selected="false">Histamín / DAO</button>
 <span class="tabs-note">Jeden lokálny import pre všetky modely.</span>
       </nav>
@@ -350,7 +350,7 @@
 
     </main>
 
-    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 13 · potravinové alergény + DAO</span></footer>
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 14 · potravinové alergény + DAO</span></footer>
   </div>
 
   <script>
@@ -470,15 +470,12 @@
       ['rs11949166','IL4 / KIF3A','T','0,63','4,3 × 10⁻¹⁷','A','0,462'],
       ['rs2212434','C11orf30 / LRRC32','T','1,35','pozri štúdiu','T','0,300']
     ];
-    const sharedFoods={wheat:['Pšenica','pšenice'],soy:['Sója','sóje'],nuts:['Stromové orechy','stromových orechov'],sesame:['Sezam','sezamu'],fish:['Ryby','rýb'],seafood:['Kôrovce a mäkkýše','kôrovcov a mäkkýšov']};
-    for(const [key,[name,food]] of Object.entries(sharedFoods)){
-      models[key]={key,name,food,loci:sharedLoci,maxScore:6,bands:{low:[0,0],normal:[1,2],high:[3,6]},shared:true};
-      modelContent[key]={heading:`${name} · spoločný model potravinovej alergie`,
-        intro:'Tri spoločné lokusy potravinovej alergie. Rovnaké skóre v týchto paneloch je zámerné: model neurčuje, na ktorú konkrétnu potravinu človek reaguje.',
-        literatureIntro:'OR pochádzajú z analýzy všeobecnej potravinovej alergie. Nejde o OR pre vybraný alergén. '+(key==='wheat'?'Tento panel nehodnotí celiakiu.':''),
-        literatureRows:sharedRows,orHeading:'OR všeobecnej potravinovej alergie',
-        notes:'<p class="footnote">Experimentálny spoločný panel; alergénovo špecifická predikcia nie je dostupná. Pásma skóre sú opisné, nie klinické prahy. EUR histogram predpokladá nezávislosť lokusov. <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a>.</p>'};
-    }
+    models.shared={key:'shared',name:'Spoločná potravinová predispozícia',food:'jednotlivé potraviny',loci:sharedLoci,maxScore:6,bands:{low:[0,0],normal:[1,2],high:[3,6]},shared:true};
+    modelContent.shared={heading:'Spoločná predispozícia k potravinovej alergii',
+      intro:'Jeden spoločný panel pre pôvodné kategórie: pšenica, sója, stromové orechy, sezam, ryby, kôrovce a mäkkýše. Všetky používali rovnaké tri SNP, preto majú jeden spoločný výsledok. Model nerozlišuje riziko medzi týmito potravinami.',
+      literatureIntro:'OR pochádzajú z analýzy všeobecnej potravinovej alergie. Nejde o samostatne overené efekty pre každú uvedenú potravinu. Panel nehodnotí celiakiu.',
+      literatureRows:sharedRows,orHeading:'OR všeobecnej potravinovej alergie',
+      notes:'<p class="footnote">Experimentálny spoločný panel; alergénovo špecifická predikcia nie je dostupná. Pásma skóre sú opisné, nie klinické prahy. EUR histogram predpokladá nezávislosť lokusov. <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a>.</p>'};
     const candidate=(id,risk,nonRisk)=>({id,risk,nonRisk,aliases:[],beta:null,proxies:[]});
     models.milk={key:'milk',name:'Mlieko',food:'kravského mlieka',loci:[...sharedLoci,candidate('rs17616434','C','T'),candidate('rs2069772','T','C')],maxScore:10,bands:{low:[0,2],normal:[3,5],high:[6,10]},directOnly:true};
     modelContent.milk={heading:'Kravské mlieko · experimentálny panel',intro:'Tri spoločné lokusy a dva kandidátne markery alergie na kravské mlieko. Zobrazuje sa súčet priamo zistených alel a rozsah pri chýbajúcich genotypoch. Tento panel nehodnotí laktózovú intoleranciu.',literatureIntro:'Dva kandidátne SNP pochádzajú z malej štúdie (30 prípadov, 23 kontrol). Asociácia homozygotov nie je dôkazom aditívneho efektu: skórovanie 0/1/2 je experimentálna voľba, nie publikovaný model.',literatureRows:[...sharedRows,['rs17616434','TLR6 región','C','CC asociovaný genotyp','0,002','C','—'],['rs2069772','IL2','T','TT asociovaný genotyp','0,038','T','—']],orHeading:'Efekt / všeobecné OR',notes:'<p class="footnote">Pre tento kombinovaný panel nie sú overené populačné prahy ani spoločná EUR distribúcia. Preto neuvádzame kategóriu nízke/normálne/zvýšené riziko ani percento istoty. <a href="https://doi.org/10.1186/s13601-016-0096-9">Henneman et al., 2016</a> · <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a>.</p>'};
@@ -697,7 +694,7 @@
         high:`Skóre ${result.achievedScore} patrí do zvýšeného pásma ${activeModel.bands.high[0]}–${activeModel.bands.high[1]}. Osoba má v sledovaných markeroch viac rizikových alel než je typické v EUR referenčnej populácii, a preto má podľa tohto modelu zvýšenú genetickú predispozíciu na imunitnú reakciu proti alergénom ${activeModel.food}. Ide o náchylnosť, nie potvrdenú alergiu, pravdepodobnosť reakcie ani jej závažnosť.`
       };
       $('interpretationTitle').textContent=band.label;
-      $('interpretationText').textContent=activeModel.shared ? `Skóre ${result.achievedScore} je súčet efektových alel spoločnej potravinovo-alergickej predispozície. Pásmo je opisné; nepredpovedá alergiu na ${activeModel.food}. Rovnaké SNP používajú aj ostatné spoločné panely, preto budú mať rovnaké skóre.` : interpretationTexts[band.key];
+      $('interpretationText').textContent=activeModel.shared ? `Skóre ${result.achievedScore} je súčet efektových alel spoločnej potravinovo-alergickej predispozície. Pásmo je opisné; nepredpovedá alergiu na ${activeModel.food}. Pšenica, sója, stromové orechy, sezam, ryby, kôrovce a mäkkýše sú zlúčené do tejto skupiny; skóre medzi nimi nerozlišuje.` : interpretationTexts[band.key];
       for (const [key,id] of [['low','bandLow'],['normal','bandNormal'],['high','bandHigh']]) $(id).classList.toggle('active',key===band.key);
       $('markerRows').innerHTML=result.calls.map(call=>{
         const best=[...call.dist].sort((a,b)=>b.p-a.p)[0];
