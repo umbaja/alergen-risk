@@ -208,13 +208,260 @@
       .chip-summary { grid-template-columns: 1fr; }
       .coverage { text-align: left; }
     }
+
+    /* NU3Gen report-inspired experience */
+    :root {
+      --nu-green: #79b433;
+      --nu-green-soft: #eef6e4;
+      --nu-blue: #318fba;
+      --nu-blue-soft: #eaf5fa;
+      --nu-ochre: #b97c2d;
+      --nu-ochre-soft: #f8efe2;
+      --nu-charcoal: #273238;
+      --nu-canvas: #e8eef0;
+    }
+
+    body {
+      background: var(--nu-canvas);
+      color: var(--nu-charcoal);
+      font-family: "Aptos", "Segoe UI", Arial, sans-serif;
+    }
+
+    [hidden] { display: none !important; }
+    .shell { width: min(1240px, calc(100% - 36px)); }
+    header { padding: 22px 0 12px; }
+    .brand-mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--nu-green);
+      box-shadow: none;
+      font-size: .86rem;
+      letter-spacing: -.02em;
+    }
+    .brand-name { color: var(--nu-green); font-size: 1.35rem; text-transform: uppercase; letter-spacing: .02em; }
+    .brand-note { color: #657278; }
+    .offline-pill { color: #4b741e; background: var(--nu-green-soft); }
+    .language-nav { margin-bottom: 6px !important; }
+    .language-nav .allergen-tab { padding: 6px 11px; border-radius: 999px; font-size: .78rem; }
+    .language-nav .allergen-tab[aria-pressed="true"] { color: #fff; border-color: var(--nu-green); background: var(--nu-green); }
+
+    #modelTabs, .legacy-model-intro { display: none; }
+
+    .report-hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 28px;
+      align-items: end;
+      margin: 14px 0 24px;
+      padding: 38px 42px;
+      border-radius: 4px 4px 56px 4px;
+      color: #fff;
+      background: var(--nu-charcoal);
+    }
+    .report-hero::after {
+      content: "";
+      position: absolute;
+      right: -72px;
+      top: -112px;
+      width: 330px;
+      height: 330px;
+      border: 2px dotted rgba(255,255,255,.45);
+      border-radius: 50%;
+    }
+    .report-kicker { color: #a8d26d; font-size: .78rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .report-hero h1 { max-width: 850px; margin: 10px 0 12px; font-size: clamp(2rem, 4.7vw, 4rem); letter-spacing: -.04em; }
+    .report-hero p { max-width: 760px; margin: 0; color: rgba(255,255,255,.78); font-size: 1.05rem; }
+
+    .workspace { grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr); gap: 0; background: #fff; }
+    .card { border: 0; border-radius: 0; box-shadow: none; }
+    .upload-card { padding: 34px 38px; }
+    .upload-card .eyebrow, .summary-eyebrow { color: var(--nu-green); }
+    .dropzone { min-height: 230px; border: 2px dotted #9aa5aa; border-radius: 0 0 46px 0; background: #fbfcfc; }
+    .dropzone:hover, .dropzone.drag { border-color: var(--nu-green); background: var(--nu-green-soft); }
+    .upload-icon { border-radius: 50%; color: var(--nu-green); background: var(--nu-green-soft); }
+    .select-btn { border-radius: 999px; background: var(--nu-green); }
+    .select-btn:hover { background: #659a29; }
+    .notice { border-color: #e6d3ad; border-radius: 0; background: #fbf5e9; color: #644a24; }
+    .empty { min-height: 100%; padding: 40px; color: #fff; background: var(--nu-blue); }
+    .empty-number { color: rgba(255,255,255,.28); }
+    .empty p { color: rgba(255,255,255,.8); }
+    .empty h2::after, .report-section-title::after, .modal-title::after {
+      content: "";
+      display: block;
+      width: min(100%, 280px);
+      margin-top: 12px;
+      border-bottom: 3px dotted currentColor;
+      opacity: .8;
+    }
+
+    #summaryDashboard {
+      margin: 0 0 34px;
+      padding: 34px 38px 42px;
+      background: #fff;
+    }
+    .summary-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 22px;
+      align-items: flex-start;
+      padding-bottom: 22px;
+      border-bottom: 3px dotted #2d3538;
+    }
+    .summary-header h2 { margin: 5px 0 4px; color: var(--nu-green); font-size: clamp(1.65rem, 3vw, 2.45rem); text-transform: uppercase; }
+    .summary-file { margin: 0; color: #69777e; }
+    .summary-reset {
+      flex: 0 0 auto;
+      border: 1px solid #b8c2c7;
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: var(--nu-charcoal);
+      background: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .summary-reset:hover { border-color: var(--nu-green); color: #4e7d20; }
+    .summary-group { margin-top: 28px; }
+    .summary-group h3 { margin: 0 0 16px; color: var(--nu-green); font-size: .95rem; letter-spacing: .04em; text-transform: uppercase; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .summary-card {
+      min-width: 0;
+      min-height: 280px;
+      padding: 22px 16px 18px;
+      border: 1px solid #dce3e6;
+      border-radius: 0 0 34px 0;
+      color: var(--nu-charcoal);
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .summary-card:hover, .summary-card:focus-visible { transform: translateY(-4px); border-color: var(--nu-green); box-shadow: 0 15px 30px rgba(35,50,56,.11); outline: 0; }
+    .summary-circle {
+      width: 126px;
+      height: 126px;
+      margin: 0 auto 16px;
+      padding: 13px;
+      display: grid;
+      place-items: center;
+      border: 4px solid currentColor;
+      border-radius: 50%;
+      line-height: 1.08;
+    }
+    .summary-circle svg { width: 26px; height: 26px; margin: 0 auto 7px; }
+    .summary-circle strong { display: block; font-size: .86rem; text-transform: uppercase; }
+    .summary-circle small { display: block; margin-top: 5px; font-size: .64rem; font-weight: 700; }
+    .state-low .summary-circle { border-color: var(--nu-green); color: #fff; background: var(--nu-green); }
+    .state-normal .summary-circle { border-color: var(--nu-blue); color: var(--nu-blue); background: #fff; }
+    .state-high .summary-circle { border-color: var(--nu-ochre); color: #fff; background: var(--nu-ochre); }
+    .state-research .summary-circle { border-color: var(--nu-blue); color: var(--nu-blue); border-style: dotted; background: var(--nu-blue-soft); }
+    .state-incomplete .summary-circle { border-color: #94a0a5; color: #667278; border-style: dotted; background: #f1f3f4; }
+    .summary-card-title { display: block; font-size: 1rem; font-weight: 850; }
+    .summary-card-meta { display: block; margin-top: 6px; color: #728087; font-size: .79rem; }
+    .summary-open { display: inline-block; margin-top: 12px; color: var(--nu-green); font-size: .75rem; font-weight: 850; text-transform: uppercase; letter-spacing: .06em; }
+    .summary-footnote { margin: 26px 0 0; padding-top: 18px; border-top: 1px solid #dfe5e7; color: #6b787e; font-size: .86rem; }
+
+    #literature { display: none; }
+    .detail-modal #literature { display: block; }
+    .detail-modal {
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      display: none;
+      padding: 24px;
+      overflow-y: auto;
+      background: rgba(30,40,44,.74);
+      backdrop-filter: blur(4px);
+    }
+    .detail-modal.open { display: block; }
+    .detail-dialog {
+      width: min(1080px, 100%);
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 0 0 54px 0;
+      background: #fff;
+      box-shadow: 0 30px 80px rgba(0,0,0,.3);
+    }
+    .modal-bar {
+      position: sticky;
+      z-index: 20;
+      top: -24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 19px 24px;
+      color: #fff;
+      background: var(--nu-charcoal);
+    }
+    .modal-title { margin: 0; color: #fff; font-size: 1.12rem; text-transform: uppercase; }
+    .modal-title::after { width: 150px; margin-top: 7px; color: var(--nu-green); }
+    .modal-close {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border: 2px solid rgba(255,255,255,.65);
+      border-radius: 50%;
+      color: #fff;
+      background: transparent;
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+    .modal-close:hover, .modal-close:focus-visible { border-color: var(--nu-green); color: #b7df7f; outline: 0; }
+    .modal-content { padding: 0 0 32px; }
+    .detail-modal .results,
+    .detail-modal .interpretation-card,
+    .detail-modal .literature-card,
+    .detail-modal .detail-card { margin: 0; border-bottom: 1px solid #dfe5e7; }
+    .detail-modal .result-head { color: var(--nu-charcoal); background: #fff; }
+    .detail-modal .file-name { color: #6b787e; opacity: 1; }
+    .detail-modal .reset-btn { display: none; }
+    .detail-modal .score-disc { border-color: var(--nu-green); color: var(--nu-charcoal); }
+    .detail-modal .result-label, .detail-modal .interpretation-card h2, .detail-modal .literature-card h2, .detail-modal .detail-card h2 { color: var(--nu-green); }
+    .detail-modal .result-copy { color: #5f6c72; }
+    .detail-modal .card { padding-left: 30px; padding-right: 30px; }
+    .detail-modal .result-head { padding: 28px 30px; }
+    .detail-modal .result-body { padding: 24px 30px 30px; }
+    .detail-modal .eyebrow { color: var(--nu-green); }
+    .detail-modal .bar.low { background: var(--nu-green); }
+    .detail-modal .bar.normal { background: var(--nu-blue); }
+    .detail-modal .bar.high { background: var(--nu-ochre); }
+    .detail-modal .individual-marker { background: var(--nu-charcoal); border-left: 1px dotted #fff; }
+    body.modal-open { overflow: hidden; }
+
+    footer { padding: 18px 0 30px; color: #657278; }
+
+    @media (max-width: 920px) {
+      .report-hero { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 18px, 1240px); }
+      .report-hero { padding: 28px 24px; border-radius: 0 0 38px 0; }
+      .workspace { grid-template-columns: 1fr; }
+      .upload-card { padding: 26px 20px; }
+      .empty { min-height: 260px; }
+      #summaryDashboard { padding: 26px 18px 32px; }
+      .summary-header { flex-direction: column; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .summary-card { min-height: 0; display: grid; grid-template-columns: 104px 1fr; column-gap: 14px; align-items: center; text-align: left; }
+      .summary-circle { grid-row: 1 / span 3; width: 104px; height: 104px; margin: 0; }
+      .summary-open { margin-top: 4px; }
+      .detail-modal { padding: 0; }
+      .detail-dialog { min-height: 100vh; border-radius: 0; }
+      .modal-bar { top: 0; }
+      .detail-modal .card, .detail-modal .result-head, .detail-modal .result-body { padding-left: 18px; padding-right: 18px; }
+    }
   </style>
 </head>
 <body>
   <div class="shell">
     <header>
       <div class="brand">
-        <div class="brand-mark">AR</div>
+        <div class="brand-mark">NU3</div>
         <div><div class="brand-name">AlergenRisk</div><div class="brand-note">genetické modely alergénov · EUR</div></div>
       </div>
       <div class="privacy" title="Súbor sa spracuje iba vo vašom prehliadači">
@@ -222,10 +469,18 @@
         <span>Genotyp neopúšťa zariadenie</span><span class="offline-pill">● OFFLINE VÝPOČET</span>
       </div>
     </header>
-    <nav aria-label="Language / Jazyk" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px"><button class="allergen-tab" type="button" data-lang="sk" lang="sk" aria-pressed="true">SK</button><button class="allergen-tab" type="button" data-lang="en" lang="en" aria-pressed="false">EN</button></nav>
+    <nav class="language-nav" aria-label="Language / Jazyk" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px"><button class="allergen-tab" type="button" data-lang="sk" lang="sk" aria-pressed="true">SK</button><button class="allergen-tab" type="button" data-lang="en" lang="en" aria-pressed="false">EN</button></nav>
 
     <main>
-      <nav class="allergen-tabs" role="tablist" aria-label="Genetické modely alergénov">
+      <section class="report-hero" aria-labelledby="reportHeroTitle">
+        <div>
+          <div class="report-kicker" id="reportKicker">NU3Gen · osobný genetický prehľad</div>
+          <h1 id="reportHeroTitle">Potravinové predispozície v jednom prehľade</h1>
+          <p id="reportHeroCopy">Nahrajte genotypový súbor raz. AlergenRisk vytvorí grafické zhrnutie všetkých panelov a každý výsledok sprístupní v samostatnom detailnom okne.</p>
+        </div>
+      </section>
+
+      <nav class="allergen-tabs" id="modelTabs" role="tablist" aria-label="Genetické modely alergénov">
         <button class="allergen-tab active" id="tabEgg" data-model="egg" type="button" role="tab" aria-selected="true">Vajce <span class="tab-count">4 SNP</span></button>
         <button class="allergen-tab" id="tabPeanut" data-model="peanut" type="button" role="tab" aria-selected="false">Arašidy <span class="tab-count">5 SNP</span></button>
         <button class="allergen-tab" data-model="milk" type="button" role="tab" aria-selected="false">Mlieko</button>
@@ -240,7 +495,7 @@
 <button class="allergen-tab" data-model="histamine" type="button" role="tab" aria-selected="false">Histamín / DAO</button>
 <span class="tabs-note">Jeden lokálny import pre všetky modely.</span>
       </nav>
-      <section class="intro">
+      <section class="intro legacy-model-intro">
         <h1 id="modelHeading">Genetická predispozícia k alergii na vajce</h1>
         <p id="modelIntro">Nahrajte export SNP čipu. Aplikácia bez internetového prenosu rozpozná 23andMe, MyHeritage alebo DNAEra a pre každý zo štyroch cieľových markerov použije priamy nález alebo najkvalitnejší dostupný proxy SNP.</p>
       </section>
@@ -310,6 +565,22 @@
         </section>
       </div>
 
+      <section id="summaryDashboard" aria-labelledby="summaryTitle" hidden>
+        <div class="summary-header">
+          <div>
+            <div class="eyebrow summary-eyebrow" id="summaryEyebrow">Rýchly prehľad</div>
+            <h2 id="summaryTitle">Vaše genetické predispozície</h2>
+            <p class="summary-file" id="summaryFile"></p>
+          </div>
+          <button class="summary-reset" id="summaryResetBtn" type="button">Nahrať nový súbor</button>
+        </div>
+        <div class="summary-group">
+          <h3 id="summaryGroupTitle">Potravinové alergény a súvisiace predispozície</h3>
+          <div class="summary-grid" id="summaryGrid"></div>
+        </div>
+        <p class="summary-footnote" id="summaryFootnote"><strong>Upozornenie:</strong> farba vyjadruje iba kategóriu konkrétneho genetického modelu. Nejde o diagnózu, pravdepodobnosť reakcie ani odporúčanie potravinu zaradiť alebo vyradiť.</p>
+      </section>
+
       <section class="card interpretation-card" id="interpretation" hidden>
         <div class="eyebrow">Praktická interpretácia</div>
         <h2 id="interpretationTitle">Význam výsledku</h2>
@@ -322,7 +593,7 @@
         <div class="notice" id="clinicalNotice"><strong>Klinický význam:</strong> genetická predispozícia neurčuje, či reakcia skutočne nastane ani aká bude závažná. Bez ťažkostí, anamnézy a alergologického vyšetrenia sa výsledok nemá používať ako pokyn na konzumáciu alebo vyradenie vajec.</div>
       </section>
 
-      <section class="card literature-card" aria-labelledby="literature-title">
+      <section class="card literature-card" id="literature" aria-labelledby="literature-title">
         <div class="eyebrow">Pôvod modelu</div>
         <h2 id="literature-title">Pôvodné SNP z literatúry</h2>
         <p id="literatureIntro">Štyri priame markery a ich účinky pochádzajú z GWAS alergie na potraviny potvrdenej orálnym expozičným testom. Hodnoty pre alergiu na slepačie vajce sú prevzaté z tabuľky 2 pôvodnej štúdie; β je prirodzený logaritmus OR rizikovej alely.</p>
@@ -351,9 +622,19 @@
         <p class="footnote">Populačná imputácia nie je individuálne určený genotyp. Spoľahlivosť interpretácie zachytáva iba neistotu spôsobenú chýbajúcimi genotypmi a proxy markerom; nehodnotí klinickú validitu ani pravdepodobnosť alergickej reakcie.</p>
       </section>
 
+      <div class="detail-modal" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailModalTitle" aria-hidden="true">
+        <div class="detail-dialog" role="document">
+          <div class="modal-bar">
+            <h2 class="modal-title" id="detailModalTitle">Detail predispozície</h2>
+            <button class="modal-close" id="detailModalClose" type="button" aria-label="Zatvoriť detail">×</button>
+          </div>
+          <div class="modal-content" id="detailModalContent"></div>
+        </div>
+      </div>
+
     </main>
 
-    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 15 · potravinové alergény + DAO</span></footer>
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 16 · grafický prehľad predispozícií</span></footer>
   </div>
 
   <script>
@@ -805,8 +1086,8 @@
     }
 
     input.addEventListener('change',e=>handleFile(e.target.files[0]));
-    $('resetBtn').addEventListener('click',reset);
-    document.querySelectorAll('.allergen-tab').forEach(tab=>tab.addEventListener('click',()=>switchModel(tab.dataset.model)));
+    $('resetBtn').addEventListener('click',resetExperience);
+    document.querySelectorAll('.allergen-tab[data-model]').forEach(tab=>tab.addEventListener('click',()=>switchModel(tab.dataset.model)));
     for (const type of ['dragenter','dragover']) dropzone.addEventListener(type,e=>{e.preventDefault();dropzone.classList.add('drag')});
     for (const type of ['dragleave','drop']) dropzone.addEventListener(type,e=>{e.preventDefault();dropzone.classList.remove('drag')});
     dropzone.addEventListener('drop',e=>handleFile(e.dataTransfer.files[0]));
@@ -867,7 +1148,7 @@
       $('histogram').setAttribute('aria-label','EUR population reference score distribution');
       document.querySelector('.privacy').title='Your file is processed only in your browser';
       document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetic allergen panels');
-      document.querySelector('.version-tag').textContent='AlergenRisk · version 15 · food allergens + DAO';
+      document.querySelector('.version-tag').textContent='AlergenRisk · version 16 · graphical predisposition overview';
     }
     updateModelUI=function(){skUpdate();if(language==='en'){translateStatic();englishUI();}document.querySelector('[data-model=lactose]').textContent=language==='en'?'Lactose':'Laktóza';document.querySelector('[data-model=celiac]').textContent=language==='en'?'Coeliac disease':'Celiakia';if(activeModel.special){$('emptyRange').textContent='DNA';$('uploadNotice').textContent=language==='en'?'Genotype-based interpretation; no disease probability, population imputation or dietary instruction.':'Interpretácia genotypu; bez pravdepodobnosti ochorenia, populačnej imputácie a pokynov na zmenu stravy.';if(language==='en'&&activeModel.key==='lactose')$('literatureRows').children[0].children[3].textContent='GG: non-persistence; AG/AA: persistence';}};
     render=function(result,fileName,parsed){
@@ -924,7 +1205,7 @@
     showError=function(message){if(language==='en')message=englishText[message]||message.replace(/^Formát (.+) sa rozpoznal, ale v súbore sa nenašli použiteľné genotypové riadky\.$/,'The $1 format was recognized, but no usable genotype rows were found.');skError(message);};
     function setLanguage(lang){
       restoreStatic();language=lang;document.documentElement.lang=lang;
-      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 15 · potravinové alergény + DAO';document.querySelector('.privacy').title='Súbor sa spracuje iba vo vašom prehliadači';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
+      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 16 · grafický prehľad predispozícií';document.querySelector('.privacy').title='Súbor sa spracuje iba vo vašom prehliadači';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
       document.title=lang==='en'?'AlergenRisk — genetic food-allergy predisposition':'AlergenRisk — genetická predispozícia';
       document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
       updateModelUI();if(currentParsed)render(analyze(currentParsed.found),currentFileName,currentParsed);clearError();
@@ -932,6 +1213,157 @@
     }
     document.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click',()=>setLanguage(b.dataset.lang)));
     setLanguage(language);
+
+    // NU3Gen report-style summary and one focused detail window per predisposition.
+    const reportModelOrder=['egg','peanut','milk','shared','lactose','celiac','histamine'];
+    const reportNames={
+      sk:{egg:'Vajce',peanut:'Arašidy',milk:'Kravské mlieko',shared:'Spoločná potravinová predispozícia',lactose:'Laktóza',celiac:'Celiakia',histamine:'Histamín / DAO'},
+      en:{egg:'Egg',peanut:'Peanut',milk:'Cow’s milk',shared:'Shared food-allergy predisposition',lactose:'Lactose',celiac:'Coeliac disease',histamine:'Histamine / DAO'}
+    };
+    const reportIcons={
+      egg:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 3C10 3 6 13 6 20a10 10 0 0 0 20 0C26 13 22 3 16 3Z"/></svg>',
+      peanut:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4c4 0 5 4 4 7s2 4 5 4 6 2 6 6-3 7-7 7c-5 0-6-4-5-7s-2-4-5-4-6-2-6-6 3-7 8-7Z"/><path d="m9 8 4 4m6 7 4 4"/></svg>',
+      milk:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 3S7 14 7 21a9 9 0 0 0 18 0c0-7-9-18-9-18Z"/><path d="M11 22c2 2 6 3 10 0"/></svg>',
+      shared:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="4"/><circle cx="22" cy="10" r="4"/><circle cx="10" cy="22" r="4"/><circle cx="22" cy="22" r="4"/></svg>',
+      lactose:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 4h14l-2 24H11L9 4Z"/><path d="M10 11h12"/></svg>',
+      celiac:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M16 29V5M16 10c-5 0-7-3-7-6 5 0 7 3 7 6Zm0 6c5 0 7-3 7-6-5 0-7 3-7 6Zm0 6c-5 0-7-3-7-6 5 0 7 3 7 6Z"/></svg>',
+      histamine:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m9 7 7-4 7 4v8l-7 4-7-4V7Z"/><path d="m16 19 7 4m0 0v6m0-6 5-3"/></svg>'
+    };
+    const reportDashboard=$('summaryDashboard');
+    const reportWorkspace=document.querySelector('.workspace');
+    const reportModal=$('detailModal');
+    const reportModalContent=$('detailModalContent');
+    let reportLastFocus=null;
+
+    function reportText(sk,en){return language==='en'?en:sk;}
+
+    function reportDirectCalls(model){
+      return model.loci.map(locus=>{
+        const raw=lookup(currentParsed.found,[locus.id,...(locus.aliases||[])]);
+        const genotype=raw&&validBases.test(raw)&&raw.split('').every(a=>a===locus.risk||a===locus.nonRisk)?raw:null;
+        return {locus,genotype};
+      });
+    }
+
+    function reportSummaryFor(key){
+      const savedModel=activeModel,savedLoci=loci,savedReference=eurReference;
+      activeModel=models[key];
+      loci=activeModel.loci;
+      eurReference=referenceDistribution();
+      try{
+        if(activeModel.key==='lactose'){
+          const call=reportDirectCalls(activeModel)[0];
+          if(!call.genotype)return {state:'incomplete',short:reportText('Neúplné','Incomplete'),context:reportText('vyhodnotenie','assessment'),meta:reportText('Marker nebol zistený','Marker not found')};
+          if(call.genotype==='GG')return {state:'high',short:reportText('Pokles','Reduced'),context:reportText('laktázy','lactase'),meta:reportText('Tvorba laktázy · GG','Lactase production · GG')};
+          return {state:'normal',short:reportText('Perzistencia','Persistence'),context:reportText('laktázy','lactase'),meta:reportText(`Perzistencia laktázy · ${call.genotype}`,`Lactase persistence · ${call.genotype}`)};
+        }
+        if(activeModel.key==='celiac'){
+          const calls=reportDirectCalls(activeModel),direct=calls.filter(c=>c.genotype).length;
+          const tags=calls.filter(c=>c.genotype&&riskCount(c.genotype,c.locus.risk)>0).map(c=>c.locus.id==='rs2187668'?'DQ2.5':'DQ8');
+          if(tags.length)return {state:'high',short:reportText('Zistený','Detected'),context:'HLA tag',meta:`HLA ${tags.join(' + ')} · ${direct}/2 SNP`};
+          if(direct<2)return {state:'incomplete',short:reportText('Neúplné','Incomplete'),context:'HLA panel',meta:`${direct}/2 SNP`};
+          return {state:'normal',short:reportText('Nezistený','Not detected'),context:'HLA tag',meta:reportText('2 sledované HLA tagy','2 assessed HLA tags')};
+        }
+        if(activeModel.directOnly){
+          const calls=reportDirectCalls(activeModel),direct=calls.filter(c=>c.genotype).length,missing=calls.length-direct;
+          const score=calls.reduce((sum,c)=>sum+(c.genotype?riskCount(c.genotype,c.locus.risk):0),0);
+          return {
+            state:missing?'incomplete':'research',
+            short:missing?reportText('Neúplné','Incomplete'):reportText('Výskumný','Research'),
+            context:reportText('panel','panel'),
+            meta:reportText(`${score} alel · ${direct}/${calls.length} SNP`,`${score} alleles · ${direct}/${calls.length} SNP`)
+          };
+        }
+        const result=analyze(currentParsed.found),band=bandForScore(result.achievedScore,result);
+        const short={
+          sk:{low:'Znížená',normal:'Typická',high:'Zvýšená'},
+          en:{low:'Lower',normal:'Typical',high:'Higher'}
+        }[language][band.key];
+        return {state:band.key,short,context:reportText('predispozícia','predisposition'),meta:reportText(`Skóre ${result.achievedScore}/${activeModel.maxScore} · ${result.direct+result.proxyCount}/${loci.length} SNP`,`Score ${result.achievedScore}/${activeModel.maxScore} · ${result.direct+result.proxyCount}/${loci.length} SNP`)};
+      }finally{
+        activeModel=savedModel;loci=savedLoci;eurReference=savedReference;
+      }
+    }
+
+    function updateReportCopy(){
+      $('reportKicker').textContent=reportText('NU3Gen · osobný genetický prehľad','NU3Gen · personal genetic overview');
+      $('reportHeroTitle').textContent=reportText('Potravinové predispozície v jednom prehľade','Food-related predispositions in one overview');
+      $('reportHeroCopy').textContent=reportText('Nahrajte genotypový súbor raz. AlergenRisk vytvorí grafické zhrnutie všetkých panelov a každý výsledok sprístupní v samostatnom detailnom okne.','Upload your genotype file once. AlergenRisk creates a graphical overview of every panel and opens each result in its own focused detail window.');
+      $('summaryEyebrow').textContent=reportText('Rýchly prehľad','Quick overview');
+      $('summaryTitle').textContent=reportText('Vaše genetické predispozície','Your genetic predispositions');
+      $('summaryGroupTitle').textContent=reportText('Potravinové alergény a súvisiace predispozície','Food allergens and related predispositions');
+      $('summaryResetBtn').textContent=reportText('Nahrať nový súbor','Upload a new file');
+      $('summaryFootnote').innerHTML=reportText('<strong>Upozornenie:</strong> farba vyjadruje iba kategóriu konkrétneho genetického modelu. Nejde o diagnózu, pravdepodobnosť reakcie ani odporúčanie potravinu zaradiť alebo vyradiť.','<strong>Notice:</strong> colour represents only the category used by that genetic model. It is not a diagnosis, reaction probability, or advice to include or exclude a food.');
+      $('detailModalClose').setAttribute('aria-label',reportText('Zatvoriť detail','Close detail'));
+    }
+
+    function renderReportDashboard(){
+      if(!currentParsed)return;
+      updateReportCopy();
+      $('summaryFile').textContent=reportText(`${currentFileName} · ${currentParsed.source.format} · ${currentParsed.rows.toLocaleString('sk-SK')} variantov`,`${currentFileName} · ${currentParsed.source.format} · ${currentParsed.rows.toLocaleString('en-GB')} variants`);
+      const grid=$('summaryGrid');
+      grid.replaceChildren();
+      for(const key of reportModelOrder){
+        const summary=reportSummaryFor(key),button=document.createElement('button');
+        button.type='button';
+        button.className=`summary-card state-${summary.state}`;
+        button.dataset.summaryModel=key;
+        button.setAttribute('aria-haspopup','dialog');
+        button.setAttribute('aria-label',reportText(`Otvoriť detail: ${reportNames.sk[key]}, ${summary.short}`,`Open details: ${reportNames.en[key]}, ${summary.short}`));
+        button.innerHTML=`<span class="summary-circle"><span>${reportIcons[key]}<strong>${summary.short}</strong><small>${summary.context||reportText('predispozícia','predisposition')}</small></span></span><span class="summary-card-title">${reportNames[language][key]}</span><span class="summary-card-meta">${summary.meta}</span><span class="summary-open">${reportText('Otvoriť detail','Open details')} →</span>`;
+        button.addEventListener('click',()=>openReportDetail(key,button));
+        grid.append(button);
+      }
+      reportWorkspace.hidden=true;
+      reportDashboard.hidden=false;
+    }
+
+    function openReportDetail(key,trigger){
+      reportLastFocus=trigger||document.activeElement;
+      switchModel(key);
+      const heading=language==='en'&&enContent[key]?enContent[key].heading:modelContent[key].heading;
+      $('detailModalTitle').textContent=heading;
+      reportModal.classList.add('open');
+      reportModal.setAttribute('aria-hidden','false');
+      document.body.classList.add('modal-open');
+      $('detailModalClose').focus();
+    }
+
+    function closeReportDetail(restoreFocus=true){
+      reportModal.classList.remove('open');
+      reportModal.setAttribute('aria-hidden','true');
+      document.body.classList.remove('modal-open');
+      if(restoreFocus&&reportLastFocus&&document.contains(reportLastFocus))reportLastFocus.focus();
+    }
+
+    function resetExperience(){
+      reset();
+      closeReportDetail(false);
+      reportDashboard.hidden=true;
+      reportWorkspace.hidden=false;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    [$('results'),$('interpretation'),$('literature'),$('details')].forEach(section=>reportModalContent.append(section));
+    $('summaryResetBtn').addEventListener('click',resetExperience);
+    $('detailModalClose').addEventListener('click',()=>closeReportDetail());
+    reportModal.addEventListener('click',event=>{if(event.target===reportModal)closeReportDetail();});
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&reportModal.classList.contains('open'))closeReportDetail();
+      if(event.key==='Tab'&&reportModal.classList.contains('open')){
+        const focusable=[...reportModal.querySelectorAll('button,[href],[tabindex]:not([tabindex="-1"])')].filter(el=>!el.disabled&&el.offsetParent!==null);
+        if(!focusable.length)return;
+        const first=focusable[0],last=focusable[focusable.length-1];
+        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+      }
+    });
+
+    const reportRender=render;
+    render=function(result,fileName,parsed){reportRender(result,fileName,parsed);renderReportDashboard();};
+    const reportSetLanguage=setLanguage;
+    setLanguage=function(lang){reportSetLanguage(lang);updateReportCopy();if(currentParsed)renderReportDashboard();};
+    updateReportCopy();
 
   </script>
 </body>

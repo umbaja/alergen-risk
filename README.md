@@ -1,6 +1,6 @@
 # AlergenRisk
 
-Experimentálna webová aplikácia na odhad genetickej predispozície k potravinovým alergiám. Aktuálne obsahuje modely pre vajce a arašidy.
+Experimentálna webová aplikácia na interpretáciu vybraných genetických predispozícií súvisiacich s potravinovými alergiami, laktázovou perzistenciou, celiakiou a aktivitou DAO.
 
 ## Vlastnosti
 
@@ -10,6 +10,8 @@ Experimentálna webová aplikácia na odhad genetickej predispozície k potravin
 - nevážené súčtové genetické skóre,
 - referenčná distribúcia EUR populácie,
 - samostatné vyjadrenie neistoty spôsobenej proxy odhadom alebo populačnou imputáciou.
+- grafický prehľad všetkých siedmich panelov inšpirovaný vizuálnym systémom správ NU3Gen,
+- samostatné modálne okno pre detail každej predispozície.
 
 Výsledok je určený na výskumné a vzdelávacie použitie. Nie je diagnózou alergie ani odporúčaním potravinu konzumovať alebo vyradiť.
 
@@ -32,8 +34,7 @@ V GitHub repozitári treba pri prvom nasadení otvoriť **Settings → Pages** a
 ## Štruktúra
 
 - `dist/index.html` – kompletná offline aplikácia,
-- `.github/workflows/pages.yml` – automatické nasadenie na GitHub Pages,
-- `.openai/hosting.json` – konfigurácia existujúceho ChatGPT Sites nasadenia.
+- `.github/workflows/pages.yml` – automatické nasadenie na GitHub Pages.
 
 ## Odborné zdroje arašidového panelu
 
@@ -63,3 +64,9 @@ Slovak/English UI, selectable with `?lang=sk` or `?lang=en`; uploaded data stays
 Added separate lactose and partial coeliac susceptibility panels. Lactose uses direct rs4988235 plus-strand GG/AG/AA genotype rules (Enattah 2002, PMID 11788828). Coeliac uses rs2187668 T and rs7454108 C as indirect DQ2.5/DQ8 tags (Monsuur 2008, DOI 10.1371/journal.pone.0002270); it does not cover the full six-SNP assay, DQ2.2/DQ7 or phase. Neither panel imputes missing data or reports disease probabilities. Negative partial HLA tags do not exclude coeliac disease.
 
 Verification: syntax validation; 28 genotype/language cases, including unsupported/missing genotypes; live browser upload with synthetic data. No personal genotype was used for deployment testing.
+
+## Verzia 16
+
+Rozhranie je prepracované podľa vizuálneho jazyka správ NU3Gen: zelené sekčné nadpisy, bodkované deliace línie, kruhové výsledkové značky a farebné rozlíšenie zníženej, typickej, zvýšenej, výskumnej a neúplnej interpretácie.
+
+Po jednom lokálnom importe aplikácia zobrazí spoločné grafické zhrnutie všetkých siedmich panelov. Každá predispozícia sa otvára v samostatnom prístupnom modálnom okne s pôvodným detailom skóre, distribúciou, interpretáciou, SNP tabuľkou a literatúrou. Výpočtové a vedecké pravidlá panelov sa nezmenili.
