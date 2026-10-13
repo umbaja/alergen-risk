@@ -464,10 +464,6 @@
         <div class="brand-mark">NU3</div>
         <div><div class="brand-name">AlergenRisk</div><div class="brand-note">genetické modely alergénov · EUR</div></div>
       </div>
-      <div class="privacy" title="Súbor sa spracuje iba vo vašom prehliadači">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        <span>Genotyp neopúšťa zariadenie</span><span class="offline-pill">● OFFLINE VÝPOČET</span>
-      </div>
     </header>
     <nav class="language-nav" aria-label="Language / Jazyk" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px"><button class="allergen-tab" type="button" data-lang="sk" lang="sk" aria-pressed="true">SK</button><button class="allergen-tab" type="button" data-lang="en" lang="en" aria-pressed="false">EN</button></nav>
 
@@ -1146,7 +1142,6 @@
       $('literatureOrHeading').textContent=activeModel.directOnly?'Observed effect / general OR':activeModel.shared?'OR for general food allergy':'OR for '+englishNames[activeModel.key];
       $('literatureRows').querySelectorAll('td').forEach(td=>{td.innerHTML=td.innerHTML.replace(/(\d),(\d)/g,'$1.$2');});
       $('histogram').setAttribute('aria-label','EUR population reference score distribution');
-      document.querySelector('.privacy').title='Your file is processed only in your browser';
       document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetic allergen panels');
       document.querySelector('.version-tag').textContent='AlergenRisk · version 16 · graphical predisposition overview';
     }
@@ -1205,7 +1200,7 @@
     showError=function(message){if(language==='en')message=englishText[message]||message.replace(/^Formát (.+) sa rozpoznal, ale v súbore sa nenašli použiteľné genotypové riadky\.$/,'The $1 format was recognized, but no usable genotype rows were found.');skError(message);};
     function setLanguage(lang){
       restoreStatic();language=lang;document.documentElement.lang=lang;
-      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 16 · grafický prehľad predispozícií';document.querySelector('.privacy').title='Súbor sa spracuje iba vo vašom prehliadači';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
+      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 16 · grafický prehľad predispozícií';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
       document.title=lang==='en'?'AlergenRisk — genetic food-allergy predisposition':'AlergenRisk — genetická predispozícia';
       document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
       updateModelUI();if(currentParsed)render(analyze(currentParsed.found),currentFileName,currentParsed);clearError();
