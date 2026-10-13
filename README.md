@@ -94,3 +94,9 @@ Pravdepodobnostný model sa už nepoužíva na vytvorenie desatinného skóre. P
 Na hlavnej stránke pribudla rozbaľovacia mapa všetkých 23 panelových lokusov a ich proxy náhrad v poradí použitia. Tabuľka má samostatné stĺpce pre DNAEra, MyHeritage a 23andMe.
 
 Keďže jednotlivé revízie čipov jednej značky sa môžu líšiť, aplikácia nepredpokladá dostupnosť SNP iba podľa názvu dodávateľa. Po nahratí exportu zvýrazní príslušný stĺpec a pri každom cieli ukáže priamy nález, použitelný proxy marker alebo chýbajúci nález podľa skutočného obsahu súboru.
+
+## Verzia 21
+
+Panel Mlieko používa pre cieľový lokus rs2069772 náhradný marker rs17388568. V kombinovanej európskej skupine 1000 Genomes (CEU, TSI, FIN, GBR a IBS) má dvojica rs2069772–rs17388568 v NIH LDlink r² = 0,981 a D′ = 1,000. Proxy alela G zodpovedá cieľovej rizikovej alele T; model používa P(T | G)=708/712 a P(T | A)=0/294.
+
+Rovnako ako pri dvoch predošlých mliečnych proxy systémoch sa do genetického skóre započíta najpravdepodobnejší celý príspevok 0, 1 alebo 2 alely. Pravdepodobnostný model sa používa iba na vyjadrenie spoľahlivosti výsledného celočíselného skóre.

@@ -31,6 +31,8 @@ async function uploadAndWait(page) {
     assert.match(await desktop.locator('#locusMapRows tr[data-panel="egg"][data-target="rs12123821"] td[data-chip="23andme"]').innerText(), /Priamy rs12123821/i);
     assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs12123821"] td[data-chip="23andme"]').innerText(), /Proxy rs115288876/i);
     assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="23andme"]').innerText(), /Proxy rs63582760/i);
+    assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs2069772"] td[data-chip="23andme"]').innerText(), /Proxy rs17388568/i);
+    assert.match(await desktop.locator('#locusMapNote').innerText(), /rs17388568/i);
     assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="dnaera"]').innerText(), /Nahrajte export/i);
     await desktop.locator('#locusMapSection').screenshot({ path: path.join(qaDir, 'locus-map-23andme.png') });
     await desktop.screenshot({ path: path.join(qaDir, 'overview-desktop.png'), fullPage: true });
@@ -48,21 +50,24 @@ async function uploadAndWait(page) {
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
 
     const milkCard = desktop.locator('[data-summary-model="milk"]');
-    assert.match(await milkCard.locator('.summary-card-meta').innerText(), /3 priamo \+ 2 proxy/i);
+    assert.match(await milkCard.locator('.summary-card-meta').innerText(), /2 priamo \+ 3 proxy/i);
     await milkCard.click();
     await desktop.waitForSelector('#detailModal.open');
     assert.match(await desktop.locator('#resultCopy').innerText(), /rs115288876/i);
     assert.match(await desktop.locator('#resultCopy').innerText(), /rs63582760/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(), /rs17388568/i);
     assert.strictEqual((await desktop.locator('#rawScore').innerText()).trim(), '7');
-    assert.match((await desktop.locator('#scoreConfidence').innerText()).trim(), /^89,1 %$/);
-    assert.strictEqual((await desktop.locator('#interpretationConfidence').innerText()).trim(), '2 / 4');
-    assert.strictEqual((await desktop.locator('#scoreRange').innerText()).trim(), '5–9');
+    assert.match((await desktop.locator('#scoreConfidence').innerText()).trim(), /^88,1 %$/);
+    assert.strictEqual((await desktop.locator('#interpretationConfidence').innerText()).trim(), '4 / 6');
+    assert.strictEqual((await desktop.locator('#scoreRange').innerText()).trim(), '3–9');
     assert.match(await desktop.locator('#markerRows').innerText(), /rs115288876/i);
     assert.match(await desktop.locator('#markerRows').innerText(), /rs63582760/i);
     assert.match(await desktop.locator('#markerRows').innerText(), /rs10588133/i);
+    assert.match(await desktop.locator('#markerRows').innerText(), /rs17388568/i);
     assert.strictEqual((await desktop.locator('#markerRows tr').nth(0).locator('td').nth(4).innerText()).trim(), '1');
     assert.strictEqual((await desktop.locator('#markerRows tr').nth(1).locator('td').nth(4).innerText()).trim(), '1');
-    assert.match(await desktop.locator('#interpretationText').innerText(), /rs115288876 aj rs63582760/i);
+    assert.strictEqual((await desktop.locator('#markerRows tr').nth(2).locator('td').nth(4).innerText()).trim(), '2');
+    assert.match(await desktop.locator('#interpretationText').innerText(), /rs115288876, rs63582760 aj rs17388568/i);
     await desktop.screenshot({ path: path.join(qaDir, 'detail-milk-proxy.png') });
     await desktop.locator('#detailModal').evaluate(element => { element.scrollTop = element.scrollHeight; });
     await desktop.screenshot({ path: path.join(qaDir, 'detail-milk-proxy-bottom.png') });
@@ -85,7 +90,8 @@ async function uploadAndWait(page) {
     await desktop.waitForSelector('#detailModal.open');
     assert.match(await desktop.locator('#resultCopy').innerText(), /rs115288876/i);
     assert.match(await desktop.locator('#resultCopy').innerText(), /rs63582760/i);
-    assert.match(await desktop.locator('#interpretationText').innerText(), /both rs115288876 and rs63582760/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(), /rs17388568/i);
+    assert.match(await desktop.locator('#interpretationText').innerText(), /rs115288876, rs63582760 and rs17388568/i);
     await desktop.keyboard.press('Escape');
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
 
@@ -98,7 +104,7 @@ async function uploadAndWait(page) {
     await aliasPage.locator('[data-summary-model="milk"]').click();
     await aliasPage.waitForSelector('#detailModal.open');
     assert.match(await aliasPage.locator('#resultCopy').innerText(), /rs63582760/i);
-    assert.match((await aliasPage.locator('#scoreConfidence').innerText()).trim(), /^89,1 %$/);
+    assert.match((await aliasPage.locator('#scoreConfidence').innerText()).trim(), /^88,1 %$/);
     assert.match(await aliasPage.locator('#markerRows').innerText(), /rs10588133/i);
     await aliasPage.close();
 
@@ -110,13 +116,15 @@ async function uploadAndWait(page) {
       'RSID,CHROMOSOME,POSITION,RESULT',
       'rs12123821,1,152179152,CT',
       'rs115288876,1,152000117,AG',
-      'rs63582760,5,132022972,GT'
+      'rs63582760,5,132022972,GT',
+      'rs17388568,4,123329362,GG'
     ].join('\n');
     await myHeritagePage.setInputFiles('#fileInput', { name: 'synthetic-myheritage.csv', mimeType: 'text/csv', buffer: Buffer.from(myHeritageFixture) });
     await myHeritagePage.waitForSelector('#summaryDashboard:not([hidden])');
     await myHeritagePage.locator('#locusMapDetails > summary').click();
     assert.match(await myHeritagePage.locator('#locusMapRows tr[data-panel="egg"][data-target="rs12123821"] td[data-chip="myheritage"]').innerText(), /Priamy rs12123821/i);
     assert.match(await myHeritagePage.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="myheritage"]').innerText(), /Proxy rs63582760/i);
+    assert.match(await myHeritagePage.locator('#locusMapRows tr[data-panel="milk"][data-target="rs2069772"] td[data-chip="myheritage"]').innerText(), /Proxy rs17388568/i);
     await myHeritagePage.close();
 
     const dnaEraPage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
@@ -129,13 +137,15 @@ async function uploadAndWait(page) {
       'Sample Name,SNP Name,Chr,Position,Allele1 - Plus,Allele2 - Plus',
       'sample,rs12123821,1,152179152,C,T',
       'sample,rs115288876,1,152000117,A,G',
-      'sample,rs63582760,5,132022972,G,T'
+      'sample,rs63582760,5,132022972,G,T',
+      'sample,rs17388568,4,123329362,G,G'
     ].join('\n');
     await dnaEraPage.setInputFiles('#fileInput', { name: 'synthetic-dnaera.csv', mimeType: 'text/csv', buffer: Buffer.from(dnaEraFixture) });
     await dnaEraPage.waitForSelector('#summaryDashboard:not([hidden])');
     await dnaEraPage.locator('#locusMapDetails > summary').click();
     assert.match(await dnaEraPage.locator('#locusMapRows tr[data-panel="egg"][data-target="rs12123821"] td[data-chip="dnaera"]').innerText(), /Priamy rs12123821/i);
     assert.match(await dnaEraPage.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="dnaera"]').innerText(), /Proxy rs63582760/i);
+    assert.match(await dnaEraPage.locator('#locusMapRows tr[data-panel="milk"][data-target="rs2069772"] td[data-chip="dnaera"]').innerText(), /Proxy rs17388568/i);
     await dnaEraPage.close();
 
     const integerScorePage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
