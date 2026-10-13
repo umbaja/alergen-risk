@@ -683,7 +683,7 @@
 
     </main>
 
-    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 21 · tretí mliečny proxy systém</span></footer>
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 22 · EUR graf pre mlieko</span></footer>
   </div>
 
   <script>
@@ -809,7 +809,7 @@
       literatureIntro:'OR pochádzajú z analýzy všeobecnej potravinovej alergie. Nejde o samostatne overené efekty pre každú uvedenú potravinu. Panel nehodnotí celiakiu.',
       literatureRows:sharedRows,orHeading:'OR všeobecnej potravinovej alergie',
       notes:'<p class="footnote">Experimentálny spoločný panel; alergénovo špecifická predikcia nie je dostupná. Pásma skóre sú opisné, nie klinické prahy. EUR histogram predpokladá nezávislosť lokusov. <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a>.</p>'};
-    const candidate=(id,risk,nonRisk)=>({id,risk,nonRisk,aliases:[],beta:null,proxies:[]});
+    const candidate=(id,risk,nonRisk,eur=null)=>({id,risk,nonRisk,aliases:[],beta:null,proxies:[],...(eur?{eur}:{})});
     const milkProxyDefinition=eggLoci[0].proxies.find(proxy=>proxy.id==='rs115288876');
     const milkProxyLocus={
       id:'rs115288876',aliases:['1:152000117'],risk:'A',nonRisk:'G',beta:null,proxies:[],
@@ -823,7 +823,12 @@
       id:'rs63582760',aliases:['rs10588133','5:132022972','5:132687280'],risk:'T',nonRisk:'G',beta:null,proxies:[],
       proxyFor:'rs11949166',targetLocus:sharedLoci[1],proxyModel:milkSecondaryProxyDefinition,currentId:'rs10588133'
     };
-    const milkRs2069772Target=candidate('rs2069772','T','C');
+    const milkRs17616434Target=candidate('rs17616434','C','T',{
+      TT:.7157**2,CT:2*.2843*.7157,CC:.2843**2
+    });
+    const milkRs2069772Target=candidate('rs2069772','T','C',{
+      CC:(298/1006)**2,CT:2*(298/1006)*(708/1006),TT:(708/1006)**2
+    });
     const milkTertiaryProxyDefinition={
       id:'rs17388568',aliases:['4:123329362','4:122408207'],riskAllele:'G',
       r2:.981,dPrime:1,pRiskIfProxy:708/712,pRiskIfOther:0
@@ -832,8 +837,8 @@
       id:'rs17388568',aliases:['4:123329362','4:122408207'],risk:'G',nonRisk:'A',beta:null,proxies:[],
       proxyFor:'rs2069772',targetLocus:milkRs2069772Target,proxyModel:milkTertiaryProxyDefinition
     };
-    models.milk={key:'milk',name:'Mlieko',food:'kravského mlieka',loci:[milkProxyLocus,milkSecondaryProxyLocus,...sharedLoci.slice(2),candidate('rs17616434','C','T'),milkTertiaryProxyLocus],maxScore:10,bands:{low:[0,2],normal:[3,5],high:[6,10]},directOnly:true};
-    modelContent.milk={heading:'Kravské mlieko · experimentálny panel',intro:'Panel používa tri EUR proxy markery: rs115288876 pre pôvodný lokus rs12123821, rs63582760 (aktuálne rs10588133) pre rs11949166 a rs17388568 pre rs2069772. Každý proxy lokus prispieva najpravdepodobnejším celým počtom 0, 1 alebo 2 alely; pravdepodobnostný model určuje spoľahlivosť tohto skóre. Tretí spoločný lokus a rs17616434 sa čítajú priamo. Panel nehodnotí laktózovú intoleranciu.',literatureIntro:'rs115288876, rs63582760 a rs17388568 nahrádzajú v tomto paneli príslušné cieľové lokusy pravdepodobnostným odhadom. rs63582760 bol v dbSNP zlúčený do rs10588133; aplikácia prijíma oba identifikátory. Do genetického skóre sa za každý lokus započíta najpravdepodobnejší celý príspevok 0/1/2 a samostatne sa uvedie jeho spoľahlivosť. Dva kandidátne mliečne SNP pochádzajú z malej štúdie (30 prípadov, 23 kontrol); skórovanie zostáva experimentálnou voľbou, nie publikovaným predikčným modelom.',literatureRows:[['rs115288876','FLG región · proxy rs12123821','A (+), proxy alela','Celočíselný proxy odhad 0/1/2','EUR LD r² = 0,698','T (cieľ rs12123821)','0,975'],['rs63582760 / rs10588133','IL4 / KIF3A · proxy rs11949166','T (+), proxy alela','Celočíselný proxy odhad 0/1/2','EUR LD r² = 0,955','A (cieľ rs11949166)','0,462'],...sharedRows.slice(2),['rs17616434','TLR6 región','C','CC asociovaný genotyp','0,002','C','—'],['rs17388568','IL2 / ADAD1 · proxy rs2069772','G (+), proxy alela','Celočíselný proxy odhad 0/1/2','EUR LD r² = 0,981','T (cieľ rs2069772)','—']],orHeading:'Efekt / všeobecné OR',notes:'<p class="footnote"><strong>Proxy neistota:</strong> rs115288876 používa P(T pri rs12123821 | A)=0,9182 a P(T | G)=0,0103; EUR r²=0,698. Pre rs63582760/rs10588133 používa model P(A pri rs11949166 | T)=267/271=0,9852 a P(A | G)=5/735=0,0068; EUR r²=0,9551 a D′=0,9798. Pre rs17388568 používa P(T pri rs2069772 | G)=708/712=0,9944 a P(T | A)=0/294=0; EUR r²=0,981 a D′=1,000. Za každý proxy lokus sa do skóre započíta najpravdepodobnejší celý počet 0, 1 alebo 2 cieľové alely. Zobrazená spoľahlivosť je pravdepodobnosť výsledného celého proxy skóre, nie klinická presnosť.</p><p class="footnote">Pre kombinovaný panel nie sú overené populačné prahy ani spoločná EUR distribúcia. Preto neuvádzame kategóriu nízke/normálne/zvýšené riziko. <a href="https://doi.org/10.1186/s13601-016-0096-9">Henneman et al., 2016</a> · <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs115288876">dbSNP rs115288876</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs63582760">dbSNP rs63582760 → rs10588133</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs17388568">dbSNP rs17388568</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs2069772">dbSNP rs2069772</a> · <a href="https://ldlink.nih.gov/ldpair">NIH LDlink LDpair</a>.</p>'};
+    models.milk={key:'milk',name:'Mlieko',food:'kravského mlieka',loci:[milkProxyLocus,milkSecondaryProxyLocus,...sharedLoci.slice(2),milkRs17616434Target,milkTertiaryProxyLocus],maxScore:10,bands:{low:[0,2],normal:[3,5],high:[6,10]},directOnly:true};
+    modelContent.milk={heading:'Kravské mlieko · experimentálny panel',intro:'Panel používa tri EUR proxy markery: rs115288876 pre pôvodný lokus rs12123821, rs63582760 (aktuálne rs10588133) pre rs11949166 a rs17388568 pre rs2069772. Každý proxy lokus prispieva najpravdepodobnejším celým počtom 0, 1 alebo 2 alely; pravdepodobnostný model určuje spoľahlivosť tohto skóre. Tretí spoločný lokus a rs17616434 sa čítajú priamo. Panel nehodnotí laktózovú intoleranciu.',literatureIntro:'Panel graficky oddeľuje pôvodné cieľové SNP od markerov použitých na ich odhad. Tri spoločné potravinovo-alergické lokusy pochádzajú z GWAS; rs17616434 a rs2069772 z malej kandidátnej štúdie (30 prípadov, 23 kontrol). rs115288876, rs63582760 a rs17388568 v tomto paneli nahrádzajú príslušné ciele. Najpravdepodobnejší celý príspevok 0/1/2 vstupuje do skóre a jeho spoľahlivosť sa uvádza samostatne.',literatureRows:[['rs115288876','FLG región · proxy rs12123821','A (+), proxy alela','Celočíselný proxy odhad 0/1/2','EUR LD r² = 0,698','T (cieľ rs12123821)','0,975'],['rs63582760 / rs10588133','IL4 / KIF3A · proxy rs11949166','T (+), proxy alela','Celočíselný proxy odhad 0/1/2','EUR LD r² = 0,955','A (cieľ rs11949166)','0,462'],...sharedRows.slice(2),['rs17616434','TLR6 región','C','CC asociovaný genotyp','0,002','C','—'],['rs17388568','IL2 / ADAD1 · proxy rs2069772','G (+), proxy alela','Celočíselný proxy odhad 0/1/2','EUR LD r² = 0,981','T (cieľ rs2069772)','—']],orHeading:'Efekt / všeobecné OR',notes:'<p class="footnote"><strong>Proxy neistota:</strong> rs115288876 používa P(T pri rs12123821 | A)=0,9182 a P(T | G)=0,0103; EUR r²=0,698. Pre rs63582760/rs10588133 používa model P(A pri rs11949166 | T)=267/271=0,9852 a P(A | G)=5/735=0,0068; EUR r²=0,9551 a D′=0,9798. Pre rs17388568 používa P(T pri rs2069772 | G)=708/712=0,9944 a P(T | A)=0/294=0; EUR r²=0,981 a D′=1,000. Za každý proxy lokus sa do skóre započíta najpravdepodobnejší celý počet 0, 1 alebo 2 cieľové alely. Zobrazená spoľahlivosť je pravdepodobnosť výsledného celého proxy skóre, nie klinická presnosť.</p><p class="footnote"><strong>Referenčný EUR histogram:</strong> ide o modelový odhad pre päť cieľových lokusov. Pre rs17616434 používa frekvenciu rizikovej alely C 0,2843 z EUR vetvy 1000 Genomes; pre rs2069772 frekvenciu T 708/1006 z EUR haplotypov LDlink. Rozdelenie predpokladá Hardyho–Weinbergovu rovnováhu a nezávislosť lokusov. Pásma 0–2, 3–5 a 6–10 sú iba opisné, nie klinicky validované prahy. <a href="https://doi.org/10.1186/s13601-016-0096-9">Henneman et al., 2016</a> · <a href="https://doi.org/10.1038/s41467-017-01220-0">Marenholz et al., 2017</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs17616434">dbSNP rs17616434</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs17388568">dbSNP rs17388568</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs2069772">dbSNP rs2069772</a> · <a href="https://ldlink.nih.gov/ldpair">NIH LDlink LDpair</a>.</p>'};
     models.histamine={key:'histamine',name:'Histamín / DAO',food:'histamínu',loci:[candidate('rs2052129','T','G'),candidate('rs10156191','T','C'),candidate('rs1049742','T','C')],maxScore:6,bands:{low:[0,1],normal:[2,3],high:[4,6]},directOnly:true};
     modelContent.histamine={heading:'Histamín · varianty spojené s aktivitou DAO',intro:'Tri varianty AOC1 spojené s nižšou DAO aktivitou. Zobrazuje sa počet priamo zistených efektových alel. Tento výsledok neurčuje diagnózu histamínovej intolerancie.',literatureIntro:'Kandidátna štúdia 484 nemeckých osôb zistila asociácie s DAO aktivitou, nie so samotným fenotypom histamínovej intolerancie. SNP v jednom géne sa nepovažujú za nezávislé.',literatureRows:[['rs2052129','AOC1 regulačný región','T','nižšia DAO aktivita','2,5 × 10⁻¹¹','T','—'],['rs10156191','AOC1 Thr16Met','T','nižšia DAO aktivita','8,9 × 10⁻¹³','T','—'],['rs1049742','AOC1 Ser332Phe','T','nižšia DAO aktivita','2 × 10⁻⁵','T','—']],orHeading:'Pozorovaný efekt',notes:'<p class="footnote">Bez overenej haplotypovej referencie nepočítame spoločný EUR histogram, populačnú imputáciu ani percentuálnu istotu. Súčet 0–6 je opis počtu alel, nie validované rizikové skóre. <a href="https://doi.org/10.1111/j.1398-9995.2011.02548.x">Maintz et al., 2011</a>.</p>'};
 
@@ -1021,9 +1026,11 @@
     function riskCount(genotype, risk) { return genotype.split('').filter(a=>a===risk).length; }
 
     function referenceDistribution() {
-      if(activeModel.directOnly) return [];
+      if(activeModel.directOnly&&activeModel.key!=='milk') return [];
+      const referenceLoci=activeModel.key==='milk'?loci.map(locus=>locus.targetLocus||locus):loci;
       let combinations=[{raw:0,p:1}];
-      for (const locus of loci) {
+      for (const locus of referenceLoci) {
+        if(!locus.eur)return [];
         const next=[];
         for (const base of combinations) for (const option of normalizedDistribution(locus.eur)) {
           next.push({raw:base.raw+riskCount(option.genotype,locus.risk),p:base.p*option.p});
@@ -1218,54 +1225,92 @@
       const en=language==='en',t=(sk,eng)=>en?eng:sk;
       const evaluation=milkEvaluation(parsed.found);
       const {proxyCalls,proxyCount,proxyOptions,proxyScore,proxyScoreConfidence,directCalls,direct,missingDirect,directScore,geneticScore,scoreMin,scoreMax,observedTargets,missingTargets}=evaluation;
+      const milkBandKey=geneticScore<=models.milk.bands.low[1]?'low':geneticScore<=models.milk.bands.normal[1]?'normal':'high';
+      const milkBandLabels={
+        low:t('Nižší počet rizikových alel','Lower risk-allele count'),
+        normal:t('Stredný počet rizikových alel','Middle risk-allele count'),
+        high:t('Vyšší počet rizikových alel','Higher risk-allele count')
+      };
       const metricLabels=$('results').querySelectorAll('.metric > span');
-      const labels=en?['Reliability of the calculated score','Whole-number proxy contribution','Possible score range']:['Spoľahlivosť vypočítaného skóre','Celočíselný proxy príspevok','Možný rozsah skóre'];
+      const labels=en?['Probability of this exact score','Interpretation reliability','Possible score range']:['Pravdepodobnosť presného skóre','Spoľahlivosť interpretácie','Možný rozsah skóre'];
       metricLabels.forEach((label,index)=>label.textContent=labels[index]);
-      $('results').querySelectorAll('.metrics,.prob-row,.confidence-note,.section-title').forEach(element=>element.style.display='');
+      $('results').querySelectorAll('.metrics,.prob-row,.confidence-note,.histogram-wrap,.section-title').forEach(element=>element.style.display='');
       const titles=$('results').querySelectorAll('.section-title');
-      titles[0].querySelector('h3').textContent=t('Spoločná neistota proxy odhadov','Combined proxy-estimate uncertainty');
-      titles[0].querySelector('span').textContent=t('podmienené EUR LD modelom','conditional on the EUR LD model');
-      titles[1].style.display='none';
-      $('histogram').parentElement.style.display='none';
-      $('individualMarker').style.display='none';
-      $('results').querySelector('.divider').style.display='none';
+      titles[0].querySelector('h3').textContent=t('Istota individuálneho zaradenia','Confidence in individual classification');
+      titles[0].querySelector('span').textContent=t('v rámci opisného pásma','within the descriptive band');
+      titles[1].querySelector('h3').textContent=t('Referenčná distribúcia EUR populácie','EUR population reference distribution');
+      $('distributionMeta').textContent=t('modelový odhad · 5 cieľových SNP · skóre 0–10','model estimate · 5 target SNPs · score 0–10');
+      $('individualMarker').style.display='';
+      $('results').querySelector('.divider').style.display='';
       const probabilityRows=$('results').querySelectorAll('.prob-row > span:first-child');
-      probabilityRows[0].textContent=t('Najpravdepodobnejší príspevok','Modal contribution');
-      probabilityRows[1].textContent=t('Ostatné možnosti','Other possibilities');
+      probabilityRows[0].textContent=t('Rovnaké opisné pásmo','Same descriptive band');
+      probabilityRows[1].textContent=t('Neistota','Uncertainty');
 
       $('uploadNotice').textContent=t('Panel Mlieko používa rs115288876 pre rs12123821, rs63582760 (aktuálne rs10588133) pre rs11949166 a rs17388568 pre rs2069772. Spoločná neistota všetkých troch proxy markerov je súčasťou výsledného odhadu.','The Milk panel uses rs115288876 for rs12123821, rs63582760 (now rs10588133) for rs11949166 and rs17388568 for rs2069772. Combined uncertainty from all three proxy markers is included in the resulting estimate.');
       $('fileName').textContent=`${fileName} · ${parsed.source.format} · ${parsed.source.build} · ${parsed.rows.toLocaleString(en?'en-GB':'sk-SK')} ${t('variantov','variants')}`;
       $('rawScore').textContent=geneticScore;
       $('scoreMaximum').textContent=t('z 10','of 10');
-      $('resultLabel').textContent=missingTargets?t('Neúplné genetické skóre','Incomplete genetic score'):t('Genetické skóre','Genetic score');
-      $('resultCopy').textContent=proxyCalls.map(call=>call.genotype?t(
-        `${call.proxyLocus.id} ${call.genotype} → ${call.proxyLocus.proxyFor}: príspevok do skóre ${call.modal.score} z 2; spoľahlivosť ${localizedPct(call.modal.p)}.`,
-        `${call.proxyLocus.id} ${call.genotype} → ${call.proxyLocus.proxyFor}: score contribution ${call.modal.score} of 2; reliability ${localizedPct(call.modal.p)}.`
+      $('resultLabel').textContent=missingTargets?t('Neúplné genetické skóre','Incomplete genetic score'):milkBandLabels[milkBandKey];
+      const bandRange=models.milk.bands[milkBandKey];
+      const bandConfidence=!missingTargets?proxyOptions.reduce((sum,option)=>{
+        const possibleScore=directScore+option.score;
+        return sum+(possibleScore>=bandRange[0]&&possibleScore<=bandRange[1]?option.p:0);
+      },0):null;
+      $('resultCopy').textContent=missingTargets?t(
+        `Panel hodnotí experimentálnu genetickú predispozíciu k alergii na bielkoviny kravského mlieka pomocou piatich cieľových lokusov. Zachytil ${observedTargets} z 5 cieľov, preto zatiaľ nemožno určiť pravdepodobnosť presného skóre ani spoľahlivosť interpretácie. Panel nehodnotí laktózovú intoleranciu.`,
+        `This panel assesses experimental genetic predisposition to cow's-milk protein allergy using five target loci. It found ${observedTargets} of 5 targets, so the probability of an exact score and the reliability of its interpretation cannot yet be determined. It does not assess lactose intolerance.`
       ):t(
-        `${call.proxyLocus.id} nebol zistený; príspevok ${call.proxyLocus.proxyFor} sa neodhaduje a zostáva v možnom rozsahu 0–2 alely.`,
-        `${call.proxyLocus.id} was not found; the ${call.proxyLocus.proxyFor} contribution is not inferred and remains within a possible range of 0–2 alleles.`
-      )).join(' ');
-      if(missingDirect)$('resultCopy').textContent+=' '+t(`${missingDirect} ďalších markerov chýba.`,`${missingDirect} additional marker(s) are missing.`);
+        `Panel hodnotí experimentálnu genetickú predispozíciu k alergii na bielkoviny kravského mlieka pomocou piatich cieľových lokusov. Pravdepodobnosť presného skóre ${geneticScore} z 10 je ${localizedPct(proxyScoreConfidence)} a spoľahlivosť zaradenia do pásma „${milkBandLabels[milkBandKey].toLowerCase()}“ je ${localizedPct(bandConfidence)}. Panel nehodnotí laktózovú intoleranciu.`,
+        `This panel assesses experimental genetic predisposition to cow's-milk protein allergy using five target loci. The probability of the exact score ${geneticScore} of 10 is ${localizedPct(proxyScoreConfidence)}, and the reliability of classification in the “${milkBandLabels[milkBandKey].toLowerCase()}” band is ${localizedPct(bandConfidence)}. It does not assess lactose intolerance.`
+      );
       $('chipProfile').textContent=chipProfile(parsed).label;
       $('panelCoverage').textContent=t(`${observedTargets}/5 cieľov · ${direct} priamo, ${proxyCount} cez proxy, ${missingTargets} chýba`,`${observedTargets}/5 targets · ${direct} direct, ${proxyCount} via proxy, ${missingTargets} missing`);
       $('scoreConfidence').textContent=!missingTargets&&proxyScoreConfidence!==null?localizedPct(proxyScoreConfidence):'—';
-      $('interpretationConfidence').textContent=proxyCount?`${proxyScore} / ${proxyCount*2}`:'—';
+      $('interpretationConfidence').textContent=bandConfidence!==null?localizedPct(bandConfidence):'—';
       $('scoreRange').textContent=scoreMin===scoreMax?`${scoreMin}`:`${scoreMin}–${scoreMax}`;
-      const proxyConfidence=!missingTargets&&proxyScoreConfidence!==null?proxyScoreConfidence:0;
-      $('confidenceBar').style.width=`${proxyConfidence*100}%`;
-      $('confidenceValue').textContent=!missingTargets&&proxyScoreConfidence!==null?localizedPct(proxyConfidence):'—';
-      $('uncertaintyBar').style.width=`${!missingTargets&&proxyScoreConfidence!==null?(1-proxyConfidence)*100:100}%`;
-      $('uncertaintyValue').textContent=!missingTargets&&proxyScoreConfidence!==null?localizedPct(1-proxyConfidence):t('neúplný panel','incomplete panel');
-      $('confidenceNote').textContent=proxyOptions.length?t(
-        `Spoločné rozdelenie dostupných proxy príspevkov: ${proxyOptions.map(option=>`${option.score} alel ${localizedPct(option.p)}`).join(' · ')}. Do skóre sa započítava najpravdepodobnejší celý proxy príspevok ${proxyScore}; s priamym súčtom ${directScore} je genetické skóre ${geneticScore}.`,
-        `Combined distribution of available proxy contributions: ${proxyOptions.map(option=>`${option.score} alleles ${localizedPct(option.p)}`).join(' · ')}. The most likely whole-number proxy contribution ${proxyScore} is counted; with the direct sum ${directScore}, the genetic score is ${geneticScore}.`
-      ):t('Bez dostupného proxy markeru nemožno vypočítať pravdepodobnostný proxy príspevok.','Without an available proxy marker, a probabilistic proxy contribution cannot be calculated.');
-      $('interpretationTitle').textContent=t('Odhad s proxy neistotou','Estimate with proxy uncertainty');
-      $('interpretationText').textContent=t(
-        `Panel uvádza celočíselné genetické skóre ${geneticScore} z 10. Za rs115288876, rs63582760 aj rs17388568 sa započítava najpravdepodobnejší príspevok 0, 1 alebo 2 alely; spoločná pravdepodobnosť zvoleného proxy skóre vyjadruje jeho spoľahlivosť, nie klinickú pravdepodobnosť alergie na mlieko.`,
-        `The panel reports a whole-number genetic score of ${geneticScore} out of 10. For rs115288876, rs63582760 and rs17388568, the most likely contribution of 0, 1 or 2 alleles is counted; the joint probability of the selected proxy score expresses its reliability, not the clinical probability of milk allergy.`
+      const referenceMax=Math.max(...eurReference,.0001);
+      $('histogram').style.gridTemplateColumns=`repeat(${eurReference.length},1fr)`;
+      $('histogram').setAttribute('aria-label',t('Referenčný histogram skóre 0 až 10 v európskej populácii','EUR population reference score distribution from 0 to 10'));
+      $('histogram').innerHTML=eurReference.map((p,i)=>{
+        const cls=i<=models.milk.bands.low[1]?'low':i<=models.milk.bands.normal[1]?'normal':'high';
+        return `<div class="bar-col"><div class="bar-value">${p>.00005?localizedPct(p):'–'}</div><div class="bar ${cls}" style="height:${Math.max(2,p/referenceMax*82)}px"></div><div class="bar-label">${i}</div></div>`;
+      }).join('');
+      $('individualMarker').style.left=`${(geneticScore+.5)/eurReference.length*100}%`;
+      $('markerLabel').textContent=t(`Skóre ${geneticScore}`,`Score ${geneticScore}`);
+      const classificationConfidence=bandConfidence??0;
+      $('confidenceBar').style.width=`${classificationConfidence*100}%`;
+      $('confidenceValue').textContent=bandConfidence!==null?localizedPct(classificationConfidence):'—';
+      $('uncertaintyBar').style.width=`${bandConfidence!==null?(1-classificationConfidence)*100:100}%`;
+      $('uncertaintyValue').textContent=bandConfidence!==null?localizedPct(1-classificationConfidence):t('neúplný panel','incomplete panel');
+      $('confidenceNote').textContent=bandConfidence!==null?t(
+        `Proxy neistota pripúšťa skóre ${scoreMin===scoreMax?scoreMin:`${scoreMin} až ${scoreMax}`}. Pravdepodobnosť, že výsledok zostane v pásme „${milkBandLabels[milkBandKey].toLowerCase()}“, je ${localizedPct(bandConfidence)}. Toto percento vyjadruje stabilitu opisného genetického zaradenia, nie klinickú presnosť diagnózy.`,
+        `Proxy uncertainty allows scores from ${scoreMin} to ${scoreMax}. The probability that the result remains in the “${milkBandLabels[milkBandKey].toLowerCase()}” band is ${localizedPct(bandConfidence)}. This percentage describes the stability of the descriptive genetic classification, not the clinical accuracy of a diagnosis.`
+      ):t(
+        `Skóre je neúplné, preto jeho opisné pásmo zatiaľ nemá vypočítanú spoľahlivosť. Chýbajúce lokusy môžu výsledok posunúť v rozsahu ${scoreMin} až ${scoreMax}.`,
+        `The score is incomplete, so no reliability is calculated for its descriptive band. Missing loci can move the result within the ${scoreMin} to ${scoreMax} range.`
       );
-      $('clinicalNotice').textContent=t('Výsledok sám neurčuje toleranciu mlieka. Proxy istota opisuje iba genetické odhady medzi markermi a nesmie sa interpretovať ako istota diagnózy.','The result alone does not determine milk tolerance. Proxy confidence describes only genetic estimates between markers and must not be interpreted as diagnostic confidence.');
+      const percentile=eurReference.slice(0,geneticScore+1).reduce((sum,p)=>sum+p,0);
+      $('interpretationTitle').textContent=missingTargets?t('Neúplné genetické skóre','Incomplete genetic score'):milkBandLabels[milkBandKey];
+      $('interpretationText').textContent=missingTargets?t(
+        `Panel zatiaľ zachytil ${observedTargets} z 5 cieľov a dosiahnuté skóre ${geneticScore} z 10 je iba dolnou hranicou. Chýbajúce lokusy môžu výsledok zvýšiť až na ${scoreMax}; neúplný výsledok sa preto nemá porovnávať s EUR referenčnou distribúciou ako konečné zaradenie.`,
+        `The panel currently covers ${observedTargets} of 5 targets, so the score of ${geneticScore} out of 10 is only a lower bound. Missing loci can raise it to ${scoreMax}; an incomplete result should not be treated as a final placement in the EUR reference distribution.`
+      ):t(
+        `Skóre ${geneticScore} z 10 patrí do opisného pásma ${models.milk.bands[milkBandKey][0]}–${models.milk.bands[milkBandKey][1]}. Približne ${localizedPct(percentile)} modelových EUR referenčných skóre je rovnakých alebo nižších. Ide o porovnanie počtu rizikových alel; nevyjadruje pravdepodobnosť alergie na mlieko ani jej závažnosť.`,
+        `The score of ${geneticScore} out of 10 falls in the descriptive ${models.milk.bands[milkBandKey][0]}–${models.milk.bands[milkBandKey][1]} band. About ${localizedPct(percentile)} of modelled EUR reference scores are equal or lower. This compares risk-allele counts; it is not the probability or severity of milk allergy.`
+      );
+      document.querySelector('.band-guide').style.display='grid';
+      const bandCards={
+        low:{id:'bandLow',title:t('Nižší počet rizikových alel · 0–2','Lower risk-allele count · 0–2'),copy:t('Dolná časť modelovej EUR distribúcie. Alergickú reakciu to nevylučuje.','Lower part of the modelled EUR distribution. This does not exclude an allergic reaction.')},
+        normal:{id:'bandNormal',title:t('Stredný počet rizikových alel · 3–5','Middle risk-allele count · 3–5'),copy:t('Stredná časť modelovej EUR distribúcie. Nejde o potvrdenú toleranciu.','Middle part of the modelled EUR distribution. This does not confirm tolerance.')},
+        high:{id:'bandHigh',title:t('Vyšší počet rizikových alel · 6–10','Higher risk-allele count · 6–10'),copy:t('Horná časť modelovej EUR distribúcie. Samotné skóre alergiu nepotvrdzuje.','Upper part of the modelled EUR distribution. The score alone does not confirm allergy.')}
+      };
+      for(const [key,card] of Object.entries(bandCards)){
+        $(card.id).querySelector('strong').textContent=card.title;
+        $(card.id).querySelector('span').textContent=card.copy;
+        $(card.id).classList.toggle('active',!missingTargets&&key===milkBandKey);
+      }
+      $('literature-title').textContent=t('Pôvod modelu a proxy náhrady','Model origin and proxy replacements');
+      $('clinicalNotice').innerHTML=t('<strong>Klinický význam:</strong> výsledok sám neurčuje toleranciu mlieka. EUR histogram je modelový populačný odhad a proxy istota opisuje iba genetické odhady medzi markermi; ani jedno nie je istotou diagnózy.','<strong>Clinical meaning:</strong> the result alone does not determine milk tolerance. The EUR histogram is a modelled population estimate and proxy confidence describes only genetic estimates between markers; neither is diagnostic confidence.');
       const proxyRows=proxyCalls.map(call=>{
         const proxyName=call.proxyLocus.currentId?`<code>${call.proxyLocus.id}</code><br><small>${t('aktuálne','now')} <code>${call.proxyLocus.currentId}</code></small>`:`<code>${call.proxyLocus.id}</code>`;
         const target=call.proxyLocus.targetLocus;
@@ -1312,13 +1357,17 @@
       $('bandLowTitle').textContent=`Znížená predispozícia · ${bands.low[0]}–${bands.low[1]}`;
       $('bandNormalTitle').textContent=`Normálna predispozícia · ${bands.normal[0]}–${bands.normal[1]}`;
       $('bandHighTitle').textContent=`Zvýšená predispozícia · ${bands.high[0]}–${bands.high[1]}`;
+      $('bandLow').querySelector('span').textContent='Menej rizikových alel než je typické v referenčnej EUR populácii. Reakciu to nevylučuje.';
+      $('bandNormal').querySelector('span').textContent='Bežná genetická predispozícia porovnateľná s referenčnou EUR populáciou.';
+      $('bandHigh').querySelector('span').textContent='Viac rizikových alel než je typické v referenčnej EUR populácii. Reakciu to nepotvrdzuje.';
+      $('literature-title').textContent='Pôvodné SNP z literatúry';
       $('uploadNotice').innerHTML=`<strong>Dôležité:</strong> výsledok vyjadruje experimentálnu genetickú predispozíciu. Nie je diagnózou alergie ani odporúčaním ${activeModel.food} konzumovať.`;
       $('clinicalNotice').innerHTML=`<strong>Klinický význam:</strong> genetická predispozícia neurčuje, či reakcia skutočne nastane ani aká bude závažná. Bez ťažkostí, anamnézy a alergologického vyšetrenia sa výsledok nemá používať ako pokyn na konzumáciu alebo vyradenie ${activeModel.food}.`;
       $('literatureIntro').textContent=content.literatureIntro;
       $('literatureOrHeading').textContent=content.orHeading || `OR pre ${activeModel.key==='egg'?'vajce':'arašidy'}`;
       $('literatureRows').innerHTML=content.literatureRows.map(row=>`<tr><td><code>${row[0]}</code></td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td><strong>${row[5]}</strong></td><td>${row[6]}</td></tr>`).join('');
       $('literatureNotes').innerHTML=content.notes;
-      document.querySelector('.band-guide').style.display=activeModel.directOnly?'none':'';
+      document.querySelector('.band-guide').style.display=activeModel.directOnly&&activeModel.key!=='milk'?'none':'';
       if(activeModel.directOnly) $('uploadNotice').textContent='Výskumný panel: počet zistených alel nie je pravdepodobnosť reakcie ani pokyn na zmenu stravy.';
       document.querySelectorAll('.allergen-tab').forEach(tab=>{
         const selected=tab.dataset.model===activeModel.key;
@@ -1400,7 +1449,7 @@
       egg:{heading:'Genetic predisposition to egg allergy',intro:'Upload your SNP-chip export. 23andMe, MyHeritage and DNAEra files are processed offline using direct calls or the best available proxy for each of four targets.',literatureIntro:'Four markers from a GWAS of food allergy confirmed by oral food challenge. Egg effects are taken from Table 2; beta is the natural logarithm of the risk-allele odds ratio.',notes:'Protective effects are inverted to define the model risk allele. Proxies are replacements, not additional score contributions.'},
       peanut:{heading:'Genetic predisposition to peanut allergy',intro:'Five target markers are assessed directly or using the best available EUR proxy. Processing stays in your browser.',literatureIntro:'The panel combines two replicated HLA markers with three candidate loci from a multi-population GWAS and meta-analysis. Beta is ln(OR); the score is an unweighted risk-allele count.',notes:'The HLA associations were replicated; the other three loci showed suggestive discovery associations. This is an experimental panel, not a clinically validated PRS. For rs744597, the reported protective A allele is on the opposite strand; the model counts C in the plus orientation.'},
       shared:{heading:'Shared predisposition to food allergy',intro:'One shared panel for wheat, soy, tree nuts, sesame, fish, crustaceans and molluscs. These categories used the same three SNPs and therefore have a single result. The model does not distinguish risk between these foods.',literatureIntro:'Odds ratios relate to general food allergy and are not separately verified effects for each food. This panel does not assess coeliac disease.',notes:'Experimental shared panel without allergen-specific prediction. Score bands are descriptive, not clinical thresholds. The EUR histogram assumes independent loci.'},
-      milk:{heading:'Cow’s milk · experimental panel',intro:'The panel uses three EUR proxy markers: rs115288876 for rs12123821, rs63582760 (now rs10588133) for rs11949166 and rs17388568 for rs2069772. Each proxy locus contributes its most likely whole-number count of 0, 1 or 2 alleles; the probability model determines the reliability of that score. The third shared locus and rs17616434 are read directly. This panel does not assess lactose intolerance.',literatureIntro:'rs115288876, rs63582760 and rs17388568 replace their respective target loci with probabilistic estimates in this panel. rs63582760 was merged into rs10588133 in dbSNP; the application accepts both identifiers. The most likely whole-number contribution of 0/1/2 is counted for each locus and its reliability is reported separately. The two candidate milk SNPs come from a small study of 30 cases and 23 controls; the score remains an experimental choice rather than a published prediction model.',notes:'rs115288876 uses P(rs12123821 T | A)=0.9182 and P(T | G)=0.0103, with EUR r²=0.698. For rs63582760/rs10588133, the model uses P(rs11949166 A | T)=267/271=0.9852 and P(A | G)=5/735=0.0068, with EUR r²=0.9551 and D′=0.9798. For rs17388568, the model uses P(rs2069772 T | G)=708/712=0.9944 and P(T | A)=0/294=0, with EUR r²=0.981 and D′=1.000. Each proxy locus contributes the most likely whole-number count of 0, 1 or 2 target alleles. The displayed reliability is the probability of the resulting whole-number proxy score, not clinical accuracy. The panel has no validated population thresholds or joint EUR distribution.'},
+      milk:{heading:'Cow’s milk · experimental panel',intro:'The panel uses three EUR proxy markers: rs115288876 for rs12123821, rs63582760 (now rs10588133) for rs11949166 and rs17388568 for rs2069772. Each proxy locus contributes its most likely whole-number count of 0, 1 or 2 alleles; the probability model determines the reliability of that score. The third shared locus and rs17616434 are read directly. This panel does not assess lactose intolerance.',literatureIntro:'The panel visually separates the original target SNPs from the markers used to estimate them. Three shared food-allergy loci come from a GWAS; rs17616434 and rs2069772 come from a small candidate study of 30 cases and 23 controls. rs115288876, rs63582760 and rs17388568 replace their respective targets in this panel. The most likely whole-number contribution of 0/1/2 enters the score and its reliability is reported separately.',notes:'rs115288876 uses P(rs12123821 T | A)=0.9182 and P(T | G)=0.0103, with EUR r²=0.698. For rs63582760/rs10588133, the model uses P(rs11949166 A | T)=267/271=0.9852 and P(A | G)=5/735=0.0068, with EUR r²=0.9551 and D′=0.9798. For rs17388568, the model uses P(rs2069772 T | G)=708/712=0.9944 and P(T | A)=0/294=0, with EUR r²=0.981 and D′=1.000. Each proxy locus contributes the most likely whole-number count of 0, 1 or 2 target alleles. The displayed reliability is the probability of the resulting whole-number proxy score, not clinical accuracy. The EUR histogram is a model estimate for the five target loci. It uses a 1000 Genomes EUR C-allele frequency of 0.2843 for rs17616434 and a T-allele frequency of 708/1006 for rs2069772, assuming Hardy–Weinberg equilibrium and independence between loci. The 0–2, 3–5 and 6–10 bands are descriptive rather than clinically validated thresholds.'},
       histamine:{heading:'Histamine · variants associated with DAO activity',intro:'Three AOC1 variants associated with lower DAO activity. Results show directly observed effect alleles and do not diagnose histamine intolerance.',literatureIntro:'A candidate study of 484 German participants found associations with DAO activity, not with the histamine-intolerance phenotype itself. SNPs within one gene are not assumed independent.',notes:'Without a verified haplotype reference, no joint EUR histogram, population imputation or confidence percentage is calculated. The 0–6 sum is an allele count, not a validated risk score.'}
     };
     let language=new URLSearchParams(location.search).get('lang')==='en'?'en':'sk';
@@ -1424,13 +1473,17 @@
       $('scoreMaximum').textContent='of '+activeModel.maxScore;
       $('distributionMeta').textContent=`All combinations of ${loci.length} SNPs · score 0–${activeModel.maxScore}`;
       for(const [k,id,label] of [['low','bandLowTitle','Lower'],['normal','bandNormalTitle','Typical'],['high','bandHighTitle','Higher']])$(id).textContent=`${label} predisposition · ${activeModel.bands[k].join('–')}`;
+      $('bandLow').querySelector('span').textContent='Fewer risk alleles than is typical in the EUR reference population. This does not exclude a reaction.';
+      $('bandNormal').querySelector('span').textContent='Genetic predisposition comparable to the EUR reference population.';
+      $('bandHigh').querySelector('span').textContent='More risk alleles than is typical in the EUR reference population. This does not confirm a reaction.';
+      $('literature-title').textContent='Original SNPs from the literature';
       $('uploadNotice').textContent=activeModel.directOnly?'Research panel: observed allele counts are not reaction probabilities or instructions to change your diet.':'Experimental genetic predisposition. This is not an allergy diagnosis or a recommendation to consume the food.';
       $('clinicalNotice').textContent='Genetic predisposition does not determine whether a reaction will occur or its severity. Do not use this result alone to decide whether to eat or exclude a food.';
       $('literatureOrHeading').textContent=activeModel.directOnly?'Observed effect / general OR':activeModel.shared?'OR for general food allergy':'OR for '+englishNames[activeModel.key];
       $('literatureRows').querySelectorAll('td').forEach(td=>{td.innerHTML=td.innerHTML.replace(/(\d),(\d)/g,'$1.$2');});
       $('histogram').setAttribute('aria-label','EUR population reference score distribution');
       document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetic allergen panels');
-      document.querySelector('.version-tag').textContent='AlergenRisk · version 21 · third milk proxy system';
+      document.querySelector('.version-tag').textContent='AlergenRisk · version 22 · milk EUR chart';
     }
     updateModelUI=function(){skUpdate();if(language==='en'){translateStatic();englishUI();}document.querySelector('[data-model=lactose]').textContent=language==='en'?'Lactose':'Laktóza';document.querySelector('[data-model=celiac]').textContent=language==='en'?'Coeliac disease':'Celiakia';if(activeModel.special){$('emptyRange').textContent='DNA';$('uploadNotice').textContent=language==='en'?'Genotype-based interpretation; no disease probability, population imputation or dietary instruction.':'Interpretácia genotypu; bez pravdepodobnosti ochorenia, populačnej imputácie a pokynov na zmenu stravy.';if(language==='en'&&activeModel.key==='lactose')$('literatureRows').children[0].children[3].textContent='GG: non-persistence; AG/AA: persistence';}};
     render=function(result,fileName,parsed){
@@ -1488,7 +1541,7 @@
     showError=function(message){if(language==='en')message=englishText[message]||message.replace(/^Formát (.+) sa rozpoznal, ale v súbore sa nenašli použiteľné genotypové riadky\.$/,'The $1 format was recognized, but no usable genotype rows were found.');skError(message);};
     function setLanguage(lang){
       restoreStatic();language=lang;document.documentElement.lang=lang;
-      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 21 · tretí mliečny proxy systém';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
+      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 22 · EUR graf pre mlieko';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
       document.title=lang==='en'?'AlergenRisk — genetic food-allergy predisposition':'AlergenRisk — genetická predispozícia';
       document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
       updateModelUI();if(currentParsed)render(analyze(currentParsed.found),currentFileName,currentParsed);clearError();
@@ -1550,10 +1603,15 @@
         }
         if(activeModel.key==='milk'){
           const evaluation=milkEvaluation(currentParsed.found);
+          const band=evaluation.geneticScore<=models.milk.bands.low[1]?'low':evaluation.geneticScore<=models.milk.bands.normal[1]?'normal':'high';
+          const short={
+            sk:{low:'Znížená',normal:'Typická',high:'Zvýšená'},
+            en:{low:'Lower',normal:'Typical',high:'Higher'}
+          }[language][band];
           return {
-            state:evaluation.missingTargets?'incomplete':'research',
-            short:evaluation.missingTargets?reportText('Neúplné','Incomplete'):reportText('Výskumný','Research'),
-            context:reportText('proxy odhad','proxy estimate'),
+            state:evaluation.missingTargets?'incomplete':band,
+            short:evaluation.missingTargets?reportText('Neúplné','Incomplete'):short,
+            context:evaluation.missingTargets?reportText('vyhodnotenie','assessment'):reportText('predispozícia','predisposition'),
             meta:reportText(`Skóre ${evaluation.geneticScore}/10 · ${evaluation.direct} priamo + ${evaluation.proxyCount} proxy`,`Score ${evaluation.geneticScore}/10 · ${evaluation.direct} direct + ${evaluation.proxyCount} proxy`)
           };
         }

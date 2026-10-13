@@ -100,3 +100,11 @@ Keďže jednotlivé revízie čipov jednej značky sa môžu líšiť, aplikáci
 Panel Mlieko používa pre cieľový lokus rs2069772 náhradný marker rs17388568. V kombinovanej európskej skupine 1000 Genomes (CEU, TSI, FIN, GBR a IBS) má dvojica rs2069772–rs17388568 v NIH LDlink r² = 0,981 a D′ = 1,000. Proxy alela G zodpovedá cieľovej rizikovej alele T; model používa P(T | G)=708/712 a P(T | A)=0/294.
 
 Rovnako ako pri dvoch predošlých mliečnych proxy systémoch sa do genetického skóre započíta najpravdepodobnejší celý príspevok 0, 1 alebo 2 alely. Pravdepodobnostný model sa používa iba na vyjadrenie spoľahlivosti výsledného celočíselného skóre.
+
+## Verzia 22
+
+Detail panelu Mlieko používa rovnakú grafickú štruktúru ako panel Vajce. Obsahuje referenčnú distribúciu skóre 0–10 v EUR populácii s vyznačením dosiahnutého skóre, trojicu opisných pásiem v Praktickej interpretácii a samostatne formátovaný Pôvod modelu.
+
+EUR histogram je modelový odhad pre päť cieľových lokusov. Pre rs17616434 používa EUR frekvenciu rizikovej alely C 0,2843 z 1000 Genomes a pre rs2069772 frekvenciu T 708/1006 z EUR haplotypov LDlink. Predpokladá Hardyho–Weinbergovu rovnováhu a nezávislosť lokusov; pásma 0–2, 3–5 a 6–10 nie sú klinicky validované prahy.
+
+Kruhový identifikátor Mlieka v hlavnom prehľade používa farbu výsledného opisného pásma: zelenú pre zníženú, modrú pre typickú a okrovú pre zvýšenú predispozíciu. Horná časť detailu namiesto technického výpisu proxy genotypov vysvetľuje zameranie panelu a osobitne uvádza pravdepodobnosť presného celočíselného skóre a spoľahlivosť zaradenia do opisného pásma. Genotypy a proxy náhrady zostávajú v podrobnej tabuľke.

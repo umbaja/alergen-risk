@@ -51,15 +51,28 @@ async function uploadAndWait(page) {
 
     const milkCard = desktop.locator('[data-summary-model="milk"]');
     assert.match(await milkCard.locator('.summary-card-meta').innerText(), /2 priamo \+ 3 proxy/i);
+    assert.strictEqual(await milkCard.evaluate(element=>element.classList.contains('state-high')), true);
+    assert.match(await milkCard.locator('.summary-circle').innerText(), /Zvýšená\s+predispozícia/i);
     await milkCard.click();
     await desktop.waitForSelector('#detailModal.open');
-    assert.match(await desktop.locator('#resultCopy').innerText(), /rs115288876/i);
-    assert.match(await desktop.locator('#resultCopy').innerText(), /rs63582760/i);
-    assert.match(await desktop.locator('#resultCopy').innerText(), /rs17388568/i);
+    assert.doesNotMatch(await desktop.locator('#resultCopy').innerText(), /rs115288876|rs63582760|rs17388568/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(), /alergii na bielkoviny kravského mlieka/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(), /pravdepodobnosť presného skóre 7 z 10 je 88,1 %/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(), /spoľahlivosť zaradenia/i);
     assert.strictEqual((await desktop.locator('#rawScore').innerText()).trim(), '7');
     assert.match((await desktop.locator('#scoreConfidence').innerText()).trim(), /^88,1 %$/);
-    assert.strictEqual((await desktop.locator('#interpretationConfidence').innerText()).trim(), '4 / 6');
+    assert.match((await desktop.locator('#interpretationConfidence').innerText()).trim(), /^99,8 %$/);
     assert.strictEqual((await desktop.locator('#scoreRange').innerText()).trim(), '3–9');
+    assert.strictEqual(await desktop.locator('#histogram .bar-col').count(), 11);
+    assert.match(await desktop.locator('#distributionMeta').innerText(), /5 cieľových SNP/i);
+    assert.strictEqual((await desktop.locator('#markerLabel').innerText()).trim(), 'Skóre 7');
+    assert.match(await desktop.locator('#results .section-title').nth(1).innerText(), /Referenčná distribúcia EUR populácie/i);
+    assert.match(await desktop.locator('#interpretationTitle').innerText(), /Vyšší počet rizikových alel/i);
+    assert.match(await desktop.locator('#interpretationText').innerText(), /modelových EUR referenčných skóre/i);
+    assert.strictEqual(await desktop.locator('.band-guide').isVisible(), true);
+    assert.strictEqual(await desktop.locator('#bandHigh').evaluate(element=>element.classList.contains('active')), true);
+    assert.strictEqual(await desktop.locator('#literatureRows tr').count(), 5);
+    assert.match(await desktop.locator('#literature-title').innerText(), /Pôvod modelu a proxy náhrady/i);
     assert.match(await desktop.locator('#markerRows').innerText(), /rs115288876/i);
     assert.match(await desktop.locator('#markerRows').innerText(), /rs63582760/i);
     assert.match(await desktop.locator('#markerRows').innerText(), /rs10588133/i);
@@ -67,8 +80,9 @@ async function uploadAndWait(page) {
     assert.strictEqual((await desktop.locator('#markerRows tr').nth(0).locator('td').nth(4).innerText()).trim(), '1');
     assert.strictEqual((await desktop.locator('#markerRows tr').nth(1).locator('td').nth(4).innerText()).trim(), '1');
     assert.strictEqual((await desktop.locator('#markerRows tr').nth(2).locator('td').nth(4).innerText()).trim(), '2');
-    assert.match(await desktop.locator('#interpretationText').innerText(), /rs115288876, rs63582760 aj rs17388568/i);
     await desktop.screenshot({ path: path.join(qaDir, 'detail-milk-proxy.png') });
+    await desktop.locator('#detailModal').evaluate(element => { element.scrollTop = 950; });
+    await desktop.screenshot({ path: path.join(qaDir, 'detail-milk-practical-origin.png') });
     await desktop.locator('#detailModal').evaluate(element => { element.scrollTop = element.scrollHeight; });
     await desktop.screenshot({ path: path.join(qaDir, 'detail-milk-proxy-bottom.png') });
     await desktop.keyboard.press('Escape');
@@ -88,10 +102,11 @@ async function uploadAndWait(page) {
     assert.strictEqual((await desktop.locator('#locusMapTitle').innerText()).trim().toLowerCase(), 'locus and proxy map by dna chip');
     await desktop.locator('[data-summary-model="milk"]').click();
     await desktop.waitForSelector('#detailModal.open');
-    assert.match(await desktop.locator('#resultCopy').innerText(), /rs115288876/i);
-    assert.match(await desktop.locator('#resultCopy').innerText(), /rs63582760/i);
-    assert.match(await desktop.locator('#resultCopy').innerText(), /rs17388568/i);
-    assert.match(await desktop.locator('#interpretationText').innerText(), /rs115288876, rs63582760 and rs17388568/i);
+    assert.doesNotMatch(await desktop.locator('#resultCopy').innerText(), /rs115288876|rs63582760|rs17388568/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(), /cow's-milk protein allergy/i);
+    assert.strictEqual(await desktop.locator('#histogram .bar-col').count(), 11);
+    assert.match(await desktop.locator('#results .section-title').nth(1).innerText(), /EUR population reference distribution/i);
+    assert.match(await desktop.locator('#interpretationTitle').innerText(), /Higher risk-allele count/i);
     await desktop.keyboard.press('Escape');
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
 
@@ -103,10 +118,36 @@ async function uploadAndWait(page) {
     await aliasPage.waitForSelector('#summaryDashboard:not([hidden])');
     await aliasPage.locator('[data-summary-model="milk"]').click();
     await aliasPage.waitForSelector('#detailModal.open');
-    assert.match(await aliasPage.locator('#resultCopy').innerText(), /rs63582760/i);
+    assert.doesNotMatch(await aliasPage.locator('#resultCopy').innerText(), /rs63582760/i);
     assert.match((await aliasPage.locator('#scoreConfidence').innerText()).trim(), /^88,1 %$/);
     assert.match(await aliasPage.locator('#markerRows').innerText(), /rs10588133/i);
     await aliasPage.close();
+
+    for (const scenario of [
+      {
+        name: 'low',
+        replacements: [['rs2212434\t11\t76281593\tCT','rs2212434\t11\t76281593\tCC'],['rs17616434\t4\t38816000\tCC','rs17616434\t4\t38816000\tTT'],['rs115288876\t1\t152000117\tAG','rs115288876\t1\t152000117\tGG'],['rs63582760\t5\t132022972\tGT','rs63582760\t5\t132022972\tGG'],['rs17388568\t4\t123329362\tGG','rs17388568\t4\t123329362\tAA']],
+        state: 'state-low',
+        label: /Znížená\s+predispozícia/i
+      },
+      {
+        name: 'typical',
+        replacements: [['rs17616434\t4\t38816000\tCC','rs17616434\t4\t38816000\tTT']],
+        state: 'state-normal',
+        label: /Typická\s+predispozícia/i
+      }
+    ]) {
+      const scenarioPage = await browser.newPage({ viewport: { width: 1000, height: 800 }, deviceScaleFactor: 1 });
+      scenarioPage.on('pageerror', error => errors.push(error.message));
+      await scenarioPage.goto(appUrl);
+      const scenarioFixture = scenario.replacements.reduce((content,[from,to])=>content.replace(from,to),fs.readFileSync(fixture,'utf8'));
+      await scenarioPage.setInputFiles('#fileInput', { name: `synthetic-milk-${scenario.name}.txt`, mimeType: 'text/plain', buffer: Buffer.from(scenarioFixture) });
+      await scenarioPage.waitForSelector('#summaryDashboard:not([hidden])');
+      const scenarioCard=scenarioPage.locator('[data-summary-model="milk"]');
+      assert.strictEqual(await scenarioCard.evaluate((element,state)=>element.classList.contains(state),scenario.state),true);
+      assert.match(await scenarioCard.locator('.summary-circle').innerText(),scenario.label);
+      await scenarioPage.close();
+    }
 
     const myHeritagePage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
     myHeritagePage.on('pageerror', error => errors.push(error.message));
@@ -159,17 +200,21 @@ async function uploadAndWait(page) {
     assert.strictEqual((await integerScorePage.locator('#rawScore').innerText()).trim(), '6');
     assert.strictEqual((await integerScorePage.locator('#markerRows tr').nth(0).locator('td').nth(4).innerText()).trim(), '0');
     assert.strictEqual((await integerScorePage.locator('#markerRows tr').nth(1).locator('td').nth(4).innerText()).trim(), '1');
-    assert.match(await integerScorePage.locator('#resultCopy').innerText(), /príspevok do skóre 0 z 2/i);
-    assert.match(await integerScorePage.locator('#resultCopy').innerText(), /príspevok do skóre 1 z 2/i);
+    assert.doesNotMatch(await integerScorePage.locator('#resultCopy').innerText(), /príspevok do skóre|rs115288876|rs63582760/i);
+    assert.match(await integerScorePage.locator('#resultCopy').innerText(), /pravdepodobnosť presného skóre/i);
     await integerScorePage.close();
 
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
     mobile.on('pageerror', error => errors.push(error.message));
     await uploadAndWait(mobile);
     await mobile.screenshot({ path: path.join(qaDir, 'overview-mobile.png'), fullPage: true });
+    await mobile.locator('[data-summary-model="milk"]').click();
+    await mobile.waitForSelector('#detailModal.open');
+    assert.strictEqual(await mobile.locator('#histogram .bar-col').count(), 11);
+    await mobile.screenshot({ path: path.join(qaDir, 'detail-milk-mobile.png') });
 
     assert.deepStrictEqual(errors, []);
-    console.log('UI smoke test passed: 7 summary cards, whole-number milk score, 23-row chip/proxy map, merged rsID alias, EN switch, desktop and mobile layouts.');
+    console.log('UI smoke test passed: 7 summary cards, whole-number milk score, milk EUR distribution, 23-row chip/proxy map, EN switch, desktop and mobile layouts.');
   } finally {
     await browser.close();
   }
