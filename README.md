@@ -82,3 +82,9 @@ Príspevok pôvodného lokusu sa v mliečnom paneli neberie ako istý genotyp. A
 V paneli Mlieko nahrádza rs63582760 cieľový rs11949166 ako druhý pravdepodobnostný proxy marker. Historický identifikátor rs63582760 bol v dbSNP zlúčený do rs10588133, preto aplikácia prijíma oba identifikátory aj ich GRCh37/GRCh38 pozičné zápisy. Ostatné panely naďalej používajú pôvodný rs11949166.
 
 Pre európsku skupinu 1000 Genomes (CEU, TSI, FIN, GBR a IBS) má dvojica rs11949166–rs10588133 v NIH LDlink r² = 0,9551 a D′ = 0,9798. Proxy alela T zodpovedá cieľovej alele A; model používa P(A | T)=267/271 a P(A | G)=5/735. Neistoty rs115288876 aj rs63582760 sa kombinujú do jedného rozdelenia celkového proxy príspevku, z ktorého sa počíta očakávané skóre, najpravdepodobnejší príspevok a rozsah.
+
+## Verzia 19
+
+Genetické skóre panelu Mlieko je opäť vždy celé číslo. Za každý proxy lokus sa vyberie najpravdepodobnejší príspevok 0, 1 alebo 2 cieľové alely a tieto hodnoty sa sčítajú s priamo zistenými alelami.
+
+Pravdepodobnostný model sa už nepoužíva na vytvorenie desatinného skóre. Používa sa iba na výpočet spoľahlivosti zvoleného celého proxy skóre a na zobrazenie ostatných možných celočíselných výsledkov.

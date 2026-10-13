@@ -46,13 +46,15 @@ async function uploadAndWait(page) {
     await desktop.waitForSelector('#detailModal.open');
     assert.match(await desktop.locator('#resultCopy').innerText(), /rs115288876/i);
     assert.match(await desktop.locator('#resultCopy').innerText(), /rs63582760/i);
-    assert.match((await desktop.locator('#rawScore').innerText()).trim(), /^≈6,9$/);
+    assert.strictEqual((await desktop.locator('#rawScore').innerText()).trim(), '7');
     assert.match((await desktop.locator('#scoreConfidence').innerText()).trim(), /^89,1 %$/);
-    assert.match((await desktop.locator('#interpretationConfidence').innerText()).trim(), /^1,92$/);
+    assert.strictEqual((await desktop.locator('#interpretationConfidence').innerText()).trim(), '2 / 4');
     assert.strictEqual((await desktop.locator('#scoreRange').innerText()).trim(), '5–9');
     assert.match(await desktop.locator('#markerRows').innerText(), /rs115288876/i);
     assert.match(await desktop.locator('#markerRows').innerText(), /rs63582760/i);
     assert.match(await desktop.locator('#markerRows').innerText(), /rs10588133/i);
+    assert.strictEqual((await desktop.locator('#markerRows tr').nth(0).locator('td').nth(4).innerText()).trim(), '1');
+    assert.strictEqual((await desktop.locator('#markerRows tr').nth(1).locator('td').nth(4).innerText()).trim(), '1');
     assert.match(await desktop.locator('#interpretationText').innerText(), /rs115288876 aj rs63582760/i);
     await desktop.screenshot({ path: path.join(qaDir, 'detail-milk-proxy.png') });
     await desktop.locator('#detailModal').evaluate(element => { element.scrollTop = element.scrollHeight; });
@@ -92,13 +94,28 @@ async function uploadAndWait(page) {
     assert.match(await aliasPage.locator('#markerRows').innerText(), /rs10588133/i);
     await aliasPage.close();
 
+    const integerScorePage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
+    integerScorePage.on('pageerror', error => errors.push(error.message));
+    await integerScorePage.goto(appUrl);
+    const integerFixture = fs.readFileSync(fixture, 'utf8').replace(/^rs115288876\t1\t152000117\tAG$/m, 'rs115288876\t1\t152000117\tGG');
+    await integerScorePage.setInputFiles('#fileInput', { name: 'synthetic-integer-score.txt', mimeType: 'text/plain', buffer: Buffer.from(integerFixture) });
+    await integerScorePage.waitForSelector('#summaryDashboard:not([hidden])');
+    await integerScorePage.locator('[data-summary-model="milk"]').click();
+    await integerScorePage.waitForSelector('#detailModal.open');
+    assert.strictEqual((await integerScorePage.locator('#rawScore').innerText()).trim(), '6');
+    assert.strictEqual((await integerScorePage.locator('#markerRows tr').nth(0).locator('td').nth(4).innerText()).trim(), '0');
+    assert.strictEqual((await integerScorePage.locator('#markerRows tr').nth(1).locator('td').nth(4).innerText()).trim(), '1');
+    assert.match(await integerScorePage.locator('#resultCopy').innerText(), /príspevok do skóre 0 z 2/i);
+    assert.match(await integerScorePage.locator('#resultCopy').innerText(), /príspevok do skóre 1 z 2/i);
+    await integerScorePage.close();
+
     const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
     mobile.on('pageerror', error => errors.push(error.message));
     await uploadAndWait(mobile);
     await mobile.screenshot({ path: path.join(qaDir, 'overview-mobile.png'), fullPage: true });
 
     assert.deepStrictEqual(errors, []);
-    console.log('UI smoke test passed: 7 summary cards, two milk proxy estimates, merged rsID alias, EN switch, desktop and mobile layouts.');
+    console.log('UI smoke test passed: 7 summary cards, whole-number milk score, two proxy reliabilities, merged rsID alias, EN switch, desktop and mobile layouts.');
   } finally {
     await browser.close();
   }
