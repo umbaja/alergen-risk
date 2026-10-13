@@ -70,3 +70,9 @@ Verification: syntax validation; 28 genotype/language cases, including unsupport
 Rozhranie je prepracované podľa vizuálneho jazyka správ NU3Gen: zelené sekčné nadpisy, bodkované deliace línie, kruhové výsledkové značky a farebné rozlíšenie zníženej, typickej, zvýšenej, výskumnej a neúplnej interpretácie.
 
 Po jednom lokálnom importe aplikácia zobrazí spoločné grafické zhrnutie všetkých siedmich panelov. Každá predispozícia sa otvára v samostatnom prístupnom modálnom okne s pôvodným detailom skóre, distribúciou, interpretáciou, SNP tabuľkou a literatúrou. Výpočtové a vedecké pravidlá panelov sa nezmenili.
+
+## Verzia 17
+
+Panel Mlieko používa namiesto priameho rs12123821 marker rs115288876 (plus vlákno G>A, efektová/proxy alela A) ako pravdepodobnostný EUR proxy. Ostatné panely, vrátane Vajca a Spoločnej potravinovej predispozície, naďalej používajú pôvodný rs12123821.
+
+Príspevok pôvodného lokusu sa v mliečnom paneli neberie ako istý genotyp. Aplikácia z podmieneného proxy modelu (EUR r² = 0,698) vypočíta rozdelenie možného príspevku 0/1/2 alely, jeho očakávanú hodnotu, pravdepodobnosť najpravdepodobnejšieho príspevku a výsledný rozsah skóre. Táto neistota je započítaná priamo do odhadu; nejde o klinickú pravdepodobnosť alergie ani presnosť diagnózy.
