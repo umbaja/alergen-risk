@@ -26,6 +26,13 @@ async function uploadAndWait(page) {
     const errors = [];
     desktop.on('pageerror', error => errors.push(error.message));
     await uploadAndWait(desktop);
+    assert.strictEqual(await desktop.locator('#locusMapRows tr').count(), 23);
+    await desktop.locator('#locusMapDetails > summary').click();
+    assert.match(await desktop.locator('#locusMapRows tr[data-panel="egg"][data-target="rs12123821"] td[data-chip="23andme"]').innerText(), /Priamy rs12123821/i);
+    assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs12123821"] td[data-chip="23andme"]').innerText(), /Proxy rs115288876/i);
+    assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="23andme"]').innerText(), /Proxy rs63582760/i);
+    assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="dnaera"]').innerText(), /Nahrajte export/i);
+    await desktop.locator('#locusMapSection').screenshot({ path: path.join(qaDir, 'locus-map-23andme.png') });
     await desktop.screenshot({ path: path.join(qaDir, 'overview-desktop.png'), fullPage: true });
 
     await desktop.locator('[data-summary-model="egg"]').click();
@@ -73,6 +80,7 @@ async function uploadAndWait(page) {
     await desktop.locator('[data-lang="en"]').click();
     assert.strictEqual((await desktop.locator('#summaryTitle').innerText()).toLowerCase(), 'your genetic predispositions');
     assert.strictEqual(await desktop.locator('.summary-card').count(), 7);
+    assert.strictEqual((await desktop.locator('#locusMapTitle').innerText()).trim().toLowerCase(), 'locus and proxy map by dna chip');
     await desktop.locator('[data-summary-model="milk"]').click();
     await desktop.waitForSelector('#detailModal.open');
     assert.match(await desktop.locator('#resultCopy').innerText(), /rs115288876/i);
@@ -93,6 +101,42 @@ async function uploadAndWait(page) {
     assert.match((await aliasPage.locator('#scoreConfidence').innerText()).trim(), /^89,1 %$/);
     assert.match(await aliasPage.locator('#markerRows').innerText(), /rs10588133/i);
     await aliasPage.close();
+
+    const myHeritagePage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
+    myHeritagePage.on('pageerror', error => errors.push(error.message));
+    await myHeritagePage.goto(appUrl);
+    const myHeritageFixture = [
+      '##fileformat=MyHeritage',
+      'RSID,CHROMOSOME,POSITION,RESULT',
+      'rs12123821,1,152179152,CT',
+      'rs115288876,1,152000117,AG',
+      'rs63582760,5,132022972,GT'
+    ].join('\n');
+    await myHeritagePage.setInputFiles('#fileInput', { name: 'synthetic-myheritage.csv', mimeType: 'text/csv', buffer: Buffer.from(myHeritageFixture) });
+    await myHeritagePage.waitForSelector('#summaryDashboard:not([hidden])');
+    await myHeritagePage.locator('#locusMapDetails > summary').click();
+    assert.match(await myHeritagePage.locator('#locusMapRows tr[data-panel="egg"][data-target="rs12123821"] td[data-chip="myheritage"]').innerText(), /Priamy rs12123821/i);
+    assert.match(await myHeritagePage.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="myheritage"]').innerText(), /Proxy rs63582760/i);
+    await myHeritagePage.close();
+
+    const dnaEraPage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
+    dnaEraPage.on('pageerror', error => errors.push(error.message));
+    await dnaEraPage.goto(appUrl);
+    const dnaEraFixture = [
+      '[Header]',
+      'GSGT Version,2.0.4',
+      '[Data]',
+      'Sample Name,SNP Name,Chr,Position,Allele1 - Plus,Allele2 - Plus',
+      'sample,rs12123821,1,152179152,C,T',
+      'sample,rs115288876,1,152000117,A,G',
+      'sample,rs63582760,5,132022972,G,T'
+    ].join('\n');
+    await dnaEraPage.setInputFiles('#fileInput', { name: 'synthetic-dnaera.csv', mimeType: 'text/csv', buffer: Buffer.from(dnaEraFixture) });
+    await dnaEraPage.waitForSelector('#summaryDashboard:not([hidden])');
+    await dnaEraPage.locator('#locusMapDetails > summary').click();
+    assert.match(await dnaEraPage.locator('#locusMapRows tr[data-panel="egg"][data-target="rs12123821"] td[data-chip="dnaera"]').innerText(), /Priamy rs12123821/i);
+    assert.match(await dnaEraPage.locator('#locusMapRows tr[data-panel="milk"][data-target="rs11949166"] td[data-chip="dnaera"]').innerText(), /Proxy rs63582760/i);
+    await dnaEraPage.close();
 
     const integerScorePage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
     integerScorePage.on('pageerror', error => errors.push(error.message));
@@ -115,7 +159,7 @@ async function uploadAndWait(page) {
     await mobile.screenshot({ path: path.join(qaDir, 'overview-mobile.png'), fullPage: true });
 
     assert.deepStrictEqual(errors, []);
-    console.log('UI smoke test passed: 7 summary cards, whole-number milk score, two proxy reliabilities, merged rsID alias, EN switch, desktop and mobile layouts.');
+    console.log('UI smoke test passed: 7 summary cards, whole-number milk score, 23-row chip/proxy map, merged rsID alias, EN switch, desktop and mobile layouts.');
   } finally {
     await browser.close();
   }

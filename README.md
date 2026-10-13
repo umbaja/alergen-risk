@@ -88,3 +88,9 @@ Pre európsku skupinu 1000 Genomes (CEU, TSI, FIN, GBR a IBS) má dvojica rs1194
 Genetické skóre panelu Mlieko je opäť vždy celé číslo. Za každý proxy lokus sa vyberie najpravdepodobnejší príspevok 0, 1 alebo 2 cieľové alely a tieto hodnoty sa sčítajú s priamo zistenými alelami.
 
 Pravdepodobnostný model sa už nepoužíva na vytvorenie desatinného skóre. Používa sa iba na výpočet spoľahlivosti zvoleného celého proxy skóre a na zobrazenie ostatných možných celočíselných výsledkov.
+
+## Verzia 20
+
+Na hlavnej stránke pribudla rozbaľovacia mapa všetkých 23 panelových lokusov a ich proxy náhrad v poradí použitia. Tabuľka má samostatné stĺpce pre DNAEra, MyHeritage a 23andMe.
+
+Keďže jednotlivé revízie čipov jednej značky sa môžu líšiť, aplikácia nepredpokladá dostupnosť SNP iba podľa názvu dodávateľa. Po nahratí exportu zvýrazní príslušný stĺpec a pri každom cieli ukáže priamy nález, použitelný proxy marker alebo chýbajúci nález podľa skutočného obsahu súboru.
