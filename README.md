@@ -7,7 +7,7 @@ Experimentálna webová aplikácia na interpretáciu vybraných genetických pre
 - lokálne spracovanie genotypu bez odosielania dát na server,
 - import formátov 23andMe, MyHeritage a DNAEra,
 - priame cieľové SNP a zabudované EUR proxy markery,
-- nevážené súčtové genetické skóre,
+- nevážené súčtové skóre pre alergénové panely a samostatné vážené GRS pre celiakiu,
 - referenčná distribúcia EUR populácie,
 - samostatné vyjadrenie neistoty spôsobenej proxy odhadom alebo populačnou imputáciou.
 - grafický prehľad všetkých siedmich panelov inšpirovaný vizuálnym systémom správ NU3Gen,
@@ -114,3 +114,11 @@ Kruhový identifikátor Mlieka v hlavnom prehľade používa farbu výsledného 
 Panel Laktóza používa v hlavnom prehľade výsledkové farby rovnakým spôsobom ako ostatné predispozície: GG sa zobrazuje okrovým kruhom ako zvýšená predispozícia k poklesu laktázy, zatiaľ čo AG alebo AA sa zobrazujú zeleným kruhom ako znížená predispozícia.
 
 Detail Laktózy je rozdelený na výsledok priameho genotypu, spôsob vyhodnotenia bez imputácie, praktickú interpretáciu dvoch relevantných genotypových stavov, klinické upozornenie, pôvod genetického pravidla a tabuľku priamo vyhodnoteného markeru. Hodnota 100 % pri spôsobe určenia znamená, že výsledok pochádza z priameho genotypu, nie diagnostickú presnosť ani pravdepodobnosť príznakov.
+
+## Verzia 24
+
+Pôvodný dvoj-SNP panel Celiakie nahrádza vážený 50-markerový model. Publikované jadro tvorí PGS000316/GRS42: 38 aditívnych SNP a jeden HLA diplotypový člen odhadnutý spoločne z ôsmich tag markerov pre DQ2.5, DQ8, DQ2.2 a DQ7.5. Štyri novšie nezávislé GWAS varianty sú pridané ako viditeľne označené výskumné rozšírenie.
+
+Detail zobrazuje vážené GRS, najpravdepodobnejší HLA diplotyp, 90 % interval pri chýbajúcich markeroch, stabilitu pásma a modelovú EUR/CEU referenčnú distribúciu s hranicami na 20. a 80. percentile. Zelená, modrá a okrová farba v hlavnom prehľade zodpovedá zníženej, typickej a zvýšenej relatívnej predispozícii; nedostatočné pokrytie zostáva sivé ako neúplné.
+
+Hrubé GRS sa zámerne neprepočítava na absolútnu pravdepodobnosť ochorenia. Staršie lead SNP v silnej LD (napríklad rs6822844, rs9851967, rs2816316, rs653178) sú uvedené v LD kontrole, ale nepripočítavajú sa druhýkrát. Výsledok nie je diagnóza, nevylučuje celiakiu a nie je dôvodom vysadiť lepok pred klinickým vyšetrením.

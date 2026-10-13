@@ -26,7 +26,7 @@ async function uploadAndWait(page) {
     const errors = [];
     desktop.on('pageerror', error => errors.push(error.message));
     await uploadAndWait(desktop);
-    assert.strictEqual(await desktop.locator('#locusMapRows tr').count(), 23);
+    assert.strictEqual(await desktop.locator('#locusMapRows tr').count(), 71);
     await desktop.locator('#locusMapDetails > summary').click();
     assert.match(await desktop.locator('#locusMapRows tr[data-panel="egg"][data-target="rs12123821"] td[data-chip="23andme"]').innerText(), /Priamy rs12123821/i);
     assert.match(await desktop.locator('#locusMapRows tr[data-panel="milk"][data-target="rs12123821"] td[data-chip="23andme"]').innerText(), /Proxy rs115288876/i);
@@ -119,7 +119,33 @@ async function uploadAndWait(page) {
     await desktop.keyboard.press('Escape');
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
 
-    for (const key of ['peanut', 'shared', 'celiac', 'histamine']) {
+    const celiacCard=desktop.locator('[data-summary-model="celiac"]');
+    assert.match(await celiacCard.locator('.summary-card-meta').innerText(),/GRS .*50\/50 SNP/i);
+    assert.strictEqual(await celiacCard.evaluate(element=>['state-low','state-normal','state-high'].some(name=>element.classList.contains(name))),true);
+    await celiacCard.click();
+    await desktop.waitForSelector('#detailModal.open');
+    assert.match(await desktop.locator('#detailModalTitle').innerText(),/vážený genetický panel/i);
+    assert.strictEqual((await desktop.locator('#rawScore').innerText()).trim(),'5,52');
+    assert.strictEqual((await desktop.locator('#scoreMaximum').innerText()).trim(),'vážené GRS');
+    assert.match(await desktop.locator('#resultLabel').innerText(),/genetická predispozícia/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(),/nie je percento pravdepodobnosti ochorenia/i);
+    assert.match(await desktop.locator('#panelCoverage').innerText(),/50\/50 priamo/i);
+    assert.match(await desktop.locator('#scoreConfidence').innerText(),/DQ2\.5\/X/i);
+    assert.strictEqual(await desktop.locator('#histogram .bar-col').count(),13);
+    assert.match(await desktop.locator('#distributionMeta').innerText(),/GRS42 \+ 4 výskumné SNP/i);
+    assert.match(await desktop.locator('#clinicalNotice').innerText(),/anti-tTG IgA/i);
+    assert.strictEqual(await desktop.locator('#literatureRows tr').count(),50);
+    assert.strictEqual(await desktop.locator('#markerRows tr').count(),50);
+    assert.match(await desktop.locator('#markerRows').innerText(),/rs2187668/i);
+    assert.match(await desktop.locator('#markerRows').innerText(),/rs17849502/i);
+    assert.match(await desktop.locator('#literatureNotes').innerText(),/rs6822844/i);
+    await desktop.screenshot({path:path.join(qaDir,'detail-celiac.png')});
+    await desktop.locator('#detailModal').evaluate(element=>{element.scrollTop=element.scrollHeight;});
+    await desktop.screenshot({path:path.join(qaDir,'detail-celiac-origin.png')});
+    await desktop.keyboard.press('Escape');
+    await desktop.locator('#detailModal').waitFor({state:'hidden'});
+
+    for (const key of ['peanut', 'shared', 'histamine']) {
       await desktop.locator(`[data-summary-model="${key}"]`).click();
       await desktop.waitForSelector('#detailModal.open');
       assert.notStrictEqual((await desktop.locator('#detailModalTitle').innerText()).trim(), '');
@@ -145,6 +171,14 @@ async function uploadAndWait(page) {
     assert.match(await desktop.locator('#resultLabel').innerText(),/Higher predisposition to lactase non-persistence/i);
     assert.strictEqual((await desktop.locator('#scoreConfidence').innerText()).trim(),'Direct genotype');
     assert.match(await desktop.locator('#literature-title').innerText(),/Origin of the genetic rule/i);
+    await desktop.keyboard.press('Escape');
+    await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
+    await desktop.locator('[data-summary-model="celiac"]').click();
+    await desktop.waitForSelector('#detailModal.open');
+    assert.match(await desktop.locator('#detailModalTitle').innerText(),/weighted genetic panel/i);
+    assert.strictEqual((await desktop.locator('#scoreMaximum').innerText()).trim(),'weighted GRS');
+    assert.match(await desktop.locator('#resultCopy').innerText(),/not a disease-probability percentage/i);
+    assert.match(await desktop.locator('#literature-title').innerText(),/Origin of the weighted model/i);
     await desktop.keyboard.press('Escape');
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
 
@@ -273,7 +307,7 @@ async function uploadAndWait(page) {
     await mobile.screenshot({path:path.join(qaDir,'detail-lactose-mobile.png')});
 
     assert.deepStrictEqual(errors, []);
-    console.log('UI smoke test passed: 7 summary cards, milk and lactose detail logic, colour states, 23-row chip/proxy map, EN switch, desktop and mobile layouts.');
+    console.log('UI smoke test passed: 7 summary cards, milk, lactose and weighted coeliac detail logic, colour states, 71-row chip/proxy map, EN switch, desktop and mobile layouts.');
   } finally {
     await browser.close();
   }
