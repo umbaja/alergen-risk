@@ -76,3 +76,9 @@ Po jednom lokálnom importe aplikácia zobrazí spoločné grafické zhrnutie v�
 Panel Mlieko používa namiesto priameho rs12123821 marker rs115288876 (plus vlákno G>A, efektová/proxy alela A) ako pravdepodobnostný EUR proxy. Ostatné panely, vrátane Vajca a Spoločnej potravinovej predispozície, naďalej používajú pôvodný rs12123821.
 
 Príspevok pôvodného lokusu sa v mliečnom paneli neberie ako istý genotyp. Aplikácia z podmieneného proxy modelu (EUR r² = 0,698) vypočíta rozdelenie možného príspevku 0/1/2 alely, jeho očakávanú hodnotu, pravdepodobnosť najpravdepodobnejšieho príspevku a výsledný rozsah skóre. Táto neistota je započítaná priamo do odhadu; nejde o klinickú pravdepodobnosť alergie ani presnosť diagnózy.
+
+## Verzia 18
+
+V paneli Mlieko nahrádza rs63582760 cieľový rs11949166 ako druhý pravdepodobnostný proxy marker. Historický identifikátor rs63582760 bol v dbSNP zlúčený do rs10588133, preto aplikácia prijíma oba identifikátory aj ich GRCh37/GRCh38 pozičné zápisy. Ostatné panely naďalej používajú pôvodný rs11949166.
+
+Pre európsku skupinu 1000 Genomes (CEU, TSI, FIN, GBR a IBS) má dvojica rs11949166–rs10588133 v NIH LDlink r² = 0,9551 a D′ = 0,9798. Proxy alela T zodpovedá cieľovej alele A; model používa P(A | T)=267/271 a P(A | G)=5/735. Neistoty rs115288876 aj rs63582760 sa kombinujú do jedného rozdelenia celkového proxy príspevku, z ktorého sa počíta očakávané skóre, najpravdepodobnejší príspevok a rozsah.
