@@ -108,3 +108,9 @@ Detail panelu Mlieko používa rovnakú grafickú štruktúru ako panel Vajce. O
 EUR histogram je modelový odhad pre päť cieľových lokusov. Pre rs17616434 používa EUR frekvenciu rizikovej alely C 0,2843 z 1000 Genomes a pre rs2069772 frekvenciu T 708/1006 z EUR haplotypov LDlink. Predpokladá Hardyho–Weinbergovu rovnováhu a nezávislosť lokusov; pásma 0–2, 3–5 a 6–10 nie sú klinicky validované prahy.
 
 Kruhový identifikátor Mlieka v hlavnom prehľade používa farbu výsledného opisného pásma: zelenú pre zníženú, modrú pre typickú a okrovú pre zvýšenú predispozíciu. Horná časť detailu namiesto technického výpisu proxy genotypov vysvetľuje zameranie panelu a osobitne uvádza pravdepodobnosť presného celočíselného skóre a spoľahlivosť zaradenia do opisného pásma. Genotypy a proxy náhrady zostávajú v podrobnej tabuľke.
+
+## Verzia 23
+
+Panel Laktóza používa v hlavnom prehľade výsledkové farby rovnakým spôsobom ako ostatné predispozície: GG sa zobrazuje okrovým kruhom ako zvýšená predispozícia k poklesu laktázy, zatiaľ čo AG alebo AA sa zobrazujú zeleným kruhom ako znížená predispozícia.
+
+Detail Laktózy je rozdelený na výsledok priameho genotypu, spôsob vyhodnotenia bez imputácie, praktickú interpretáciu dvoch relevantných genotypových stavov, klinické upozornenie, pôvod genetického pravidla a tabuľku priamo vyhodnoteného markeru. Hodnota 100 % pri spôsobe určenia znamená, že výsledok pochádza z priameho genotypu, nie diagnostickú presnosť ani pravdepodobnosť príznakov.

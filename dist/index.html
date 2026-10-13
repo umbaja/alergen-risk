@@ -119,6 +119,9 @@
     .reset-btn:hover { background: rgba(255,255,255,.22); }
     .result-main { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
     .score-disc { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; background: white; color: var(--navy); border: 8px solid rgba(232,168,43,.78); }
+    .results.result-low .score-disc { border-color: var(--low); }
+    .results.result-high .score-disc { border-color: var(--high); }
+    .results.result-incomplete .score-disc { border-color: #94a0a5; }
     .score-disc strong { display: block; font-size: 2.1rem; line-height: 1; letter-spacing: -.05em; }
     .score-disc small { display: block; color: var(--muted); text-align: center; margin-top: 4px; }
     .result-label { font-size: 1.55rem; font-weight: 800; letter-spacing: -.03em; }
@@ -161,8 +164,11 @@
     .interpretation-card h2, .detail-card h2, .literature-card h2 { margin-top: 0; }
     .interpretation-lead { margin: 8px 0 20px; max-width: 900px; color: #30445c; font-size: 1.02rem; }
     .band-guide { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .band-guide.lactose-bands { grid-template-columns: repeat(2, 1fr); }
+    .band-guide.lactose-bands #bandNormal { display: none; }
     .band-item { padding: 15px; border: 1px solid var(--line); border-radius: 15px; background: #f9fbfc; }
     .band-item.active { border-color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber); background: #fffaf0; }
+    .band-guide.lactose-bands #bandLow.active { border-color: var(--low); box-shadow: inset 0 0 0 1px var(--low); background: #f2faed; }
     .band-item strong { display: block; margin-bottom: 4px; }
     .band-item span { color: var(--muted); font-size: .87rem; }
     .detail-card h2 { margin-top: 0; }
@@ -683,7 +689,7 @@
 
     </main>
 
-    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 22 · EUR graf pre mlieko</span></footer>
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy, špecifického IgE a podľa potreby lekársky kontrolovaného expozičného testu.<span class="version-tag">AlergenRisk · verzia 23 · detail laktózy</span></footer>
   </div>
 
   <script>
@@ -1483,9 +1489,23 @@
       $('literatureRows').querySelectorAll('td').forEach(td=>{td.innerHTML=td.innerHTML.replace(/(\d),(\d)/g,'$1.$2');});
       $('histogram').setAttribute('aria-label','EUR population reference score distribution');
       document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetic allergen panels');
-      document.querySelector('.version-tag').textContent='AlergenRisk · version 22 · milk EUR chart';
+      document.querySelector('.version-tag').textContent='AlergenRisk · version 23 · lactose detail';
     }
-    updateModelUI=function(){skUpdate();if(language==='en'){translateStatic();englishUI();}document.querySelector('[data-model=lactose]').textContent=language==='en'?'Lactose':'Laktóza';document.querySelector('[data-model=celiac]').textContent=language==='en'?'Coeliac disease':'Celiakia';if(activeModel.special){$('emptyRange').textContent='DNA';$('uploadNotice').textContent=language==='en'?'Genotype-based interpretation; no disease probability, population imputation or dietary instruction.':'Interpretácia genotypu; bez pravdepodobnosti ochorenia, populačnej imputácie a pokynov na zmenu stravy.';if(language==='en'&&activeModel.key==='lactose')$('literatureRows').children[0].children[3].textContent='GG: non-persistence; AG/AA: persistence';}};
+    updateModelUI=function(){
+      skUpdate();
+      $('results').classList.remove('result-low','result-high','result-incomplete');
+      document.querySelector('.band-guide').classList.remove('lactose-bands');
+      document.querySelector('.detail-card h2').textContent=language==='en'?'Identified and imputed markers':'Identifikované a imputované markery';
+      document.querySelectorAll('.detail-card .footnote').forEach(note=>note.style.display='');
+      if(language==='en'){translateStatic();englishUI();}
+      document.querySelector('[data-model=lactose]').textContent=language==='en'?'Lactose':'Laktóza';
+      document.querySelector('[data-model=celiac]').textContent=language==='en'?'Coeliac disease':'Celiakia';
+      if(activeModel.special){
+        $('emptyRange').textContent='DNA';
+        $('uploadNotice').textContent=language==='en'?'Genotype-based interpretation; no disease probability, population imputation or dietary instruction.':'Interpretácia genotypu; bez pravdepodobnosti ochorenia, populačnej imputácie a pokynov na zmenu stravy.';
+        if(language==='en'&&activeModel.key==='lactose')$('literatureRows').children[0].children[3].textContent='GG: non-persistence; AG/AA: persistence';
+      }
+    };
     render=function(result,fileName,parsed){
       skRender(result,fileName,parsed);if(activeModel.special){if(language==='en'){translateStatic();englishUI();}renderSpecialPanel(fileName,parsed);return;}if(language!=='en')return;
       translateStatic();englishUI();
@@ -1512,7 +1532,106 @@
       }
     };
 
+    function renderLactosePanel(fileName,parsed){
+      const en=language==='en',t=(sk,eng)=>en?eng:sk;
+      const locus=models.lactose.loci[0];
+      const raw=lookup(parsed.found,[locus.id,...(locus.aliases||[])]);
+      const genotype=raw&&raw.length===2&&raw.split('').every(a=>a===locus.risk||a===locus.nonRisk)?raw:null;
+      const isNonPersistent=genotype==='GG';
+      const resultState=!genotype?'incomplete':isNonPersistent?'high':'low';
+      const resultLabels={
+        low:t('Znížená predispozícia k poklesu laktázy','Lower predisposition to lactase non-persistence'),
+        high:t('Zvýšená predispozícia k poklesu laktázy','Higher predisposition to lactase non-persistence'),
+        incomplete:t('Neúplné vyhodnotenie','Incomplete assessment')
+      };
+
+      $('results').classList.remove('result-low','result-high','result-incomplete');
+      $('results').classList.add(`result-${resultState}`);
+      $('results').querySelectorAll('.metrics,.prob-row,.confidence-note,.section-title').forEach(element=>element.style.display='');
+      const titles=$('results').querySelectorAll('.section-title');
+      titles[0].querySelector('h3').textContent=t('Spôsob vyhodnotenia','Assessment method');
+      titles[0].querySelector('span').textContent=t('jeden priamy marker · bez imputácie','one direct marker · no imputation');
+      titles[1].style.display='none';
+      $('results').querySelector('.divider').style.display='none';
+      $('histogram').parentElement.style.display='none';
+      $('individualMarker').style.display='none';
+
+      const metricLabels=$('results').querySelectorAll('.metric > span');
+      const labels=en?['Result source','Imputation','Assessed marker']:['Zdroj výsledku','Imputácia','Vyhodnotený marker'];
+      metricLabels.forEach((label,index)=>label.textContent=labels[index]);
+      $('scoreConfidence').textContent=genotype?t('Priamy genotyp','Direct genotype'):'—';
+      $('interpretationConfidence').textContent=t('Nepoužitá','Not used');
+      $('scoreRange').textContent='rs4988235';
+
+      $('uploadNotice').textContent=t('Panel Laktóza interpretuje iba priamy genotyp rs4988235. Marker sa neimputuje a výsledok sa nesčítava do alelového skóre.','The Lactose panel interprets only a direct rs4988235 genotype. The marker is not imputed and no additive allele score is calculated.');
+      $('fileName').textContent=`${fileName} · ${parsed.source.format} · ${parsed.source.build} · ${parsed.rows.toLocaleString(en?'en-GB':'sk-SK')} ${t('variantov','variants')}`;
+      $('rawScore').textContent=genotype||'—';
+      $('scoreMaximum').textContent='rs4988235';
+      $('resultLabel').textContent=resultLabels[resultState];
+      $('resultCopy').textContent=!genotype?t(
+        'Panel hodnotí genetickú predispozíciu k primárnemu poklesu tvorby enzýmu laktáza v dospelosti. Marker rs4988235 nebol zistený, preto výsledok nemožno určiť. Test sa netýka alergie na bielkoviny kravského mlieka.','This panel assesses genetic predisposition to primary adult decline in lactase production. The rs4988235 marker was not found, so no result can be determined. It does not assess cow’s-milk protein allergy.'
+      ):isNonPersistent?t(
+        'Panel hodnotí genetickú predispozíciu k primárnemu poklesu tvorby enzýmu laktáza v dospelosti. Priamy genotyp GG zodpovedá laktázovej nonperzistencii, preto je výsledok zaradený do zvýšenej predispozície. Test sa netýka alergie na bielkoviny kravského mlieka ani sekundárnej intolerancie.','This panel assesses genetic predisposition to primary adult decline in lactase production. The direct GG genotype corresponds to lactase non-persistence, so the result is classified as higher predisposition. It does not assess cow’s-milk protein allergy or secondary intolerance.'
+      ):t(
+        `Panel hodnotí genetickú predispozíciu k primárnemu poklesu tvorby enzýmu laktáza v dospelosti. Priamy genotyp ${genotype} zodpovedá perzistencii laktázy, preto je výsledok zaradený do zníženej predispozície. Test sa netýka alergie na bielkoviny kravského mlieka ani sekundárnej intolerancie.`,
+        `This panel assesses genetic predisposition to primary adult decline in lactase production. The direct ${genotype} genotype corresponds to lactase persistence, so the result is classified as lower predisposition. It does not assess cow’s-milk protein allergy or secondary intolerance.`
+      );
+      $('chipProfile').textContent=chipProfile(parsed).label;
+      $('panelCoverage').textContent=genotype?t('1/1 cieľ · priamy nález','1/1 target · direct call'):t('0/1 cieľ · marker chýba','0/1 target · marker missing');
+
+      const probabilityRows=$('results').querySelectorAll('.prob-row > span:first-child');
+      probabilityRows[0].textContent=t('Priamy genotyp','Direct genotype');
+      probabilityRows[1].textContent=t('Imputácia','Imputation');
+      $('confidenceBar').style.width=genotype?'100%':'0%';
+      $('confidenceValue').textContent=genotype?'100 %':'—';
+      $('uncertaintyBar').style.width=genotype?'0%':'100%';
+      $('uncertaintyValue').textContent=genotype?'0 %':t('marker chýba','marker missing');
+      $('confidenceNote').textContent=genotype?t(
+        'Hodnota 100 % znamená, že zaradenie vychádza z priamo uvedeného genotypu, nie z proxy alebo populačného odhadu. Nevyjadruje diagnostickú presnosť ani pravdepodobnosť vzniku príznakov.','The 100% value means that classification comes from the directly reported genotype, not a proxy or population estimate. It is not diagnostic accuracy or the probability of symptoms.'
+      ):t(
+        'Bez priameho genotypu sa výsledok neodhaduje. Chýbajúci marker sa nesmie interpretovať ako nízka predispozícia.','No result is inferred without a direct genotype. A missing marker must not be interpreted as low predisposition.'
+      );
+
+      $('interpretationTitle').textContent=resultLabels[resultState];
+      $('interpretationText').textContent=!genotype?t(
+        'Výsledok je neúplný. Na interpretáciu primárnej laktázovej nonperzistencie je potrebný podporovaný priamy genotyp rs4988235.','The result is incomplete. A supported direct rs4988235 genotype is required to interpret primary lactase non-persistence.'
+      ):isNonPersistent?t(
+        'Genotyp GG je spojený s poklesom tvorby laktázy po detstve, najmä pri európskom pôvode. Zvyšuje predispozíciu k primárnej malabsorpcii laktózy, ale neurčuje, či vzniknú tráviace ťažkosti ani aké množstvo laktózy bude tolerované.','The GG genotype is associated with a decline in lactase production after childhood, especially in people of European ancestry. It increases predisposition to primary lactose malabsorption but does not determine whether digestive symptoms will occur or what amount of lactose will be tolerated.'
+      ):t(
+        `Genotyp ${genotype} je spojený so zachovaním tvorby laktázy v dospelosti a so zníženou predispozíciou k primárnej malabsorpcii laktózy. Nevylučuje však sekundárnu intoleranciu ani tráviace ťažkosti z iných príčin.`,
+        `The ${genotype} genotype is associated with continued lactase production in adulthood and lower predisposition to primary lactose malabsorption. It does not exclude secondary intolerance or digestive symptoms from other causes.`
+      );
+      const bandGuide=document.querySelector('.band-guide');
+      bandGuide.style.display='grid';
+      bandGuide.classList.add('lactose-bands');
+      $('bandLowTitle').textContent=t('Znížená predispozícia · AG / AA','Lower predisposition · AG / AA');
+      $('bandLow').querySelector('span').textContent=t('Perzistencia laktázy: genetická výbava podporuje zachovanie tvorby laktázy v dospelosti.','Lactase persistence: the genetic finding supports continued lactase production in adulthood.');
+      $('bandHighTitle').textContent=t('Zvýšená predispozícia · GG','Higher predisposition · GG');
+      $('bandHigh').querySelector('span').textContent=t('Laktázová nonperzistencia: genetická výbava podporuje pokles tvorby laktázy po detstve.','Lactase non-persistence: the genetic finding supports a decline in lactase production after childhood.');
+      $('bandLow').classList.toggle('active',Boolean(genotype&&!isNonPersistent));
+      $('bandNormal').classList.remove('active');
+      $('bandHigh').classList.toggle('active',Boolean(genotype&&isNonPersistent));
+      $('clinicalNotice').innerHTML=t(
+        '<strong>Klinický význam:</strong> genotyp neurčuje prítomnosť ani intenzitu príznakov. Panel nehodnotí sekundárnu intoleranciu spôsobenú ochorením čreva a výsledok sám nie je dôvodom na vyradenie mliečnych výrobkov.',
+        '<strong>Clinical meaning:</strong> genotype does not determine the presence or intensity of symptoms. The panel does not assess secondary intolerance caused by intestinal disease, and the result alone is not a reason to exclude dairy products.'
+      );
+
+      $('literature-title').textContent=t('Pôvod genetického pravidla','Origin of the genetic rule');
+      $('literatureOrHeading').textContent=t('Interpretácia genotypu','Genotype interpretation');
+      document.querySelector('.detail-card h2').textContent=t('Priamo vyhodnotený marker','Directly assessed marker');
+      const detailNotes=document.querySelectorAll('.detail-card .footnote');
+      detailNotes[0].textContent=t('Panel používa iba priamy nález rs4988235 v plus orientácii. Nepoužíva proxy marker ani populačný odhad.','The panel uses only a direct rs4988235 call in plus orientation. It does not use a proxy marker or population estimate.');
+      detailNotes[1].textContent=t('Genotypové pravidlo nie je aditívne rizikové skóre. Tabuľka preto neuvádza alelové skóre, klinickú pravdepodobnosť ani intenzitu príznakov.','The genotype rule is not an additive risk score. The table therefore does not report an allele score, clinical probability or symptom intensity.');
+      detailNotes.forEach(note=>note.style.display='');
+      $('markerRows').innerHTML=`<tr><td><code>rs4988235</code></td><td>G</td><td><strong>${genotype||t('nezistený / nepodporovaný','missing / unsupported')}</strong></td><td>—</td><td>—</td><td>—</td><td><span class="status ${genotype?'direct':''}">${genotype?t('Priamy SNP nález','Direct SNP call'):t('Bez imputácie','No imputation')}</span></td><td>${t('nepoužitý','not used')}</td><td>—</td><td>—</td></tr>`;
+      $('emptyState').style.display='none';
+      $('results').classList.add('show');
+      $('interpretation').hidden=false;
+      $('details').hidden=false;
+    }
+
     function renderSpecialPanel(fileName,parsed){
+      if(activeModel.key==='lactose')return renderLactosePanel(fileName,parsed);
       const en=language==='en',t=(sk,eng)=>en?eng:sk;
       const calls=loci.map(l=>{const raw=lookup(parsed.found,[l.id]);const g=raw&&raw.length===2&&raw.split('').every(a=>a===l.risk||a===l.nonRisk)?raw:null;return {...l,g,raw};});
       const direct=calls.filter(c=>c.g).length;
@@ -1522,12 +1641,7 @@
       $('rawScore').textContent=activeModel.key==='lactose'?(calls[0].g||'—'):'HLA';
       $('panelCoverage').textContent=t(`${direct}/${calls.length} priamo · bez imputácie`,`${direct}/${calls.length} direct · no imputation`);
       $('interpretationTitle').textContent=t('Interpretácia','Interpretation');
-      if(activeModel.key==='lactose'){
-        const g=calls[0].g;
-        $('resultLabel').textContent=!g?t('Nedostatok údajov','Insufficient data'):g==='GG'?t('Predispozícia k poklesu laktázy','Predisposition to lactase non-persistence'):t('Genotyp spojený s perzistenciou laktázy','Genotype associated with lactase persistence');
-        $('resultCopy').textContent=t('GG: pokles tvorby laktázy v dospelosti. AG / AA: zachovanie tvorby laktázy. Chýbajúci alebo nepodporovaný genotyp sa neodhaduje.','GG: adult lactase non-persistence. AG / AA: lactase persistence. Missing or unsupported genotypes are not inferred.');
-        $('interpretationText').textContent=t('Táto asociácia sa týka primárnej laktázovej nonperzistencie, najmä pri európskom pôvode. Genotyp neurčuje, či a po akej dávke laktózy vzniknú príznaky. AG ani AA nevylučujú sekundárnu intoleranciu. Chýbajúci nález nie je nízka predispozícia.','This association concerns primary lactase non-persistence, mainly in European ancestry. Genotype does not determine symptoms or the lactose dose that triggers them. AG and AA do not exclude secondary intolerance. A missing result is not low predisposition.');
-      }else{
+      {
         const tags=calls.filter(c=>c.g&&riskCount(c.g,c.risk)>0).map(c=>c.id==='rs2187668'?'DQ2.5':'DQ8');
         $('resultLabel').textContent=tags.length?t('Zistený tag: ','Detected tag: ')+tags.join(' + '):direct<2?t('Neúplný HLA tag panel','Incomplete HLA tag panel'):t('Dva sledované tagy nezistené','Neither assessed tag detected');
         $('resultCopy').textContent=t('Nález tagu podporuje možnú HLA predispozíciu; nejde o potvrdenú HLA typizáciu ani o diagnózu celiakie.','A tag supports possible HLA susceptibility; it is not confirmed HLA typing or a coeliac diagnosis.');
@@ -1541,7 +1655,7 @@
     showError=function(message){if(language==='en')message=englishText[message]||message.replace(/^Formát (.+) sa rozpoznal, ale v súbore sa nenašli použiteľné genotypové riadky\.$/,'The $1 format was recognized, but no usable genotype rows were found.');skError(message);};
     function setLanguage(lang){
       restoreStatic();language=lang;document.documentElement.lang=lang;
-      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 22 · EUR graf pre mlieko';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
+      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 23 · detail laktózy';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
       document.title=lang==='en'?'AlergenRisk — genetic food-allergy predisposition':'AlergenRisk — genetická predispozícia';
       document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
       updateModelUI();if(currentParsed)render(analyze(currentParsed.found),currentFileName,currentParsed);clearError();
@@ -1591,8 +1705,8 @@
         if(activeModel.key==='lactose'){
           const call=reportDirectCalls(activeModel)[0];
           if(!call.genotype)return {state:'incomplete',short:reportText('Neúplné','Incomplete'),context:reportText('vyhodnotenie','assessment'),meta:reportText('Marker nebol zistený','Marker not found')};
-          if(call.genotype==='GG')return {state:'high',short:reportText('Pokles','Reduced'),context:reportText('laktázy','lactase'),meta:reportText('Tvorba laktázy · GG','Lactase production · GG')};
-          return {state:'normal',short:reportText('Perzistencia','Persistence'),context:reportText('laktázy','lactase'),meta:reportText(`Perzistencia laktázy · ${call.genotype}`,`Lactase persistence · ${call.genotype}`)};
+          if(call.genotype==='GG')return {state:'high',short:reportText('Zvýšená','Higher'),context:reportText('predispozícia','predisposition'),meta:reportText('Pokles laktázy · GG','Lactase non-persistence · GG')};
+          return {state:'low',short:reportText('Znížená','Lower'),context:reportText('predispozícia','predisposition'),meta:reportText(`Perzistencia laktázy · ${call.genotype}`,`Lactase persistence · ${call.genotype}`)};
         }
         if(activeModel.key==='celiac'){
           const calls=reportDirectCalls(activeModel),direct=calls.filter(c=>c.genotype).length;

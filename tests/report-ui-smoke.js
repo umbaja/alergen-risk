@@ -88,7 +88,38 @@ async function uploadAndWait(page) {
     await desktop.keyboard.press('Escape');
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
 
-    for (const key of ['peanut', 'shared', 'lactose', 'celiac', 'histamine']) {
+    const lactoseCard=desktop.locator('[data-summary-model="lactose"]');
+    assert.strictEqual(await lactoseCard.evaluate(element=>element.classList.contains('state-high')),true);
+    assert.match(await lactoseCard.locator('.summary-circle').innerText(),/Zvýšená\s+predispozícia/i);
+    assert.match(await lactoseCard.locator('.summary-card-meta').innerText(),/Pokles laktázy · GG/i);
+    await lactoseCard.click();
+    await desktop.waitForSelector('#detailModal.open');
+    assert.match(await desktop.locator('#detailModalTitle').innerText(),/Laktóza/i);
+    assert.strictEqual(await desktop.locator('#results').evaluate(element=>element.classList.contains('result-high')),true);
+    assert.strictEqual((await desktop.locator('#rawScore').innerText()).trim(),'GG');
+    assert.strictEqual((await desktop.locator('#scoreMaximum').innerText()).trim(),'rs4988235');
+    assert.match(await desktop.locator('#resultLabel').innerText(),/Zvýšená predispozícia k poklesu laktázy/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(),/primárnemu poklesu tvorby enzýmu laktáza/i);
+    assert.match(await desktop.locator('#resultCopy').innerText(),/netýka alergie na bielkoviny kravského mlieka/i);
+    assert.strictEqual((await desktop.locator('#scoreConfidence').innerText()).trim(),'Priamy genotyp');
+    assert.strictEqual((await desktop.locator('#interpretationConfidence').innerText()).trim(),'Nepoužitá');
+    assert.match(await desktop.locator('#results .section-title').first().innerText(),/Spôsob vyhodnotenia/i);
+    assert.strictEqual((await desktop.locator('#confidenceValue').innerText()).trim(),'100 %');
+    assert.strictEqual((await desktop.locator('#uncertaintyValue').innerText()).trim(),'0 %');
+    assert.strictEqual(await desktop.locator('.band-guide').evaluate(element=>element.classList.contains('lactose-bands')),true);
+    assert.strictEqual(await desktop.locator('#bandNormal').isVisible(),false);
+    assert.strictEqual(await desktop.locator('#bandHigh').evaluate(element=>element.classList.contains('active')),true);
+    assert.match(await desktop.locator('#interpretationTitle').innerText(),/Zvýšená predispozícia k poklesu laktázy/i);
+    assert.match(await desktop.locator('#literature-title').innerText(),/Pôvod genetického pravidla/i);
+    assert.match(await desktop.locator('.detail-card h2').innerText(),/Priamo vyhodnotený marker/i);
+    assert.match(await desktop.locator('#markerRows').innerText(),/rs4988235/i);
+    await desktop.screenshot({path:path.join(qaDir,'detail-lactose.png')});
+    await desktop.locator('#detailModal').evaluate(element=>{element.scrollTop=element.scrollHeight;});
+    await desktop.screenshot({path:path.join(qaDir,'detail-lactose-origin.png')});
+    await desktop.keyboard.press('Escape');
+    await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
+
+    for (const key of ['peanut', 'shared', 'celiac', 'histamine']) {
       await desktop.locator(`[data-summary-model="${key}"]`).click();
       await desktop.waitForSelector('#detailModal.open');
       assert.notStrictEqual((await desktop.locator('#detailModalTitle').innerText()).trim(), '');
@@ -107,6 +138,13 @@ async function uploadAndWait(page) {
     assert.strictEqual(await desktop.locator('#histogram .bar-col').count(), 11);
     assert.match(await desktop.locator('#results .section-title').nth(1).innerText(), /EUR population reference distribution/i);
     assert.match(await desktop.locator('#interpretationTitle').innerText(), /Higher risk-allele count/i);
+    await desktop.keyboard.press('Escape');
+    await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
+    await desktop.locator('[data-summary-model="lactose"]').click();
+    await desktop.waitForSelector('#detailModal.open');
+    assert.match(await desktop.locator('#resultLabel').innerText(),/Higher predisposition to lactase non-persistence/i);
+    assert.strictEqual((await desktop.locator('#scoreConfidence').innerText()).trim(),'Direct genotype');
+    assert.match(await desktop.locator('#literature-title').innerText(),/Origin of the genetic rule/i);
     await desktop.keyboard.press('Escape');
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
 
@@ -148,6 +186,22 @@ async function uploadAndWait(page) {
       assert.match(await scenarioCard.locator('.summary-circle').innerText(),scenario.label);
       await scenarioPage.close();
     }
+
+    const lactoseLowPage=await browser.newPage({viewport:{width:1000,height:800},deviceScaleFactor:1});
+    lactoseLowPage.on('pageerror',error=>errors.push(error.message));
+    await lactoseLowPage.goto(appUrl);
+    const lactoseLowFixture=fs.readFileSync(fixture,'utf8').replace('rs4988235\t2\t136608646\tGG','rs4988235\t2\t136608646\tAA');
+    await lactoseLowPage.setInputFiles('#fileInput',{name:'synthetic-lactose-low.txt',mimeType:'text/plain',buffer:Buffer.from(lactoseLowFixture)});
+    await lactoseLowPage.waitForSelector('#summaryDashboard:not([hidden])');
+    const lactoseLowCard=lactoseLowPage.locator('[data-summary-model="lactose"]');
+    assert.strictEqual(await lactoseLowCard.evaluate(element=>element.classList.contains('state-low')),true);
+    assert.match(await lactoseLowCard.locator('.summary-circle').innerText(),/Znížená\s+predispozícia/i);
+    await lactoseLowCard.click();
+    await lactoseLowPage.waitForSelector('#detailModal.open');
+    assert.strictEqual(await lactoseLowPage.locator('#results').evaluate(element=>element.classList.contains('result-low')),true);
+    assert.match(await lactoseLowPage.locator('#resultLabel').innerText(),/Znížená predispozícia k poklesu laktázy/i);
+    assert.strictEqual(await lactoseLowPage.locator('#bandLow').evaluate(element=>element.classList.contains('active')),true);
+    await lactoseLowPage.close();
 
     const myHeritagePage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
     myHeritagePage.on('pageerror', error => errors.push(error.message));
@@ -212,9 +266,14 @@ async function uploadAndWait(page) {
     await mobile.waitForSelector('#detailModal.open');
     assert.strictEqual(await mobile.locator('#histogram .bar-col').count(), 11);
     await mobile.screenshot({ path: path.join(qaDir, 'detail-milk-mobile.png') });
+    await mobile.keyboard.press('Escape');
+    await mobile.locator('#detailModal').waitFor({state:'hidden'});
+    await mobile.locator('[data-summary-model="lactose"]').click();
+    await mobile.waitForSelector('#detailModal.open');
+    await mobile.screenshot({path:path.join(qaDir,'detail-lactose-mobile.png')});
 
     assert.deepStrictEqual(errors, []);
-    console.log('UI smoke test passed: 7 summary cards, whole-number milk score, milk EUR distribution, 23-row chip/proxy map, EN switch, desktop and mobile layouts.');
+    console.log('UI smoke test passed: 7 summary cards, milk and lactose detail logic, colour states, 23-row chip/proxy map, EN switch, desktop and mobile layouts.');
   } finally {
     await browser.close();
   }
