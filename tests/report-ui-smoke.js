@@ -129,7 +129,7 @@ async function uploadAndWait(page) {
     assert.strictEqual((await desktop.locator('#scoreMaximum').innerText()).trim(),'vážené GRS');
     assert.match(await desktop.locator('#resultLabel').innerText(),/genetická predispozícia/i);
     assert.match(await desktop.locator('#resultCopy').innerText(),/nie je percento pravdepodobnosti ochorenia/i);
-    assert.match(await desktop.locator('#panelCoverage').innerText(),/50\/50 priamo/i);
+    assert.match(await desktop.locator('#panelCoverage').innerText(),/50 priamo \+ 0 proxy/i);
     assert.match(await desktop.locator('#scoreConfidence').innerText(),/DQ2\.5\/X/i);
     assert.strictEqual(await desktop.locator('#histogram .bar-col').count(),13);
     assert.match(await desktop.locator('#distributionMeta').innerText(),/GRS42 \+ 4 výskumné SNP/i);
@@ -181,6 +181,31 @@ async function uploadAndWait(page) {
     assert.match(await desktop.locator('#literature-title').innerText(),/Origin of the weighted model/i);
     await desktop.keyboard.press('Escape');
     await desktop.locator('#detailModal').waitFor({ state: 'hidden' });
+
+    const celiacProxyPage=await browser.newPage({viewport:{width:1200,height:900},deviceScaleFactor:1});
+    celiacProxyPage.on('pageerror',error=>errors.push(error.message));
+    await celiacProxyPage.goto(appUrl);
+    const celiacProxyFixture=fs.readFileSync(fixture,'utf8')
+      .replace(/^rs3184504\t12\t11100014\tCT$/m,'rs7310615\t12\t111446001\tCG')
+      .replace(/^rs2187668\t6\t32605884\tCT$/m,'rs9272729\t6\t32605890\tAG');
+    await celiacProxyPage.setInputFiles('#fileInput',{name:'synthetic-celiac-proxy.txt',mimeType:'text/plain',buffer:Buffer.from(celiacProxyFixture)});
+    await celiacProxyPage.waitForSelector('#summaryDashboard:not([hidden])');
+    const celiacProxyCard=celiacProxyPage.locator('[data-summary-model="celiac"]');
+    assert.match(await celiacProxyCard.locator('.summary-card-meta').innerText(),/48 priamo \+ 2 proxy/i);
+    await celiacProxyCard.click();
+    await celiacProxyPage.waitForSelector('#detailModal.open');
+    assert.match(await celiacProxyPage.locator('#panelCoverage').innerText(),/48 priamo \+ 2 proxy/i);
+    const celiacProxyRow=celiacProxyPage.locator('#markerRows tr').filter({hasText:'rs3184504'});
+    assert.match(await celiacProxyRow.innerText(),/Proxy odhad/i);
+    assert.match(await celiacProxyRow.innerText(),/rs7310615/i);
+    assert.match(await celiacProxyRow.innerText(),/0,996/i);
+    const celiacHlaProxyRow=celiacProxyPage.locator('#markerRows tr').filter({hasText:'rs2187668'});
+    assert.match(await celiacHlaProxyRow.innerText(),/Proxy HLA odhad/i);
+    assert.match(await celiacHlaProxyRow.innerText(),/rs9272729/i);
+    assert.match(await celiacProxyPage.locator('#confidenceNote').innerText(),/2 proxy marker/i);
+    await celiacProxyPage.locator('#detailModal').evaluate(element=>{element.scrollTop=element.scrollHeight;});
+    await celiacProxyPage.screenshot({path:path.join(qaDir,'detail-celiac-proxy-bottom.png')});
+    await celiacProxyPage.close();
 
     const aliasPage = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
     aliasPage.on('pageerror', error => errors.push(error.message));

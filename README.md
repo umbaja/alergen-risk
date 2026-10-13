@@ -122,3 +122,9 @@ Pôvodný dvoj-SNP panel Celiakie nahrádza vážený 50-markerový model. Publi
 Detail zobrazuje vážené GRS, najpravdepodobnejší HLA diplotyp, 90 % interval pri chýbajúcich markeroch, stabilitu pásma a modelovú EUR/CEU referenčnú distribúciu s hranicami na 20. a 80. percentile. Zelená, modrá a okrová farba v hlavnom prehľade zodpovedá zníženej, typickej a zvýšenej relatívnej predispozícii; nedostatočné pokrytie zostáva sivé ako neúplné.
 
 Hrubé GRS sa zámerne neprepočítava na absolútnu pravdepodobnosť ochorenia. Staršie lead SNP v silnej LD (napríklad rs6822844, rs9851967, rs2816316, rs653178) sú uvedené v LD kontrole, ale nepripočítavajú sa druhýkrát. Výsledok nie je diagnóza, nevylučuje celiakiu a nie je dôvodom vysadiť lepok pred klinickým vyšetrením.
+
+## Verzia 25
+
+Panel Celiakia pri chýbajúcom cieľovom SNP skúša overené proxy náhrady v poradí podľa EUR r². Automaticky sa používajú iba páry s r² ≥ 0,90; priamy cieľ má vždy prednosť a proxy sa nepridáva ako ďalší samostatný lokus.
+
+Smer väzby a podmienené pravdepodobnosti boli odvodené z 1 006 fázovaných haplotypov 503 európskych vzoriek 1000 Genomes Phase 3. Pravdepodobnostné rozdelenie odhadovanej dávky 0/1/2 efektových alel vstupuje do 90 % intervalu skóre a stability pásma. Osem cieľov bez dostatočne silnej EUR náhrady zostáva populačne neistých. Mapa lokusov zobrazuje dostupné proxy a detail výsledku rozlišuje priamy nález, proxy odhad a populačnú neistotu.

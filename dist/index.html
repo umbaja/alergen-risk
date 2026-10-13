@@ -694,7 +694,7 @@
 
     </main>
 
-    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy a príslušného odborného vyšetrenia.<span class="version-tag">AlergenRisk · verzia 24 · vážený panel celiakie</span></footer>
+    <footer>Prototyp pre výskumné a vzdelávacie použitie. Klinické rozhodnutie musí vychádzať z anamnézy a príslušného odborného vyšetrenia.<span class="version-tag">AlergenRisk · verzia 25 · proxy panel celiakie</span></footer>
   </div>
 
   <script>
@@ -876,6 +876,56 @@
       ['rs1049124','A','DQ2.2','HLA-DQA1'],['rs7775228','C','DQ2.2','HLA-DQB1'],
       ['rs73405471','T','DQ7.5','HLA-DQA1'],['rs79550239','A','DQ7.5','HLA-DQB1']
     ].map(([id,risk,haplotype,gene])=>({id,risk,haplotype,gene,group:'hla',aliases:[],proxies:[]}));
+    const celiacProxy=(id,riskAllele,r2,dPrime,pRiskIfProxy,pRiskIfOther)=>({
+      id,aliases:[],riskAllele,r2,dPrime,pRiskIfProxy,pRiskIfOther,reference:'1000GENOMES:phase_3:EUR'
+    });
+    const celiacProxyCatalog={
+      rs4143332:[celiacProxy('rs2596565','G',.987025,1,1,.011905),celiacProxy('rs2523571','T',.987025,1,1,.011905)],
+      rs2301226:[celiacProxy('rs9277336','G',1,1,1,0),celiacProxy('rs9277334','A',.991234,1,1,.007634)],
+      rs6937061:[celiacProxy('rs55821907','C',1,1,1,0),celiacProxy('rs115544840','T',1,1,1,0)],
+      rs1611710:[celiacProxy('rs9258682','T',1,1,1,0),celiacProxy('rs9258680','C',1,1,1,0)],
+      rs13132308:[celiacProxy('rs13129806','G',1,1,1,0),celiacProxy('rs6822844','T',.970108,1,1,.004695)],
+      rs2030519:[celiacProxy('rs6778720','G',1,1,1,0),celiacProxy('rs6790260','G',1,1,1,0)],
+      rs1359062:[celiacProxy('rs2984919','A',.993439,1,1,.001220),celiacProxy('rs1323292','G',.993439,1,1,.001220)],
+      rs17264332:[celiacProxy('rs6927172','G',1,1,1,0),celiacProxy('rs6920220','A',1,1,1,0)],
+      rs6715106:[celiacProxy('rs7574608','T',.980452,1,.981481,0),celiacProxy('rs1400656','G',.960526,.980064,.981132,.001049)],
+      rs55743914:[celiacProxy('rs41285280','T',.988686,1,1,.002564),celiacProxy('rs3190930','T',.960834,.988557,.978355,.002581)],
+      rs990171:[celiacProxy('rs11123931','A',1,1,1,0),celiacProxy('rs1403554','G',1,1,1,0)],
+      rs1980422:[celiacProxy('rs7588874','G',.994859,1,.996198,0),celiacProxy('rs7422494','G',.994846,1,1,.001342)],
+      rs3184504:[celiacProxy('rs7310615','C',.996012,1,.997863,0),celiacProxy('rs7137828','C',.992015,.995999,.993576,.005566),celiacProxy('rs653178','C',.984074,.995976,.982942,.011173)],
+      rs61907765:[celiacProxy('rs7117768','G',.946683,.994387,.963415,.001316),celiacProxy('rs11221332','T',.946683,.994387,.963415,.001316)],
+      rs13003464:[celiacProxy('rs67927699','C',1,1,1,0),celiacProxy('rs7596362','C',.995707,1,.997260,0)],
+      rs11875687:[celiacProxy('rs612058','T',.991611,1,1,.001151),celiacProxy('rs579052','T',.991611,1,1,.001151)],
+      rs12068671:[celiacProxy('rs10912292','T',.993743,1,1,.001238),celiacProxy('rs7553067','T',.987499,.993730,.994975,.001239)],
+      rs10892258:[celiacProxy('rs10892260','C',1,1,1,0),celiacProxy('rs10790261','G',1,1,1,0)],
+      rs1018326:[celiacProxy('rs6744620','G',1,1,1,0),celiacProxy('rs13405121','A',.968150,.999999,1,.013962)],
+      rs182429:[celiacProxy('rs212410','C',1,1,1,0),celiacProxy('rs212411','G',1,1,1,0)],
+      rs4821124:[celiacProxy('rs5998509','T',.986840,1,1,.002433),celiacProxy('rs4821104','G',.986840,1,1,.002433)],
+      rs4445406:[celiacProxy('rs4074789','G',1,1,1,0),celiacProxy('rs10797439','A',1,1,1,0)],
+      rs12142280:[celiacProxy('rs11801183','T',.993357,1,.994565,0),celiacProxy('rs112124189','T',.953725,.979849,.978261,.003650)],
+      rs6498114:[celiacProxy('rs7501204','C',.967968,1,1,.007833),celiacProxy('rs12922863','A',.967828,.989105,.991803,.005249)],
+      rs11851414:[celiacProxy('rs1051533','A',1,1,1,0),celiacProxy('rs11847049','G',1,1,1,0)],
+      rs1378938:[celiacProxy('rs7085','T',.990846,1,1,.002903),celiacProxy('rs11634474','C',.981748,.995383,.990654,.001460)],
+      rs10800746:[celiacProxy('rs905634','T',.952678,.985423,.976589,.004243),celiacProxy('rs7522462','A',.911239,.999998,1,.026027)],
+      rs1050976:[celiacProxy('rs9391997','G',1,1,1,0),celiacProxy('rs1050979','G',.992036,.996010,.997908,.001894)],
+      rs7616215:[celiacProxy('rs2172247','T',1,1,1,0),celiacProxy('rs2087726','G',1,1,1,0)],
+      rs2561288:[celiacProxy('rs9832199','A',.992034,1,.995708,0),celiacProxy('rs671046','A',.992034,1,.995708,0)],
+      rs61579022:[celiacProxy('rs62266700','G',1,1,1,0),celiacProxy('rs11712165','G',1,1,1,0)],
+      rs10167650:[celiacProxy('rs12468278','G',1,1,1,0),celiacProxy('rs7424172','C',.995069,1,1,.001377)],
+      rs17849502:[celiacProxy('rs17849501','T',1,1,1,0),celiacProxy('rs41272536','G',.946997,1,1,.003161)],
+      rs6806528:[celiacProxy('rs34263064','C',.989467,1,.990566,0),celiacProxy('rs6781739','A',.989467,1,.990566,0)],
+      rs2364484:[celiacProxy('rs12425441','A',.979751,.994871,.996255,.004060),celiacProxy('rs10774430','T',.969688,.984727,.988848,.004071)],
+      rs9610686:[celiacProxy('rs5995404','T',.987510,1,1,.007673),celiacProxy('rs4821614','A',.983297,.995778,.998377,.007692)],
+      rs2187668:[celiacProxy('rs9272729','A',1,1,.962617,.004449),celiacProxy('rs9272139','A',.979172,.989531,.990654,.001112)],
+      rs1617322:[celiacProxy('rs2647044','A',1,1,1,0),celiacProxy('rs1794277','A',1,1,1,0)],
+      rs3957146:[celiacProxy('rs9275387','C',.989378,1,.990476,0),celiacProxy('rs9275214','A',.989378,1,.990476,0)],
+      rs1049124:[celiacProxy('rs2133037','A',.988809,1,.989796,.002203),celiacProxy('rs17211713','C',.988809,1,.969388,.004405)],
+      rs7775228:[celiacProxy('rs3129715','T',1,1,1,0),celiacProxy('rs2858327','G',.992614,1,.993789,0)],
+      rs73405471:[celiacProxy('rs9469199','A',.981413,.990663,.991803,.001131)]
+    };
+    [...celiacHlaMarkers,...celiacCoreLoci,...celiacResearchLoci].forEach(locus=>{
+      locus.proxies=celiacProxyCatalog[locus.id]||[];
+    });
     const celiacHaplotypeFrequencies={'DQ2.5':.09,'DQ8':.18,'DQ2.2':.10,'DQ7.5':.09,'X':.54};
     const celiacHlaWeights={
       'DQ2.5/DQ2.5':4.97,'DQ2.5/DQ2.2':4.96,'DQ2.2/DQ7.5':3.95,'DQ2.5/DQ8':3.74,'DQ2.5/X':3.59,
@@ -893,7 +943,7 @@
     modelContent.lactose={heading:'Laktóza · predispozícia k poklesu laktázy',intro:'Samostatný panel pre primárnu laktázovú nonperzistenciu v dospelosti, najmä pri európskom pôvode. Nejde o alergiu na mliečne bielkoviny.',literatureIntro:'rs4988235: v genómovej plus orientácii GG zodpovedá −13910 CC; AG a AA zodpovedajú CT a TT. Hodnotíme genotyp, nie aditívne rizikové skóre.',orHeading:'Genotypové pravidlo',literatureRows:[['rs4988235','MCM6 / LCT','G / A','GG: nonperzistencia; AG/AA: perzistencia','—','G','—']],notes:'<p class="footnote">Prijímame priamy nález GG, AG alebo AA v plus orientácii. Chýbajúci marker sa neimputuje. Výsledok nepredpovedá intenzitu príznakov ani sekundárnu intoleranciu; iné populačne špecifické varianty nie sú zahrnuté. <a href="https://pubmed.ncbi.nlm.nih.gov/11788828/" target="_blank" rel="noopener">Enattah et al. (2002)</a> · <a href="https://www.ncbi.nlm.nih.gov/snp/rs4988235" target="_blank" rel="noopener">dbSNP: plus strand</a></p>'};
     modelContent.celiac={
       heading:'Celiakia · vážený genetický panel',
-      intro:'Rozšírený panel spája publikované skóre GRS42, osemmarkerový odhad HLA-DQ2.5/DQ8/DQ2.2/DQ7.5 a štyri novšie nezávislé GWAS varianty. Výsledok je poradie voči modelovej EUR/CEU distribúcii, nie diagnóza ani absolútna pravdepodobnosť ochorenia.',
+      intro:'Rozšírený panel spája publikované skóre GRS42, osemmarkerový odhad HLA-DQ2.5/DQ8/DQ2.2/DQ7.5 a štyri novšie nezávislé GWAS varianty. Pri chýbajúcom cieli skúša overené EUR proxy s r² ≥ 0,90 a ich neistotu zahŕňa do intervalu. Výsledok je poradie voči modelovej EUR/CEU distribúcii, nie diagnóza ani absolútna pravdepodobnosť ochorenia.',
       literatureIntro:'Jadro tvorí publikované PGS000316: 38 aditívnych variantov a jeden HLA diplotypový člen. Štyri označené varianty tvoria samostatné výskumné rozšírenie. Staršie lead SNP v tom istom LD lokuse sa druhýkrát nepripočítavajú.',
       orHeading:'Váha β v modeli',
       literatureRows:[
@@ -1179,6 +1229,35 @@
       return rows;
     }
 
+    function celiacProxyDosageOptions(proxy,proxyGenotype){
+      const alleles=normalizeGenotype(proxyGenotype)?.split('');
+      if(!alleles)return null;
+      const q=alleles.map(allele=>allele===proxy.riskAllele?proxy.pRiskIfProxy:proxy.pRiskIfOther);
+      return [
+        {dosage:0,p:(1-q[0])*(1-q[1])},
+        {dosage:1,p:q[0]*(1-q[1])+(1-q[0])*q[1]},
+        {dosage:2,p:q[0]*q[1]}
+      ].filter(option=>option.p>1e-12);
+    }
+
+    function celiacEvidenceCall(locus,found){
+      const raw=lookup(found,[locus.id,...locus.aliases]);
+      const genotype=raw&&validBases.test(raw)?raw:null;
+      if(genotype)return {
+        genotype,dosage:riskCount(genotype,locus.risk),dosageOptions:[{dosage:riskCount(genotype,locus.risk),p:1}],
+        method:'direct',usedProxy:null,usedProxyGenotype:null
+      };
+      for(const proxy of locus.proxies){
+        const proxyRaw=lookup(found,[proxy.id,...(proxy.aliases||[])]);
+        const proxyGenotype=proxyRaw&&validBases.test(proxyRaw)?proxyRaw:null;
+        const dosageOptions=proxyGenotype?celiacProxyDosageOptions(proxy,proxyGenotype):null;
+        if(dosageOptions)return {
+          genotype:null,dosage:null,dosageOptions,method:'proxy',usedProxy:proxy,usedProxyGenotype:proxyGenotype
+        };
+      }
+      return {genotype:null,dosage:null,dosageOptions:null,method:'population',usedProxy:null,usedProxyGenotype:null};
+    }
+
     function celiacConvolve(distribution,options){
       const combined=new Map();
       for(const base of distribution)for(const option of options){
@@ -1200,25 +1279,27 @@
 
     function celiacHlaPosterior(found){
       const calls=celiacHlaMarkers.map(marker=>{
-        const raw=lookup(found,[marker.id,...marker.aliases]);
-        const genotype=raw&&validBases.test(raw)?raw:null;
-        return {...marker,genotype,dosage:genotype?riskCount(genotype,marker.risk):null};
+        return {...marker,...celiacEvidenceCall(marker,found)};
       });
-      const observed=calls.filter(call=>call.genotype).length;
+      const observed=calls.filter(call=>call.dosageOptions).length;
+      const directObserved=calls.filter(call=>call.method==='direct').length;
+      const proxyObserved=calls.filter(call=>call.method==='proxy').length;
       const options=celiacDiplotypes().map(diplotype=>{
         let likelihood=1;
         for(const call of calls){
-          if(call.dosage===null)continue;
+          if(!call.dosageOptions)continue;
           const predicted=(diplotype.a===call.haplotype?1:0)+(diplotype.b===call.haplotype?1:0);
-          const distance=Math.abs(predicted-call.dosage);
-          likelihood*=distance===0?.985:distance===1?.014:.001;
+          likelihood*=call.dosageOptions.reduce((sum,evidence)=>{
+            const distance=Math.abs(predicted-evidence.dosage);
+            return sum+evidence.p*(distance===0?.985:distance===1?.014:.001);
+          },0);
         }
         return {...diplotype,p:diplotype.prior*likelihood};
       });
       const total=options.reduce((sum,item)=>sum+item.p,0)||1;
       options.forEach(item=>item.p/=total);
       options.sort((a,b)=>b.p-a.p);
-      return {calls,observed,options,modal:options[0]};
+      return {calls,observed,directObserved,proxyObserved,options,modal:options[0]};
     }
 
     function celiacReferenceDistribution(){
@@ -1266,15 +1347,13 @@
       const hla=celiacHlaPosterior(found);
       let distribution=hla.options.map(option=>({score:option.score,p:option.p}));
       const additiveCalls=[...celiacCoreLoci,...celiacResearchLoci].map(locus=>{
-        const raw=lookup(found,[locus.id,...locus.aliases]);
-        const genotype=raw&&validBases.test(raw)?raw:null;
-        const dosage=genotype?riskCount(genotype,locus.risk):null;
+        const evidence=celiacEvidenceCall(locus,found);
         const p=locus.eurFrequency;
-        const options=genotype
-          ? [{score:dosage*locus.beta,p:1,dosage}]
+        const options=evidence.dosageOptions
+          ? evidence.dosageOptions.map(option=>({score:option.dosage*locus.beta,p:option.p,dosage:option.dosage}))
           : [{score:0,p:(1-p)*(1-p),dosage:0},{score:locus.beta,p:2*p*(1-p),dosage:1},{score:2*locus.beta,p:p*p,dosage:2}];
         distribution=celiacConvolve(distribution,options);
-        return {...locus,genotype,dosage,options};
+        return {...locus,...evidence,options};
       });
       const total=distribution.reduce((sum,item)=>sum+item.p,0)||1;
       distribution.forEach(item=>item.p/=total);
@@ -1282,7 +1361,11 @@
       const reference=celiacReferenceDistribution();
       const band=celiacBandForScore(expectedScore,reference);
       const bandConfidence=distribution.reduce((sum,item)=>sum+(celiacBandForScore(item.score,reference)===band?item.p:0),0);
-      const additiveObserved=additiveCalls.filter(call=>call.genotype).length;
+      const additiveObserved=additiveCalls.filter(call=>call.dosageOptions).length;
+      const additiveDirect=additiveCalls.filter(call=>call.method==='direct').length;
+      const additiveProxy=additiveCalls.filter(call=>call.method==='proxy').length;
+      const directObserved=hla.directObserved+additiveDirect;
+      const proxyObserved=hla.proxyObserved+additiveProxy;
       const observed=hla.observed+additiveObserved;
       const percentile=reference.distribution.reduce((sum,item)=>sum+(item.score<=expectedScore?item.p:0),0);
       const hlaExpected=hla.options.reduce((sum,item)=>sum+item.score*item.p,0);
@@ -1290,7 +1373,7 @@
       const researchExpected=additiveCalls.filter(call=>call.group==='research').reduce((sum,call)=>sum+call.options.reduce((part,item)=>part+item.score*item.p,0),0);
       return {
         hla,additiveCalls,distribution,reference,expectedScore,band,bandConfidence,percentile,hlaExpected,coreExpected,researchExpected,
-        observed,additiveObserved,missing:models.celiac.loci.length-observed,
+        observed,directObserved,proxyObserved,additiveObserved,missing:models.celiac.loci.length-observed,
         intervalLow:celiacQuantile(distribution,.05),intervalHigh:celiacQuantile(distribution,.95),
         sufficient:hla.observed>=2&&additiveObserved>=10
       };
@@ -1634,7 +1717,7 @@
     };
     const enContent={
       lactose:{heading:'Lactose · predisposition to lactase non-persistence',intro:'A separate panel for primary adult lactase non-persistence, primarily in people of European ancestry. This is distinct from milk-protein allergy.',literatureIntro:'In genomic plus orientation, rs4988235 GG corresponds to −13910 CC; AG and AA correspond to CT and TT. Interpretation follows genotype rules, not an additive risk score.',notes:'Only direct GG, AG or AA calls in plus orientation are accepted. No imputation. This does not predict symptoms or secondary intolerance; other ancestry-specific persistence variants are not included.'},
-      celiac:{heading:'Coeliac disease · weighted genetic panel',intro:'The extended panel combines the published GRS42, an eight-marker estimate of HLA-DQ2.5/DQ8/DQ2.2/DQ7.5 and four newer independent GWAS variants. It reports position in a modelled EUR/CEU distribution, not a diagnosis or absolute disease probability.',literatureIntro:'The core is published PGS000316: 38 additive variants and one HLA diplotype term. Four labelled variants form a separate research extension. Older lead SNPs in the same LD locus are not counted again.',notes:'A raw weighted GRS is not converted to disease probability without a clinically calibrated intercept. Bands are based on a modelled EUR/CEU distribution and describe relative genetic predisposition.'},
+      celiac:{heading:'Coeliac disease · weighted genetic panel',intro:'The extended panel combines the published GRS42, an eight-marker estimate of HLA-DQ2.5/DQ8/DQ2.2/DQ7.5 and four newer independent GWAS variants. For a missing target it tries verified EUR proxies with r² ≥ 0.90 and carries their uncertainty into the interval. It reports position in a modelled EUR/CEU distribution, not a diagnosis or absolute disease probability.',literatureIntro:'The core is published PGS000316: 38 additive variants and one HLA diplotype term. Four labelled variants form a separate research extension. Older lead SNPs in the same LD locus are not counted again.',notes:'A raw weighted GRS is not converted to disease probability without a clinically calibrated intercept. Bands are based on a modelled EUR/CEU distribution and describe relative genetic predisposition.'},
       egg:{heading:'Genetic predisposition to egg allergy',intro:'Upload your SNP-chip export. 23andMe, MyHeritage and DNAEra files are processed offline using direct calls or the best available proxy for each of four targets.',literatureIntro:'Four markers from a GWAS of food allergy confirmed by oral food challenge. Egg effects are taken from Table 2; beta is the natural logarithm of the risk-allele odds ratio.',notes:'Protective effects are inverted to define the model risk allele. Proxies are replacements, not additional score contributions.'},
       peanut:{heading:'Genetic predisposition to peanut allergy',intro:'Five target markers are assessed directly or using the best available EUR proxy. Processing stays in your browser.',literatureIntro:'The panel combines two replicated HLA markers with three candidate loci from a multi-population GWAS and meta-analysis. Beta is ln(OR); the score is an unweighted risk-allele count.',notes:'The HLA associations were replicated; the other three loci showed suggestive discovery associations. This is an experimental panel, not a clinically validated PRS. For rs744597, the reported protective A allele is on the opposite strand; the model counts C in the plus orientation.'},
       shared:{heading:'Shared predisposition to food allergy',intro:'One shared panel for wheat, soy, tree nuts, sesame, fish, crustaceans and molluscs. These categories used the same three SNPs and therefore have a single result. The model does not distinguish risk between these foods.',literatureIntro:'Odds ratios relate to general food allergy and are not separately verified effects for each food. This panel does not assess coeliac disease.',notes:'Experimental shared panel without allergen-specific prediction. Score bands are descriptive, not clinical thresholds. The EUR histogram assumes independent loci.'},
@@ -1672,7 +1755,7 @@
       $('literatureRows').querySelectorAll('td').forEach(td=>{td.innerHTML=td.innerHTML.replace(/(\d),(\d)/g,'$1.$2');});
       $('histogram').setAttribute('aria-label','EUR population reference score distribution');
       document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetic allergen panels');
-      document.querySelector('.version-tag').textContent='AlergenRisk · version 24 · coeliac weighted panel';
+      document.querySelector('.version-tag').textContent='AlergenRisk · version 25 · coeliac proxy panel';
     }
     updateModelUI=function(){
       skUpdate();
@@ -1817,7 +1900,7 @@
     function renderCeliacPanel(fileName,parsed){
       const en=language==='en',t=(sk,eng)=>en?eng:sk;
       const evaluation=celiacEvaluation(parsed.found);
-      const {hla,additiveCalls,reference,expectedScore,band,bandConfidence,percentile,observed,missing,intervalLow,intervalHigh,sufficient,hlaExpected,coreExpected,researchExpected}=evaluation;
+      const {hla,additiveCalls,reference,expectedScore,band,bandConfidence,percentile,observed,directObserved,proxyObserved,missing,intervalLow,intervalHigh,sufficient,hlaExpected,coreExpected,researchExpected}=evaluation;
       const resultState=sufficient?band:'incomplete';
       const bandLabels={
         low:t('Znížená genetická predispozícia','Lower genetic predisposition'),
@@ -1847,19 +1930,19 @@
       $('scoreRange').textContent=range;
 
       $('uploadNotice').textContent=t(
-        'Panel Celiakia kombinuje 38 variantov PGS000316, HLA diplotyp odhadnutý z 8 tag SNP a 4 varianty výskumného rozšírenia. Chýbajúce aditívne SNP sa zobrazujú ako populačná neistota, nie ako osobne zistený genotyp.',
-        'The coeliac panel combines 38 PGS000316 variants, an HLA diplotype estimated from 8 tag SNPs, and 4 research-extension variants. Missing additive SNPs are shown as population uncertainty, not as personally observed genotypes.'
+        'Panel Celiakia kombinuje 38 variantov PGS000316, HLA diplotyp odhadnutý z 8 tag SNP a 4 varianty výskumného rozšírenia. Ak cieľ chýba, skúša overené EUR proxy s r² ≥ 0,90; zvyšná neistota proxy vstupuje priamo do intervalu skóre.',
+        'The coeliac panel combines 38 PGS000316 variants, an HLA diplotype estimated from 8 tag SNPs, and 4 research-extension variants. If a target is missing, verified EUR proxies with r² ≥ 0.90 are tried; residual proxy uncertainty feeds directly into the score interval.'
       );
       $('fileName').textContent=`${fileName} · ${parsed.source.format} · ${parsed.source.build} · ${parsed.rows.toLocaleString(en?'en-GB':'sk-SK')} ${t('variantov','variants')}`;
       $('rawScore').textContent=score;
       $('scoreMaximum').textContent=t('vážené GRS','weighted GRS');
       $('resultLabel').textContent=sufficient?bandLabels[band]:t(`Neúplný panel · modelovo ${bandLabels[band].toLowerCase()}`,`Incomplete panel · modelled ${bandLabels[band].toLowerCase()}`);
       $('resultCopy').textContent=t(
-        `Panel odhaduje relatívnu genetickú predispozíciu k celiakii. Vážené skóre ${score} leží približne na ${localizedPct(percentile)} modelovej EUR/CEU distribúcie. Pokrytie ${observed}/50 markerov a HLA odhad ${hla.modal.key} sa premietajú do 90 % intervalu ${range}. Skóre nie je percento pravdepodobnosti ochorenia.`,
-        `This panel estimates relative genetic predisposition to coeliac disease. The weighted score of ${score} lies at about ${localizedPct(percentile)} of the modelled EUR/CEU distribution. Coverage of ${observed}/50 markers and the ${hla.modal.key} HLA estimate are reflected in the 90% interval ${range}. The score is not a disease-probability percentage.`
+        `Panel odhaduje relatívnu genetickú predispozíciu k celiakii. Vážené skóre ${score} leží približne na ${localizedPct(percentile)} modelovej EUR/CEU distribúcie. Pokrytie ${directObserved} priamymi a ${proxyObserved} proxy markermi z 50 spolu s HLA odhadom ${hla.modal.key} sa premieta do 90 % intervalu ${range}. Skóre nie je percento pravdepodobnosti ochorenia.`,
+        `This panel estimates relative genetic predisposition to coeliac disease. The weighted score of ${score} lies at about ${localizedPct(percentile)} of the modelled EUR/CEU distribution. Coverage by ${directObserved} direct and ${proxyObserved} proxy markers out of 50, together with the ${hla.modal.key} HLA estimate, is reflected in the 90% interval ${range}. The score is not a disease-probability percentage.`
       );
       $('chipProfile').textContent=chipProfile(parsed).label;
-      $('panelCoverage').textContent=t(`${observed}/50 priamo · ${missing} modelovo doplnených`,`${observed}/50 direct · ${missing} modelled as uncertain`);
+      $('panelCoverage').textContent=t(`${directObserved} priamo + ${proxyObserved} proxy · ${missing} populačne neistých`,`${directObserved} direct + ${proxyObserved} proxy · ${missing} population-uncertain`);
 
       const probabilityRows=$('results').querySelectorAll('.prob-row > span:first-child');
       probabilityRows[0].textContent=t('Rovnaké pásmo','Same band');
@@ -1869,8 +1952,8 @@
       $('uncertaintyBar').style.width=`${(1-bandConfidence)*100}%`;
       $('uncertaintyValue').textContent=localizedPct(1-bandConfidence);
       $('confidenceNote').textContent=t(
-        `Stabilita pásma ${localizedPct(bandConfidence)} zahŕňa neistotu chýbajúcich markerov aj HLA diplotypu. Publikované jadro prispieva odhadom ${localizedScore(coreExpected+hlaExpected,2)} a výskumné rozšírenie ${localizedScore(researchExpected,2)} bodu. Nejde o diagnostickú presnosť.`,
-        `Band stability of ${localizedPct(bandConfidence)} includes uncertainty from missing markers and the HLA diplotype. The published core contributes an estimated ${localizedScore(coreExpected+hlaExpected,2)} and the research extension ${localizedScore(researchExpected,2)} points. This is not diagnostic accuracy.`
+        `Stabilita pásma ${localizedPct(bandConfidence)} zahŕňa neistotu ${proxyObserved} proxy markerov, ${missing} chýbajúcich cieľov aj HLA diplotypu. Publikované jadro prispieva odhadom ${localizedScore(coreExpected+hlaExpected,2)} a výskumné rozšírenie ${localizedScore(researchExpected,2)} bodu. Nejde o diagnostickú presnosť.`,
+        `Band stability of ${localizedPct(bandConfidence)} includes uncertainty from ${proxyObserved} proxy markers, ${missing} missing targets and the HLA diplotype. The published core contributes an estimated ${localizedScore(coreExpected+hlaExpected,2)} and the research extension ${localizedScore(researchExpected,2)} points. This is not diagnostic accuracy.`
       );
 
       const histogram=celiacHistogram(reference.distribution,13),histogramMax=Math.max(...histogram.bins.map(bin=>bin.p),.0001);
@@ -1911,8 +1994,8 @@
 
       $('literature-title').textContent=t('Pôvod váženého modelu','Origin of the weighted model');
       $('literatureIntro').textContent=t(
-        'Publikované jadro PGS000316 zahŕňa 38 aditívnych SNP a HLA diplotypový člen. Štyri novšie varianty sú zobrazené ako výskumné rozšírenie. Váhy β sa násobia počtom efektových alel; staršie SNP v LD sa nepripočítavajú opakovane.',
-        'The published PGS000316 core contains 38 additive SNPs and one HLA diplotype term. Four newer variants are shown as a research extension. Beta weights are multiplied by effect-allele dosage; older SNPs in LD are not counted again.'
+        'Publikované jadro PGS000316 zahŕňa 38 aditívnych SNP a HLA diplotypový člen. Štyri novšie varianty sú zobrazené ako výskumné rozšírenie. Pri chýbajúcom cieli sa použije najkvalitnejšia prítomná proxy; jej neistota sa neskrýva a staršie SNP v LD sa nepripočítavajú opakovane.',
+        'The published PGS000316 core contains 38 additive SNPs and one HLA diplotype term. Four newer variants are shown as a research extension. When a target is absent, the best available proxy is used, its uncertainty remains explicit, and older SNPs in LD are not counted again.'
       );
       $('literatureOrHeading').textContent=t('Váha β / zdroj','β weight / source');
       const literatureRows=[
@@ -1923,24 +2006,31 @@
       $('literatureRows').innerHTML=literatureRows.map(row=>`<tr><td><code>${row[0]}</code></td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td><strong>${row[5]}</strong></td><td>${row[6]}</td></tr>`).join('');
       const ldSummary=celiacLegacyLd.map(row=>`<code>${row[0]}</code> (${row[1]}: ${en?'represented by the updated model; not double-counted':row[2]})`).join(' · ');
       $('literatureNotes').innerHTML=t(
-        `<p class="footnote"><strong>Validované jadro a rozšírenie:</strong> GRS42 bolo publikované a hodnotené v európskych dátach; štvor-SNP doplnok je výskumná nadstavba a nie súčasť pôvodnej validácie. <a href="https://www.pgscatalog.org/score/PGS000316/" target="_blank" rel="noopener">PGS Catalog PGS000316</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7028987/" target="_blank" rel="noopener">Sharp et al. (2020)</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2386975/" target="_blank" rel="noopener">Monsuur et al. (2008)</a></p><p class="footnote"><strong>LD kontrola:</strong> ${ldSummary}.</p><p class="footnote"><strong>Referenčný model:</strong> frekvencie efektových alel sú EUR 1000 Genomes; HLA haplotypy používajú približné CEU frekvencie. Model predpokladá Hardyho–Weinbergovu rovnováhu a medzi-lokusovú nezávislosť, preto je histogram porovnávací, nie klinicky kalibrovaný.</p>`,
-        `<p class="footnote"><strong>Validated core and extension:</strong> GRS42 was published and evaluated in European data; the four-SNP addition is a research extension and was not part of the original validation. <a href="https://www.pgscatalog.org/score/PGS000316/" target="_blank" rel="noopener">PGS Catalog PGS000316</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7028987/" target="_blank" rel="noopener">Sharp et al. (2020)</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2386975/" target="_blank" rel="noopener">Monsuur et al. (2008)</a></p><p class="footnote"><strong>LD control:</strong> ${ldSummary}.</p><p class="footnote"><strong>Reference model:</strong> effect-allele frequencies are from 1000 Genomes EUR; HLA haplotypes use approximate CEU frequencies. Hardy–Weinberg equilibrium and between-locus independence are assumed, so the histogram is comparative rather than clinically calibrated.</p>`
+        `<p class="footnote"><strong>Validované jadro a rozšírenie:</strong> GRS42 bolo publikované a hodnotené v európskych dátach; štvor-SNP doplnok je výskumná nadstavba a nie súčasť pôvodnej validácie. <a href="https://www.pgscatalog.org/score/PGS000316/" target="_blank" rel="noopener">PGS Catalog PGS000316</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7028987/" target="_blank" rel="noopener">Sharp et al. (2020)</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2386975/" target="_blank" rel="noopener">Monsuur et al. (2008)</a></p><p class="footnote"><strong>Proxy pravidlo:</strong> automaticky sa používajú iba náhrady s EUR r² ≥ 0,90. Smer väzby a podmienené pravdepodobnosti boli vypočítané z 1 006 fázovaných haplotypov 503 európskych vzoriek 1000 Genomes Phase 3. Priamy cieľ má vždy prednosť; prvá prítomná proxy podľa r² sa použije iba raz. Osem cieľov bez takejto náhrady zostáva populačne neistých. <a href="https://rest.ensembl.org/documentation/info/ld_id_get" target="_blank" rel="noopener">Ensembl LD API</a> · <a href="https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel" target="_blank" rel="noopener">1000 Genomes panel</a></p><p class="footnote"><strong>LD kontrola:</strong> ${ldSummary}.</p><p class="footnote"><strong>Referenčný model:</strong> frekvencie efektových alel sú EUR 1000 Genomes; HLA haplotypy používajú približné CEU frekvencie. Model predpokladá Hardyho–Weinbergovu rovnováhu a medzi-lokusovú nezávislosť, preto je histogram porovnávací, nie klinicky kalibrovaný.</p>`,
+        `<p class="footnote"><strong>Validated core and extension:</strong> GRS42 was published and evaluated in European data; the four-SNP addition is a research extension and was not part of the original validation. <a href="https://www.pgscatalog.org/score/PGS000316/" target="_blank" rel="noopener">PGS Catalog PGS000316</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7028987/" target="_blank" rel="noopener">Sharp et al. (2020)</a> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2386975/" target="_blank" rel="noopener">Monsuur et al. (2008)</a></p><p class="footnote"><strong>Proxy rule:</strong> only replacements with EUR r² ≥ 0.90 are used automatically. LD phase and conditional probabilities were calculated from 1,006 phased haplotypes in 503 European 1000 Genomes Phase 3 samples. A direct target always has priority; the first available proxy by r² is used once. Eight targets without such a replacement remain population-uncertain. <a href="https://rest.ensembl.org/documentation/info/ld_id_get" target="_blank" rel="noopener">Ensembl LD API</a> · <a href="https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/integrated_call_samples_v3.20130502.ALL.panel" target="_blank" rel="noopener">1000 Genomes panel</a></p><p class="footnote"><strong>LD control:</strong> ${ldSummary}.</p><p class="footnote"><strong>Reference model:</strong> effect-allele frequencies are from 1000 Genomes EUR; HLA haplotypes use approximate CEU frequencies. Hardy–Weinberg equilibrium and between-locus independence are assumed, so the histogram is comparative rather than clinically calibrated.</p>`
       );
 
       document.querySelector('.detail-card h2').textContent=t('Vyhodnotené markery a príspevky','Assessed markers and contributions');
       const detailNotes=document.querySelectorAll('.detail-card .footnote');
-      detailNotes[0].textContent=t('Priamy genotyp má prednosť. Pri chýbajúcom aditívnom SNP sa pre interval použije EUR frekvencia; nejde o individuálnu imputáciu genotypu. HLA diplotyp sa odhaduje spoločne z ôsmich tag markerov.','Direct genotypes take priority. For a missing additive SNP, its EUR frequency contributes to the uncertainty interval; this is not individual genotype imputation. The HLA diplotype is jointly estimated from eight tag markers.');
+      detailNotes[0].textContent=t('Priamy genotyp má prednosť. Ak chýba, aplikácia skúsi overené EUR proxy podľa r²; ich neistota vstupuje do intervalu. Až cieľ bez dostupnej proxy používa EUR frekvenciu. HLA diplotyp sa odhaduje spoločne z ôsmich tag markerov a ich proxy.','Direct genotypes take priority. If absent, verified EUR proxies are tried by r² and their uncertainty feeds into the interval. Only a target without an available proxy uses its EUR frequency. The HLA diplotype is jointly estimated from eight tag markers and their proxies.');
       detailNotes[1].textContent=t('Stĺpec Skóre uvádza vážený príspevok β × počet efektových alel. Pri HLA tagoch sa jednotlivé alely nesčítavajú; do výsledku vstupuje jediná váha najpravdepodobnejšieho diplotypu.','The Score column shows β × effect-allele dosage. HLA tag alleles are not summed individually; one diplotype weight enters the result.');
       detailNotes.forEach(note=>note.style.display='');
       const hlaRows=hla.calls.map(call=>{
         const predicted=(hla.modal.a===call.haplotype?1:0)+(hla.modal.b===call.haplotype?1:0);
-        return `<tr><td><code>${call.id}</code><br><small>${call.haplotype}</small></td><td>${call.risk}</td><td><strong>${call.genotype||t('nezistený','missing')}</strong></td><td>${call.genotype?'100 %':'—'}</td><td>${call.genotype?call.dosage:`≈ ${predicted}`}</td><td>HLA</td><td><span class="status ${call.genotype?'direct':'population'}">${call.genotype?t('Priamy HLA tag','Direct HLA tag'):t('Súčasť HLA odhadu','Part of HLA estimate')}</span></td><td>${t('nepoužitý','not used')}</td><td>—</td><td>—</td></tr>`;
+        const proxy=call.usedProxy,proxyConfidence=call.dosageOptions?Math.max(...call.dosageOptions.map(option=>option.p)):null;
+        const estimatedDosage=call.dosageOptions?call.dosageOptions.reduce((sum,option)=>sum+option.dosage*option.p,0):predicted;
+        const genotypeLabel=call.genotype||(proxy?t(`odhad ${localizedScore(estimatedDosage,2)} alely`,`estimated ${localizedScore(estimatedDosage,2)} alleles`):t('nezistený','missing'));
+        const status=call.method==='direct'?t('Priamy HLA tag','Direct HLA tag'):call.method==='proxy'?t('Proxy HLA odhad','Proxy HLA estimate'):t('Súčasť HLA odhadu','Part of HLA estimate');
+        return `<tr><td><code>${call.id}</code><br><small>${call.haplotype}</small></td><td>${call.risk}</td><td><strong>${genotypeLabel}</strong></td><td>${call.method==='direct'?'100 %':proxy?localizedPct(proxyConfidence):'—'}</td><td>${call.method==='direct'?call.dosage:`≈ ${localizedScore(estimatedDosage,2)}`}</td><td>HLA</td><td><span class="status ${call.method}">${status}</span></td><td>${proxy?`<code>${proxy.id}</code> ${call.usedProxyGenotype}`:t('nepoužitý','not used')}</td><td>${proxy?localizedScore(proxy.r2,3):'—'}</td><td>${proxy?localizedScore(proxy.dPrime,3):'—'}</td></tr>`;
       }).join('');
       const additiveRows=additiveCalls.map(call=>{
-        const expectedDosage=call.genotype?call.dosage:2*call.eurFrequency;
+        const expectedDosage=call.dosageOptions?call.dosageOptions.reduce((sum,option)=>sum+option.dosage*option.p,0):2*call.eurFrequency;
         const contribution=expectedDosage*call.beta;
         const groupLabel=call.group==='research'?t('Výskumné rozšírenie','Research extension'):t('Jadro PGS000316','PGS000316 core');
-        return `<tr><td><code>${call.id}</code><br><small>${groupLabel}</small></td><td>${call.risk}</td><td><strong>${call.genotype||t('nezistený','missing')}</strong></td><td>${call.genotype?'100 %':t('EUR model','EUR model')}</td><td>${localizedScore(contribution,3)}</td><td>${localizedScore(call.beta,3)}</td><td><span class="status ${call.genotype?'direct':'population'}">${call.genotype?t('Priamy SNP nález','Direct SNP call'):t('Populačná neistota','Population uncertainty')}</span></td><td>${t('nepoužitý','not used')}</td><td>—</td><td>—</td></tr>`;
+        const proxy=call.usedProxy,proxyConfidence=call.dosageOptions?Math.max(...call.dosageOptions.map(option=>option.p)):null;
+        const genotypeLabel=call.genotype||(proxy?t(`odhad dávky ${localizedScore(expectedDosage,2)}`,`dosage estimate ${localizedScore(expectedDosage,2)}`):t('nezistený','missing'));
+        const status=call.method==='direct'?t('Priamy SNP nález','Direct SNP call'):call.method==='proxy'?t('Proxy odhad','Proxy estimate'):t('Populačná neistota','Population uncertainty');
+        return `<tr><td><code>${call.id}</code><br><small>${groupLabel}</small></td><td>${call.risk}</td><td><strong>${genotypeLabel}</strong></td><td>${call.method==='direct'?'100 %':proxy?localizedPct(proxyConfidence):t('EUR model','EUR model')}</td><td>${localizedScore(contribution,3)}</td><td>${localizedScore(call.beta,3)}</td><td><span class="status ${call.method}">${status}</span></td><td>${proxy?`<code>${proxy.id}</code> ${call.usedProxyGenotype}`:t('nepoužitý','not used')}</td><td>${proxy?localizedScore(proxy.r2,3):'—'}</td><td>${proxy?localizedScore(proxy.dPrime,3):'—'}</td></tr>`;
       }).join('');
       $('markerRows').innerHTML=hlaRows+additiveRows;
       $('emptyState').style.display='none';
@@ -1975,7 +2065,7 @@
     showError=function(message){if(language==='en')message=englishText[message]||message.replace(/^Formát (.+) sa rozpoznal, ale v súbore sa nenašli použiteľné genotypové riadky\.$/,'The $1 format was recognized, but no usable genotype rows were found.');skError(message);};
     function setLanguage(lang){
       restoreStatic();language=lang;document.documentElement.lang=lang;
-      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 24 · vážený panel celiakie';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
+      if(lang==='sk'){document.querySelector('.version-tag').textContent='AlergenRisk · verzia 25 · proxy panel celiakie';document.querySelector('.allergen-tabs').setAttribute('aria-label','Genetické modely alergénov');$('histogram').setAttribute('aria-label','Referenčná distribúcia EUR populácie');}
       document.title=lang==='en'?'AlergenRisk — genetic food-allergy predisposition':'AlergenRisk — genetická predispozícia';
       document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lang===lang)));
       updateModelUI();if(currentParsed)render(analyze(currentParsed.found),currentFileName,currentParsed);clearError();
@@ -2035,7 +2125,7 @@
             state:evaluation.sufficient?evaluation.band:'incomplete',
             short:evaluation.sufficient?short:reportText('Neúplné','Incomplete'),
             context:evaluation.sufficient?reportText('predispozícia','predisposition'):reportText('vyhodnotenie','assessment'),
-            meta:reportText(`GRS ${localizedScore(evaluation.expectedScore,2)} · ${evaluation.observed}/50 SNP`,`GRS ${localizedScore(evaluation.expectedScore,2)} · ${evaluation.observed}/50 SNP`)
+            meta:reportText(`GRS ${localizedScore(evaluation.expectedScore,2)} · ${evaluation.observed}/50 SNP (${evaluation.directObserved} priamo + ${evaluation.proxyObserved} proxy)`,`GRS ${localizedScore(evaluation.expectedScore,2)} · ${evaluation.observed}/50 SNP (${evaluation.directObserved} direct + ${evaluation.proxyObserved} proxy)`)
           };
         }
         if(activeModel.key==='milk'){
