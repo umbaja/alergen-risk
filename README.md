@@ -31,9 +31,24 @@ Workflow v `.github/workflows/pages.yml` automaticky publikuje obsah priečinka 
 
 V GitHub repozitári treba pri prvom nasadení otvoriť **Settings → Pages** a ako **Source** zvoliť **GitHub Actions**. Následne workflow možno spustiť pushom alebo ručne cez kartu **Actions**.
 
+## Programová dokumentácia
+
+Komplexný používateľský, vedecký a technický opis nasadenej verzie 25 je dostupný ako
+[PDF dokument](https://umbaja.github.io/alergen-risk/downloads/AlergenRisk_Programova_a_metodicka_dokumentacia_v25.pdf).
+Obsahuje metodiku siedmich panelov, úplný register 71 panel-lokus záznamov, proxy pravidlá,
+architektúru lokálneho spracovania, rozsah QA a hranice klinickej interpretácie.
+
+Zdroj generátora je v `scripts/build_program_pdf.py`. Po inštalácii
+`python -m pip install -r requirements-docs.txt` sa výstup vytvára príkazom
+`python scripts/build_program_pdf.py`.
+
 ## Štruktúra
 
 - `dist/index.html` – kompletná offline aplikácia,
+- `dist/downloads/` – publikované metodické dokumenty,
+- `output/pdf/` – zdrojové PDF výstupy,
+- `scripts/build_program_pdf.py` – generátor programovej dokumentácie,
+- `requirements-docs.txt` – verzovaná závislosť generátora PDF,
 - `.github/workflows/pages.yml` – automatické nasadenie na GitHub Pages.
 
 ## Odborné zdroje arašidového panelu
